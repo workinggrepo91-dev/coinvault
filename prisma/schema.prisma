@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  // The 'url' line is removed from here
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  username      String
+  firstName     String?   // New field
+  lastName      String?   // New field
+  phoneNumber   String?   // New field
+  password      String
+  totalBalance  Float     @default(0.0) 
+  assets        Asset[]
+  createdAt     DateTime  @default(now())
+}
+
+model Asset {
+  id            String   @id @default(cuid())
+  symbol        String   // e.g., "BTC"
+  name          String   // e.g., "Bitcoin"
+  amount        Float    @default(0.0)
+  walletAddress String?  // New Field: Admin sets this manually
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+}
