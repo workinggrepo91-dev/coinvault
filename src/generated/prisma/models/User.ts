@@ -42,6 +42,7 @@ export type UserMinAggregateOutputType = {
   lastName: string | null
   phoneNumber: string | null
   password: string | null
+  role: $Enums.Role | null
   totalBalance: number | null
   createdAt: Date | null
 }
@@ -54,6 +55,7 @@ export type UserMaxAggregateOutputType = {
   lastName: string | null
   phoneNumber: string | null
   password: string | null
+  role: $Enums.Role | null
   totalBalance: number | null
   createdAt: Date | null
 }
@@ -66,6 +68,7 @@ export type UserCountAggregateOutputType = {
   lastName: number
   phoneNumber: number
   password: number
+  role: number
   totalBalance: number
   createdAt: number
   _all: number
@@ -88,6 +91,7 @@ export type UserMinAggregateInputType = {
   lastName?: true
   phoneNumber?: true
   password?: true
+  role?: true
   totalBalance?: true
   createdAt?: true
 }
@@ -100,6 +104,7 @@ export type UserMaxAggregateInputType = {
   lastName?: true
   phoneNumber?: true
   password?: true
+  role?: true
   totalBalance?: true
   createdAt?: true
 }
@@ -112,6 +117,7 @@ export type UserCountAggregateInputType = {
   lastName?: true
   phoneNumber?: true
   password?: true
+  role?: true
   totalBalance?: true
   createdAt?: true
   _all?: true
@@ -211,6 +217,7 @@ export type UserGroupByOutputType = {
   lastName: string | null
   phoneNumber: string | null
   password: string
+  role: $Enums.Role
   totalBalance: number
   createdAt: Date
   _count: UserCountAggregateOutputType | null
@@ -246,6 +253,7 @@ export type UserWhereInput = {
   lastName?: Prisma.StringNullableFilter<"User"> | string | null
   phoneNumber?: Prisma.StringNullableFilter<"User"> | string | null
   password?: Prisma.StringFilter<"User"> | string
+  role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
   totalBalance?: Prisma.FloatFilter<"User"> | number
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   assets?: Prisma.AssetListRelationFilter
@@ -259,6 +267,7 @@ export type UserOrderByWithRelationInput = {
   lastName?: Prisma.SortOrderInput | Prisma.SortOrder
   phoneNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   password?: Prisma.SortOrder
+  role?: Prisma.SortOrder
   totalBalance?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   assets?: Prisma.AssetOrderByRelationAggregateInput
@@ -275,6 +284,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   lastName?: Prisma.StringNullableFilter<"User"> | string | null
   phoneNumber?: Prisma.StringNullableFilter<"User"> | string | null
   password?: Prisma.StringFilter<"User"> | string
+  role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
   totalBalance?: Prisma.FloatFilter<"User"> | number
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   assets?: Prisma.AssetListRelationFilter
@@ -288,6 +298,7 @@ export type UserOrderByWithAggregationInput = {
   lastName?: Prisma.SortOrderInput | Prisma.SortOrder
   phoneNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   password?: Prisma.SortOrder
+  role?: Prisma.SortOrder
   totalBalance?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -308,6 +319,7 @@ export type UserScalarWhereWithAggregatesInput = {
   lastName?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   phoneNumber?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   password?: Prisma.StringWithAggregatesFilter<"User"> | string
+  role?: Prisma.EnumRoleWithAggregatesFilter<"User"> | $Enums.Role
   totalBalance?: Prisma.FloatWithAggregatesFilter<"User"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -320,6 +332,7 @@ export type UserCreateInput = {
   lastName?: string | null
   phoneNumber?: string | null
   password: string
+  role?: $Enums.Role
   totalBalance?: number
   createdAt?: Date | string
   assets?: Prisma.AssetCreateNestedManyWithoutUserInput
@@ -333,6 +346,7 @@ export type UserUncheckedCreateInput = {
   lastName?: string | null
   phoneNumber?: string | null
   password: string
+  role?: $Enums.Role
   totalBalance?: number
   createdAt?: Date | string
   assets?: Prisma.AssetUncheckedCreateNestedManyWithoutUserInput
@@ -346,6 +360,7 @@ export type UserUpdateInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUpdateManyWithoutUserNestedInput
@@ -359,6 +374,7 @@ export type UserUncheckedUpdateInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUncheckedUpdateManyWithoutUserNestedInput
@@ -372,6 +388,7 @@ export type UserCreateManyInput = {
   lastName?: string | null
   phoneNumber?: string | null
   password: string
+  role?: $Enums.Role
   totalBalance?: number
   createdAt?: Date | string
 }
@@ -384,6 +401,7 @@ export type UserUpdateManyMutationInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -396,6 +414,7 @@ export type UserUncheckedUpdateManyInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -408,6 +427,7 @@ export type UserCountOrderByAggregateInput = {
   lastName?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  role?: Prisma.SortOrder
   totalBalance?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -424,6 +444,7 @@ export type UserMaxOrderByAggregateInput = {
   lastName?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  role?: Prisma.SortOrder
   totalBalance?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -436,6 +457,7 @@ export type UserMinOrderByAggregateInput = {
   lastName?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  role?: Prisma.SortOrder
   totalBalance?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -455,6 +477,10 @@ export type StringFieldUpdateOperationsInput = {
 
 export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
+}
+
+export type EnumRoleFieldUpdateOperationsInput = {
+  set?: $Enums.Role
 }
 
 export type FloatFieldUpdateOperationsInput = {
@@ -491,6 +517,7 @@ export type UserCreateWithoutAssetsInput = {
   lastName?: string | null
   phoneNumber?: string | null
   password: string
+  role?: $Enums.Role
   totalBalance?: number
   createdAt?: Date | string
 }
@@ -503,6 +530,7 @@ export type UserUncheckedCreateWithoutAssetsInput = {
   lastName?: string | null
   phoneNumber?: string | null
   password: string
+  role?: $Enums.Role
   totalBalance?: number
   createdAt?: Date | string
 }
@@ -531,6 +559,7 @@ export type UserUpdateWithoutAssetsInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -543,6 +572,7 @@ export type UserUncheckedUpdateWithoutAssetsInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -586,6 +616,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   lastName?: boolean
   phoneNumber?: boolean
   password?: boolean
+  role?: boolean
   totalBalance?: boolean
   createdAt?: boolean
   assets?: boolean | Prisma.User$assetsArgs<ExtArgs>
@@ -600,6 +631,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   lastName?: boolean
   phoneNumber?: boolean
   password?: boolean
+  role?: boolean
   totalBalance?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -612,6 +644,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   lastName?: boolean
   phoneNumber?: boolean
   password?: boolean
+  role?: boolean
   totalBalance?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -624,11 +657,12 @@ export type UserSelectScalar = {
   lastName?: boolean
   phoneNumber?: boolean
   password?: boolean
+  role?: boolean
   totalBalance?: boolean
   createdAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "username" | "firstName" | "lastName" | "phoneNumber" | "password" | "totalBalance" | "createdAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "username" | "firstName" | "lastName" | "phoneNumber" | "password" | "role" | "totalBalance" | "createdAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   assets?: boolean | Prisma.User$assetsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -649,6 +683,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     lastName: string | null
     phoneNumber: string | null
     password: string
+    role: $Enums.Role
     totalBalance: number
     createdAt: Date
   }, ExtArgs["result"]["user"]>
@@ -1082,6 +1117,7 @@ export interface UserFieldRefs {
   readonly lastName: Prisma.FieldRef<"User", 'String'>
   readonly phoneNumber: Prisma.FieldRef<"User", 'String'>
   readonly password: Prisma.FieldRef<"User", 'String'>
+  readonly role: Prisma.FieldRef<"User", 'Role'>
   readonly totalBalance: Prisma.FieldRef<"User", 'Float'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
 }

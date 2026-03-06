@@ -9,17 +9,25 @@ export default function LoginPage() {
   const [showPass, setShowPass] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    
+    // 1. Force strings and trim invisible spaces
+    const emailStr = formData.get("email")?.toString().trim().toLowerCase();
+    const passwordStr = formData.get("password")?.toString();
+
     const result = await signIn("credentials", {
-      email: formData.get("email"),
-      password: formData.get("password"),
+      email: emailStr,
+      password: passwordStr,
       redirect: false,
     });
 
-    if (result?.error) setError("The email or password you entered is incorrect.");
-    else router.push("/dashboard");
+    if (result?.error) {
+      setError("The email or password you entered is incorrect.");
+    } else {
+      router.push("/dashboard");
+    }
   };
 
   return (
