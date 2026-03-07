@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import DashboardClient from "@/components/DashboardClient";
 import AppShell from "@/components/AppShell"; // 1. Import the shell
+export const dynamic = "force-dynamic";
+
 
 export default async function DashboardPage() {
   const session = await auth();

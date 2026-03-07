@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { updateBalance, updateAssetDetails } from "@/app/actions/admin"; // Note the new import
 import { ShieldAlert, Wallet, RefreshCw } from "lucide-react";
 import { updateUserCustomizations } from "@/app/actions/admin";
+export const dynamic = "force-dynamic";
 
 export default async function AdminGodMode() {
   const users = await prisma.user.findMany({ 
