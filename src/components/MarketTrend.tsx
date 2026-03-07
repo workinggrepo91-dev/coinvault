@@ -1,57 +1,43 @@
-import { ArrowRight, TrendingUp } from "lucide-react";
-import Link from "next/link";
+import { TrendingUp } from "lucide-react";
 
-export default function MarketTrend({ prices }: { prices: any }) {
-  if (!prices) return null;
+export default function MarketTrend({ coins }: { coins: any[] }) {
+  if (!coins || coins.length === 0) return null;
 
   return (
-    <section className="py-20 bg-slate-950 px-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-end mb-8">
-          <h2 className="text-3xl font-bold text-white">Market Trend</h2>
-          <Link href="/register" className="text-emerald-500 hover:text-emerald-400 flex items-center gap-1 text-sm font-bold">
-            View All Markets <ArrowRight size={16} />
-          </Link>
+    <div className="bg-slate-950/50 border-y border-white/5 py-8 backdrop-blur-md">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-slate-400 text-sm font-bold uppercase tracking-widest">Live Market Trends</h3>
+          <a href="/market" className="text-emerald-500 text-sm font-bold hover:text-emerald-400 transition-colors">View All Markets →</a>
         </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {coins.slice(0, 4).map((coin) => {
+            const isPositive = coin.price_change_percentage_24h >= 0;
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
-          <div className="grid grid-cols-4 p-4 border-b border-slate-800 bg-slate-900/50 text-xs font-bold text-slate-500 uppercase tracking-widest">
-            <div className="pl-4">Name</div>
-            <div className="text-right">Last Price</div>
-            <div className="text-right">24h Change</div>
-            <div className="text-right pr-4">Action</div>
-          </div>
-
-          {Object.entries(prices).map(([id, data]: any) => {
-            const isPositive = data.usd_24h_change >= 0;
             return (
-              <div key={id} className="grid grid-cols-4 p-6 border-b border-slate-800 hover:bg-slate-800/50 transition-colors items-center group">
-                <div className="flex items-center gap-4 pl-4">
-                  <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold capitalize text-white group-hover:bg-emerald-500 transition-colors">
-                    {id[0]}
+              <div key={coin.id} className="bg-slate-900 border border-slate-800 p-4 rounded-2xl hover:bg-slate-800/50 transition-colors flex items-center justify-between group">
+                <div className="flex items-center gap-3">
+                  <img src={coin.image} alt={coin.name} className="w-8 h-8 rounded-full group-hover:scale-110 transition-transform" />
+                  <div>
+                    <p className="font-bold text-white text-sm">{coin.symbol.toUpperCase()}</p>
+                    <p className="text-slate-500 text-xs">{coin.name}</p>
                   </div>
-                  <span className="font-bold text-white capitalize text-lg">{id}</span>
-                  <span className="text-xs text-slate-500 uppercase">{id.substring(0, 3)}</span>
                 </div>
-                
-                <div className="text-right font-mono text-white text-lg">
-                  ${data.usd.toLocaleString()}
-                </div>
-                
-                <div className={`text-right font-medium ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
-                  {isPositive ? '+' : ''}{data.usd_24h_change.toFixed(2)}%
-                </div>
-                
-                <div className="text-right pr-4">
-                  <Link href="/login" className="text-emerald-500 hover:text-emerald-300 text-sm font-bold underline decoration-2 decoration-emerald-500/30 hover:decoration-emerald-500 transition-all">
-                    Trade
-                  </Link>
+                <div className="text-right">
+                  <p className="font-mono font-bold text-white text-sm">
+                    ${coin.current_price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
+                  </p>
+                  <p className={`text-xs font-bold flex items-center justify-end gap-1 ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {isPositive ? <TrendingUp size={12} /> : <TrendingUp size={12} className="rotate-180" />}
+                    {Math.abs(coin.price_change_percentage_24h).toFixed(2)}%
+                  </p>
                 </div>
               </div>
             );
           })}
         </div>
       </div>
-    </section>
+    </div>
   );
 }

@@ -2,16 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, ShieldAlert, Settings, LogOut } from "lucide-react";
+// Add LogIn to the imports
+import { LayoutDashboard, ShieldAlert, Settings, LogOut, Activity, LogIn } from "lucide-react";
 import { signOut } from "next-auth/react";
 
-export default function Navigation({ role }: { role: string }) {
+export default function Navigation({ role, isLoggedIn }: { role: string; isLoggedIn: boolean }) {
   const pathname = usePathname();
 
+  // Add a reqAuth boolean to your links
   const navLinks = [
-    { name: "Vault", href: "/dashboard", icon: LayoutDashboard, reqAdmin: false },
-    { name: "Admin", href: "/admin", icon: ShieldAlert, reqAdmin: true },
-    { name: "Settings", href: "/settings", icon: Settings, reqAdmin: false },
+    { name: "Vault", href: "/dashboard", icon: LayoutDashboard, reqAuth: true, reqAdmin: false },
+    { name: "Market", href: "/market", icon: Activity, reqAuth: false, reqAdmin: false },
+    { name: "Admin", href: "/admin", icon: ShieldAlert, reqAuth: true, reqAdmin: true },
+    { name: "Settings", href: "/settings", icon: Settings, reqAuth: true, reqAdmin: false },
   ];
 
   return (
@@ -21,6 +24,9 @@ export default function Navigation({ role }: { role: string }) {
         <div className="flex h-full justify-around items-center px-2">
           {navLinks.map((link) => {
             if (link.reqAdmin && role !== "ADMIN") return null;
+            // NEW: Hide private links if user is not logged in
+            if (link.reqAuth && !isLoggedIn) return null; 
+
             const isActive = pathname.startsWith(link.href);
             const Icon = link.icon;
 
@@ -46,6 +52,9 @@ export default function Navigation({ role }: { role: string }) {
         <div className="flex flex-col gap-2 flex-1">
           {navLinks.map((link) => {
             if (link.reqAdmin && role !== "ADMIN") return null;
+            // NEW: Hide private links if user is not logged in
+            if (link.reqAuth && !isLoggedIn) return null;
+
             const isActive = pathname.startsWith(link.href);
             const Icon = link.icon;
 
@@ -58,10 +67,18 @@ export default function Navigation({ role }: { role: string }) {
           })}
         </div>
 
-        <button onClick={() => signOut({ callbackUrl: "/login" })} className="flex items-center gap-3 px-4 py-3 mt-auto text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all w-full text-left">
-          <LogOut size={18} />
-          <span className="text-sm font-bold tracking-wide">Sign Out</span>
-        </button>
+        {/* Dynamic Bottom Button: Show Sign Out if logged in, else Log In */}
+        {isLoggedIn ? (
+          <button onClick={() => signOut({ callbackUrl: "/login" })} className="flex items-center gap-3 px-4 py-3 mt-auto text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all w-full text-left">
+            <LogOut size={18} />
+            <span className="text-sm font-bold tracking-wide">Sign Out</span>
+          </button>
+        ) : (
+          <Link href="/login" className="flex items-center gap-3 px-4 py-3 mt-auto text-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-xl transition-all w-full text-left">
+            <LogIn size={18} />
+            <span className="text-sm font-bold tracking-wide">Log In</span>
+          </Link>
+        )}
       </aside>
     </>
   );

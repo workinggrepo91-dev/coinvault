@@ -2,18 +2,22 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Lock } from "lucide-react";
+// 1. Import Loader2
+import { Eye, EyeOff, Lock, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const [error, setError] = useState("");
   const [showPass, setShowPass] = useState(false);
+  // 2. Add loading state
+  const [isLoading, setIsLoading] = useState(false); 
   const router = useRouter();
 
-const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLoading(true); // 3. Start loading
+    setError("");
+
     const formData = new FormData(e.currentTarget);
-    
-    // 1. Force strings and trim invisible spaces
     const emailStr = formData.get("email")?.toString().trim().toLowerCase();
     const passwordStr = formData.get("password")?.toString();
 
@@ -25,6 +29,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
     if (result?.error) {
       setError("The email or password you entered is incorrect.");
+      setIsLoading(false); // 4. Stop loading on error
     } else {
       router.push("/dashboard");
     }
@@ -54,8 +59,10 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
               {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-          <button type="submit" className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3 rounded-lg transition-all">
-            Unlock Vault
+          
+          {/* 5. Update the button to show the spinner and disable clicking while loading */}
+          <button type="submit" disabled={isLoading} className="w-full flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3 rounded-lg transition-all disabled:opacity-70">
+            {isLoading ? <Loader2 size={18} className="animate-spin" /> : "Unlock Vault"}
           </button>
         </form>
       </div>

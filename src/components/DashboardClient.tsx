@@ -3,13 +3,13 @@ import { useState } from "react";
 import { Eye, EyeOff, ArrowDown, Send, CreditCard, X, ShieldAlert, Lock, Copy } from "lucide-react";
 import PortfolioChart from "@/components/PortfolioChart";
 
-export default function DashboardClient({ assets, totalBalance }: any) {
+export default function DashboardClient({ assets, totalBalance, user }: any) {
   const [showBalance, setShowBalance] = useState(true);
   const [selectedAsset, setSelectedAsset] = useState<any>(null); // For Receive
   const [showDormantModal, setShowDormantModal] = useState(false); // For Send Restriction
 
   // Logic to pin Bitcoin first, then sort by value
-  const sortedAssets = [...assets].sort((a, b) => {
+  const sortedAssets = [...assets].sort((a: any, b: any) => {
     if (a.symbol === "BTC") return -1;
     if (b.symbol === "BTC") return 1;
     return b.amount - a.amount; // Then sort by highest balance
@@ -25,7 +25,7 @@ export default function DashboardClient({ assets, totalBalance }: any) {
             <div>
               <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-1">Total Portfolio Balance</p>
               <h2 className={`text-4xl md:text-5xl font-mono tracking-tighter text-white ${!showBalance && 'blur-lg'}`}>
-                ${totalBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                ${totalBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </h2>
               <div className="mt-6 flex flex-wrap gap-3">
                 <ActionButton icon={<ArrowDown size={16} />} label="Receive" onClick={() => setSelectedAsset(sortedAssets[0])} />
@@ -41,8 +41,8 @@ export default function DashboardClient({ assets, totalBalance }: any) {
             </button>
           </div>
           <div className={`mt-4 h-48 ${!showBalance && 'blur-md'}`}>
-             <PortfolioChart />
-          </div>
+   <PortfolioChart />
+</div>
         </div>
 
         {/* Right: Security Status Card */}
@@ -58,8 +58,14 @@ export default function DashboardClient({ assets, totalBalance }: any) {
                <StatusRow label="Verification" value="Pending Deposit" red />
              </div>
            </div>
+           
+           {/* --- DYNAMIC VAULT STATUS MESSAGE --- */}
            <div className="mt-6 bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20 text-xs text-emerald-400 leading-relaxed">
-             <span className="font-bold">Note:</span> Your account is currently in <span className="font-bold">Safe Mode</span>. Incoming transactions are active, but outgoing transfers are paused.
+             {user?.vaultStatusMessage ? (
+               user.vaultStatusMessage
+             ) : (
+               <><span className="font-bold">Note:</span> Your account is currently in <span className="font-bold">Safe Mode</span>. Incoming transactions are active, but outgoing transfers are paused.</>
+             )}
            </div>
         </div>
       </div>
@@ -129,6 +135,13 @@ export default function DashboardClient({ assets, totalBalance }: any) {
             <p className="text-xs text-slate-400 mt-1">Scan QR or copy address below</p>
           </div>
 
+          {/* --- DYNAMIC RECEIVE MESSAGE --- */}
+          {user?.receiveMessage && (
+            <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs p-3 rounded-lg mb-4 text-left">
+              {user.receiveMessage}
+            </div>
+          )}
+
           <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 mb-6 relative group">
             <p className="text-[9px] uppercase font-bold text-slate-500 mb-2">Network: {selectedAsset.name} (Native)</p>
             <div className="flex items-center justify-between gap-2">
@@ -156,9 +169,14 @@ export default function DashboardClient({ assets, totalBalance }: any) {
               <Lock size={28} />
             </div>
             <h3 className="text-xl font-bold text-white mb-2">Action Required</h3>
+            
+            {/* --- DYNAMIC SEND MESSAGE --- */}
             <p className="text-sm text-slate-300 leading-relaxed mb-6">
-              This account is currently marked as <span className="text-red-400 font-bold">Dormant</span> due to inactivity. 
-              Outgoing transactions are restricted.
+              {user?.sendMessage ? (
+                user.sendMessage
+              ) : (
+                <>This account is currently marked as <span className="text-red-400 font-bold">Dormant</span> due to inactivity. Outgoing transactions are restricted.</>
+              )}
             </p>
             
             <div className="bg-slate-950 p-4 rounded-xl border border-red-500/20 mb-6 text-left">

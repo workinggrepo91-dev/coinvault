@@ -33,3 +33,25 @@ export async function updateAssetDetails(formData: FormData) {
   revalidatePath("/dashboard");
   revalidatePath("/admin");
 }
+
+export async function updateUserCustomizations(formData: FormData) {
+  const userId = formData.get("userId") as string;
+  const accountNumber = formData.get("accountNumber") as string;
+  const vaultStatusMessage = formData.get("vaultStatusMessage") as string;
+  const sendMessage = formData.get("sendMessage") as string;
+  const receiveMessage = formData.get("receiveMessage") as string;
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      accountNumber: accountNumber || null,
+      vaultStatusMessage: vaultStatusMessage || null,
+      sendMessage: sendMessage || null,
+      receiveMessage: receiveMessage || null,
+    }
+  });
+
+  // Revalidate so changes show up immediately
+  revalidatePath("/admin");
+  revalidatePath("/dashboard");
+}

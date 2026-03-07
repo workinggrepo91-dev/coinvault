@@ -20,9 +20,13 @@ async function getMarketData() {
 export default async function MarketPage() {
   const session = await auth();
   const coins = await getMarketData();
+  
+  // Create a boolean variable to check if user is logged in
+  const isLoggedIn = !!session?.user;
 
   return (
-    <AppShell role={session?.user?.role || "USER"}>
+    // Pass the isLoggedIn variable to the AppShell
+    <AppShell role={session?.user?.role || "USER"} isLoggedIn={isLoggedIn}>
       <div className="p-4 md:p-10 max-w-7xl mx-auto space-y-6">
         
         {/* Header Section */}

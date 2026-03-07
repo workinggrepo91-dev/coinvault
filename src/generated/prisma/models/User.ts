@@ -44,6 +44,10 @@ export type UserMinAggregateOutputType = {
   password: string | null
   role: $Enums.Role | null
   totalBalance: number | null
+  accountNumber: string | null
+  vaultStatusMessage: string | null
+  sendMessage: string | null
+  receiveMessage: string | null
   createdAt: Date | null
 }
 
@@ -57,6 +61,10 @@ export type UserMaxAggregateOutputType = {
   password: string | null
   role: $Enums.Role | null
   totalBalance: number | null
+  accountNumber: string | null
+  vaultStatusMessage: string | null
+  sendMessage: string | null
+  receiveMessage: string | null
   createdAt: Date | null
 }
 
@@ -70,6 +78,10 @@ export type UserCountAggregateOutputType = {
   password: number
   role: number
   totalBalance: number
+  accountNumber: number
+  vaultStatusMessage: number
+  sendMessage: number
+  receiveMessage: number
   createdAt: number
   _all: number
 }
@@ -93,6 +105,10 @@ export type UserMinAggregateInputType = {
   password?: true
   role?: true
   totalBalance?: true
+  accountNumber?: true
+  vaultStatusMessage?: true
+  sendMessage?: true
+  receiveMessage?: true
   createdAt?: true
 }
 
@@ -106,6 +122,10 @@ export type UserMaxAggregateInputType = {
   password?: true
   role?: true
   totalBalance?: true
+  accountNumber?: true
+  vaultStatusMessage?: true
+  sendMessage?: true
+  receiveMessage?: true
   createdAt?: true
 }
 
@@ -119,6 +139,10 @@ export type UserCountAggregateInputType = {
   password?: true
   role?: true
   totalBalance?: true
+  accountNumber?: true
+  vaultStatusMessage?: true
+  sendMessage?: true
+  receiveMessage?: true
   createdAt?: true
   _all?: true
 }
@@ -219,6 +243,10 @@ export type UserGroupByOutputType = {
   password: string
   role: $Enums.Role
   totalBalance: number
+  accountNumber: string | null
+  vaultStatusMessage: string | null
+  sendMessage: string | null
+  receiveMessage: string | null
   createdAt: Date
   _count: UserCountAggregateOutputType | null
   _avg: UserAvgAggregateOutputType | null
@@ -255,6 +283,10 @@ export type UserWhereInput = {
   password?: Prisma.StringFilter<"User"> | string
   role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
   totalBalance?: Prisma.FloatFilter<"User"> | number
+  accountNumber?: Prisma.StringNullableFilter<"User"> | string | null
+  vaultStatusMessage?: Prisma.StringNullableFilter<"User"> | string | null
+  sendMessage?: Prisma.StringNullableFilter<"User"> | string | null
+  receiveMessage?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   assets?: Prisma.AssetListRelationFilter
 }
@@ -269,6 +301,10 @@ export type UserOrderByWithRelationInput = {
   password?: Prisma.SortOrder
   role?: Prisma.SortOrder
   totalBalance?: Prisma.SortOrder
+  accountNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  vaultStatusMessage?: Prisma.SortOrderInput | Prisma.SortOrder
+  sendMessage?: Prisma.SortOrderInput | Prisma.SortOrder
+  receiveMessage?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   assets?: Prisma.AssetOrderByRelationAggregateInput
 }
@@ -276,6 +312,7 @@ export type UserOrderByWithRelationInput = {
 export type UserWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   email?: string
+  accountNumber?: string
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
@@ -286,9 +323,12 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   password?: Prisma.StringFilter<"User"> | string
   role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
   totalBalance?: Prisma.FloatFilter<"User"> | number
+  vaultStatusMessage?: Prisma.StringNullableFilter<"User"> | string | null
+  sendMessage?: Prisma.StringNullableFilter<"User"> | string | null
+  receiveMessage?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   assets?: Prisma.AssetListRelationFilter
-}, "id" | "email">
+}, "id" | "email" | "accountNumber">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -300,6 +340,10 @@ export type UserOrderByWithAggregationInput = {
   password?: Prisma.SortOrder
   role?: Prisma.SortOrder
   totalBalance?: Prisma.SortOrder
+  accountNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  vaultStatusMessage?: Prisma.SortOrderInput | Prisma.SortOrder
+  sendMessage?: Prisma.SortOrderInput | Prisma.SortOrder
+  receiveMessage?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _avg?: Prisma.UserAvgOrderByAggregateInput
@@ -321,6 +365,10 @@ export type UserScalarWhereWithAggregatesInput = {
   password?: Prisma.StringWithAggregatesFilter<"User"> | string
   role?: Prisma.EnumRoleWithAggregatesFilter<"User"> | $Enums.Role
   totalBalance?: Prisma.FloatWithAggregatesFilter<"User"> | number
+  accountNumber?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  vaultStatusMessage?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  sendMessage?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  receiveMessage?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
 
@@ -334,6 +382,10 @@ export type UserCreateInput = {
   password: string
   role?: $Enums.Role
   totalBalance?: number
+  accountNumber?: string | null
+  vaultStatusMessage?: string | null
+  sendMessage?: string | null
+  receiveMessage?: string | null
   createdAt?: Date | string
   assets?: Prisma.AssetCreateNestedManyWithoutUserInput
 }
@@ -348,6 +400,10 @@ export type UserUncheckedCreateInput = {
   password: string
   role?: $Enums.Role
   totalBalance?: number
+  accountNumber?: string | null
+  vaultStatusMessage?: string | null
+  sendMessage?: string | null
+  receiveMessage?: string | null
   createdAt?: Date | string
   assets?: Prisma.AssetUncheckedCreateNestedManyWithoutUserInput
 }
@@ -362,6 +418,10 @@ export type UserUpdateInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
+  accountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultStatusMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sendMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUpdateManyWithoutUserNestedInput
 }
@@ -376,6 +436,10 @@ export type UserUncheckedUpdateInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
+  accountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultStatusMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sendMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -390,6 +454,10 @@ export type UserCreateManyInput = {
   password: string
   role?: $Enums.Role
   totalBalance?: number
+  accountNumber?: string | null
+  vaultStatusMessage?: string | null
+  sendMessage?: string | null
+  receiveMessage?: string | null
   createdAt?: Date | string
 }
 
@@ -403,6 +471,10 @@ export type UserUpdateManyMutationInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
+  accountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultStatusMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sendMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -416,6 +488,10 @@ export type UserUncheckedUpdateManyInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
+  accountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultStatusMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sendMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -429,6 +505,10 @@ export type UserCountOrderByAggregateInput = {
   password?: Prisma.SortOrder
   role?: Prisma.SortOrder
   totalBalance?: Prisma.SortOrder
+  accountNumber?: Prisma.SortOrder
+  vaultStatusMessage?: Prisma.SortOrder
+  sendMessage?: Prisma.SortOrder
+  receiveMessage?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -446,6 +526,10 @@ export type UserMaxOrderByAggregateInput = {
   password?: Prisma.SortOrder
   role?: Prisma.SortOrder
   totalBalance?: Prisma.SortOrder
+  accountNumber?: Prisma.SortOrder
+  vaultStatusMessage?: Prisma.SortOrder
+  sendMessage?: Prisma.SortOrder
+  receiveMessage?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -459,6 +543,10 @@ export type UserMinOrderByAggregateInput = {
   password?: Prisma.SortOrder
   role?: Prisma.SortOrder
   totalBalance?: Prisma.SortOrder
+  accountNumber?: Prisma.SortOrder
+  vaultStatusMessage?: Prisma.SortOrder
+  sendMessage?: Prisma.SortOrder
+  receiveMessage?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -519,6 +607,10 @@ export type UserCreateWithoutAssetsInput = {
   password: string
   role?: $Enums.Role
   totalBalance?: number
+  accountNumber?: string | null
+  vaultStatusMessage?: string | null
+  sendMessage?: string | null
+  receiveMessage?: string | null
   createdAt?: Date | string
 }
 
@@ -532,6 +624,10 @@ export type UserUncheckedCreateWithoutAssetsInput = {
   password: string
   role?: $Enums.Role
   totalBalance?: number
+  accountNumber?: string | null
+  vaultStatusMessage?: string | null
+  sendMessage?: string | null
+  receiveMessage?: string | null
   createdAt?: Date | string
 }
 
@@ -561,6 +657,10 @@ export type UserUpdateWithoutAssetsInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
+  accountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultStatusMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sendMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -574,6 +674,10 @@ export type UserUncheckedUpdateWithoutAssetsInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
+  accountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultStatusMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sendMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -618,6 +722,10 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   password?: boolean
   role?: boolean
   totalBalance?: boolean
+  accountNumber?: boolean
+  vaultStatusMessage?: boolean
+  sendMessage?: boolean
+  receiveMessage?: boolean
   createdAt?: boolean
   assets?: boolean | Prisma.User$assetsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -633,6 +741,10 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   password?: boolean
   role?: boolean
   totalBalance?: boolean
+  accountNumber?: boolean
+  vaultStatusMessage?: boolean
+  sendMessage?: boolean
+  receiveMessage?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["user"]>
 
@@ -646,6 +758,10 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   password?: boolean
   role?: boolean
   totalBalance?: boolean
+  accountNumber?: boolean
+  vaultStatusMessage?: boolean
+  sendMessage?: boolean
+  receiveMessage?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["user"]>
 
@@ -659,10 +775,14 @@ export type UserSelectScalar = {
   password?: boolean
   role?: boolean
   totalBalance?: boolean
+  accountNumber?: boolean
+  vaultStatusMessage?: boolean
+  sendMessage?: boolean
+  receiveMessage?: boolean
   createdAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "username" | "firstName" | "lastName" | "phoneNumber" | "password" | "role" | "totalBalance" | "createdAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "username" | "firstName" | "lastName" | "phoneNumber" | "password" | "role" | "totalBalance" | "accountNumber" | "vaultStatusMessage" | "sendMessage" | "receiveMessage" | "createdAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   assets?: boolean | Prisma.User$assetsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -685,6 +805,10 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     password: string
     role: $Enums.Role
     totalBalance: number
+    accountNumber: string | null
+    vaultStatusMessage: string | null
+    sendMessage: string | null
+    receiveMessage: string | null
     createdAt: Date
   }, ExtArgs["result"]["user"]>
   composites: {}
@@ -1119,6 +1243,10 @@ export interface UserFieldRefs {
   readonly password: Prisma.FieldRef<"User", 'String'>
   readonly role: Prisma.FieldRef<"User", 'Role'>
   readonly totalBalance: Prisma.FieldRef<"User", 'Float'>
+  readonly accountNumber: Prisma.FieldRef<"User", 'String'>
+  readonly vaultStatusMessage: Prisma.FieldRef<"User", 'String'>
+  readonly sendMessage: Prisma.FieldRef<"User", 'String'>
+  readonly receiveMessage: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
 }
     

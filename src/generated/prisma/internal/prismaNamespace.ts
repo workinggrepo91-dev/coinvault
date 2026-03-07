@@ -602,6 +602,10 @@ export const UserScalarFieldEnum = {
   password: 'password',
   role: 'role',
   totalBalance: 'totalBalance',
+  accountNumber: 'accountNumber',
+  vaultStatusMessage: 'vaultStatusMessage',
+  sendMessage: 'sendMessage',
+  receiveMessage: 'receiveMessage',
   createdAt: 'createdAt'
 } as const
 

@@ -1,7 +1,9 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import SettingsForms from "@/components/SettingsForms"; // We'll create this next
+import AppShell from "@/components/AppShell";
+import SettingsForms from "@/components/SettingsForms";
+import { Settings } from "lucide-react";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -11,19 +13,25 @@ export default async function SettingsPage() {
     where: { id: session.user.id },
   });
 
-  if (!user) return <div>User not found</div>;
+  if (!user) return <div>Error loading profile.</div>;
 
   return (
-    <main className="min-h-screen bg-slate-950 text-white p-6 font-sans">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold mb-2">Account Settings</h1>
-        <p className="text-slate-400 mb-8 border-b border-slate-900 pb-4">
-          Manage your personal details and security preferences.
-        </p>
+    <AppShell role={session.user.role}>
+      <div className="p-4 md:p-10 max-w-4xl mx-auto space-y-6">
         
-        {/* Pass user data to the client form */}
+        {/* Page Header */}
+        <header className="flex items-center gap-3 mb-8 border-b border-slate-900 pb-6">
+          <Settings className="text-emerald-500" size={32} />
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-white">Account Settings</h1>
+            <p className="text-slate-500 text-xs md:text-sm">Manage your profile, security, and verification status.</p>
+          </div>
+        </header>
+        
+        {/* The Form Component */}
         <SettingsForms user={user} />
+        
       </div>
-    </main>
+    </AppShell>
   );
 }

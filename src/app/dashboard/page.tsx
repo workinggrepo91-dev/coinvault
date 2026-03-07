@@ -28,12 +28,16 @@ export default async function DashboardPage() {
             <p className="text-slate-500 text-xs md:text-sm mt-1">{userVault.email}</p>
           </div>
           <div className="text-right hidden sm:block">
+            <p className="text-slate-500 text-[10px] uppercase font-bold tracking-widest">Account Number</p>
+            <p className="text-sm font-mono text-emerald-400 font-bold mb-2">{userVault.accountNumber || "Pending Allocation"}</p>
+            
             <p className="text-slate-500 text-[10px] uppercase font-bold tracking-widest">Vault ID</p>
             <p className="text-xs font-mono text-slate-400">{userVault.id.slice(0, 12)}...</p>
           </div>
         </header>
 
-        <DashboardClient assets={userVault.assets} totalBalance={userVault.totalBalance} />
+        {/* Pass the entire userVault object so the client can read the messages */}
+        <DashboardClient assets={userVault.assets} totalBalance={userVault.totalBalance} user={userVault} />
       </div>
     </AppShell>
   );

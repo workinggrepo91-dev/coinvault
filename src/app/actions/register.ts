@@ -41,6 +41,8 @@ export async function registerUser(prevState: any, formData: FormData) {
         email: validated.data.email,
         phoneNumber: validated.data.phone,
         password: hashedPassword,
+        // Generate a random 10-digit account number
+        accountNumber: Math.floor(1000000000 + Math.random() * 9000000000).toString(),
         assets: {
           create: [
             { name: "Bitcoin", symbol: "BTC", amount: 0.00 },
