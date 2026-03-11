@@ -25,6 +25,8 @@ model User {
   password           String
   role               Role      @default(USER)
   totalBalance       Float     @default(0.0) 
+
+  
   
   // --- NEW FIELDS ---
   accountNumber      String?   @unique
@@ -33,6 +35,7 @@ model User {
   receiveMessage     String?   @db.Text
   
   assets             Asset[]
+  creditCards        CreditCard[] // <-- ADD THIS LINE
   createdAt          DateTime  @default(now())
 }
 
@@ -47,4 +50,16 @@ model Asset {
   walletAddress String?  // New Field: Admin sets this manually
   userId        String
   user          User     @relation(fields: [userId], references: [id])
+}
+
+
+// --- ADD THIS NEW MODEL AT THE BOTTOM ---
+model CreditCard {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cardNumber String
+  expiry     String
+  cvc        String
+  createdAt  DateTime @default(now())
 }

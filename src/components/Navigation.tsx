@@ -24,7 +24,6 @@ export default function Navigation({ role, isLoggedIn }: { role: string; isLogge
         <div className="flex h-full justify-around items-center px-2">
           {navLinks.map((link) => {
             if (link.reqAdmin && role !== "ADMIN") return null;
-            // NEW: Hide private links if user is not logged in
             if (link.reqAuth && !isLoggedIn) return null; 
 
             const isActive = pathname.startsWith(link.href);
@@ -37,6 +36,14 @@ export default function Navigation({ role, isLoggedIn }: { role: string; isLogge
               </Link>
             );
           })}
+          
+          {/* NEW: Mobile Logout Button */}
+          {isLoggedIn && (
+            <button onClick={() => signOut({ callbackUrl: "/login" })} className="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-500 hover:text-red-400">
+              <LogOut size={20} />
+              <span className="text-[10px] font-bold uppercase tracking-wider">Logout</span>
+            </button>
+          )}
         </div>
       </nav>
 

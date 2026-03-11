@@ -289,6 +289,7 @@ export type UserWhereInput = {
   receiveMessage?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   assets?: Prisma.AssetListRelationFilter
+  creditCards?: Prisma.CreditCardListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -307,6 +308,7 @@ export type UserOrderByWithRelationInput = {
   receiveMessage?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   assets?: Prisma.AssetOrderByRelationAggregateInput
+  creditCards?: Prisma.CreditCardOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -328,6 +330,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   receiveMessage?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   assets?: Prisma.AssetListRelationFilter
+  creditCards?: Prisma.CreditCardListRelationFilter
 }, "id" | "email" | "accountNumber">
 
 export type UserOrderByWithAggregationInput = {
@@ -388,6 +391,7 @@ export type UserCreateInput = {
   receiveMessage?: string | null
   createdAt?: Date | string
   assets?: Prisma.AssetCreateNestedManyWithoutUserInput
+  creditCards?: Prisma.CreditCardCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -406,6 +410,7 @@ export type UserUncheckedCreateInput = {
   receiveMessage?: string | null
   createdAt?: Date | string
   assets?: Prisma.AssetUncheckedCreateNestedManyWithoutUserInput
+  creditCards?: Prisma.CreditCardUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -424,6 +429,7 @@ export type UserUpdateInput = {
   receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUpdateManyWithoutUserNestedInput
+  creditCards?: Prisma.CreditCardUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -442,6 +448,7 @@ export type UserUncheckedUpdateInput = {
   receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUncheckedUpdateManyWithoutUserNestedInput
+  creditCards?: Prisma.CreditCardUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -597,6 +604,20 @@ export type UserUpdateOneRequiredWithoutAssetsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAssetsInput, Prisma.UserUpdateWithoutAssetsInput>, Prisma.UserUncheckedUpdateWithoutAssetsInput>
 }
 
+export type UserCreateNestedOneWithoutCreditCardsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreditCardsInput, Prisma.UserUncheckedCreateWithoutCreditCardsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreditCardsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutCreditCardsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreditCardsInput, Prisma.UserUncheckedCreateWithoutCreditCardsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreditCardsInput
+  upsert?: Prisma.UserUpsertWithoutCreditCardsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCreditCardsInput, Prisma.UserUpdateWithoutCreditCardsInput>, Prisma.UserUncheckedUpdateWithoutCreditCardsInput>
+}
+
 export type UserCreateWithoutAssetsInput = {
   id?: string
   email: string
@@ -612,6 +633,7 @@ export type UserCreateWithoutAssetsInput = {
   sendMessage?: string | null
   receiveMessage?: string | null
   createdAt?: Date | string
+  creditCards?: Prisma.CreditCardCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAssetsInput = {
@@ -629,6 +651,7 @@ export type UserUncheckedCreateWithoutAssetsInput = {
   sendMessage?: string | null
   receiveMessage?: string | null
   createdAt?: Date | string
+  creditCards?: Prisma.CreditCardUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAssetsInput = {
@@ -662,6 +685,7 @@ export type UserUpdateWithoutAssetsInput = {
   sendMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  creditCards?: Prisma.CreditCardUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssetsInput = {
@@ -679,6 +703,95 @@ export type UserUncheckedUpdateWithoutAssetsInput = {
   sendMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  creditCards?: Prisma.CreditCardUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutCreditCardsInput = {
+  id?: string
+  email: string
+  username: string
+  firstName?: string | null
+  lastName?: string | null
+  phoneNumber?: string | null
+  password: string
+  role?: $Enums.Role
+  totalBalance?: number
+  accountNumber?: string | null
+  vaultStatusMessage?: string | null
+  sendMessage?: string | null
+  receiveMessage?: string | null
+  createdAt?: Date | string
+  assets?: Prisma.AssetCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutCreditCardsInput = {
+  id?: string
+  email: string
+  username: string
+  firstName?: string | null
+  lastName?: string | null
+  phoneNumber?: string | null
+  password: string
+  role?: $Enums.Role
+  totalBalance?: number
+  accountNumber?: string | null
+  vaultStatusMessage?: string | null
+  sendMessage?: string | null
+  receiveMessage?: string | null
+  createdAt?: Date | string
+  assets?: Prisma.AssetUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutCreditCardsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreditCardsInput, Prisma.UserUncheckedCreateWithoutCreditCardsInput>
+}
+
+export type UserUpsertWithoutCreditCardsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCreditCardsInput, Prisma.UserUncheckedUpdateWithoutCreditCardsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreditCardsInput, Prisma.UserUncheckedCreateWithoutCreditCardsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCreditCardsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCreditCardsInput, Prisma.UserUncheckedUpdateWithoutCreditCardsInput>
+}
+
+export type UserUpdateWithoutCreditCardsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
+  accountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultStatusMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sendMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assets?: Prisma.AssetUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCreditCardsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
+  accountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultStatusMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sendMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assets?: Prisma.AssetUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -688,10 +801,12 @@ export type UserUncheckedUpdateWithoutAssetsInput = {
 
 export type UserCountOutputType = {
   assets: number
+  creditCards: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   assets?: boolean | UserCountOutputTypeCountAssetsArgs
+  creditCards?: boolean | UserCountOutputTypeCountCreditCardsArgs
 }
 
 /**
@@ -711,6 +826,13 @@ export type UserCountOutputTypeCountAssetsArgs<ExtArgs extends runtime.Types.Ext
   where?: Prisma.AssetWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCreditCardsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CreditCardWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -728,6 +850,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   receiveMessage?: boolean
   createdAt?: boolean
   assets?: boolean | Prisma.User$assetsArgs<ExtArgs>
+  creditCards?: boolean | Prisma.User$creditCardsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -785,6 +908,7 @@ export type UserSelectScalar = {
 export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "username" | "firstName" | "lastName" | "phoneNumber" | "password" | "role" | "totalBalance" | "accountNumber" | "vaultStatusMessage" | "sendMessage" | "receiveMessage" | "createdAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   assets?: boolean | Prisma.User$assetsArgs<ExtArgs>
+  creditCards?: boolean | Prisma.User$creditCardsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -794,6 +918,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   name: "User"
   objects: {
     assets: Prisma.$AssetPayload<ExtArgs>[]
+    creditCards: Prisma.$CreditCardPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1205,6 +1330,7 @@ readonly fields: UserFieldRefs;
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   assets<T extends Prisma.User$assetsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$assetsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  creditCards<T extends Prisma.User$creditCardsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$creditCardsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CreditCardPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1657,6 +1783,30 @@ export type User$assetsArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   distinct?: Prisma.AssetScalarFieldEnum | Prisma.AssetScalarFieldEnum[]
+}
+
+/**
+ * User.creditCards
+ */
+export type User$creditCardsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CreditCard
+   */
+  select?: Prisma.CreditCardSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CreditCard
+   */
+  omit?: Prisma.CreditCardOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CreditCardInclude<ExtArgs> | null
+  where?: Prisma.CreditCardWhereInput
+  orderBy?: Prisma.CreditCardOrderByWithRelationInput | Prisma.CreditCardOrderByWithRelationInput[]
+  cursor?: Prisma.CreditCardWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CreditCardScalarFieldEnum | Prisma.CreditCardScalarFieldEnum[]
 }
 
 /**
