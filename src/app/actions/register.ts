@@ -22,23 +22,31 @@ export async function registerUser(prevState: any, formData: FormData) {
   const validated = RegisterSchema.safeParse(data);
 
   if (!validated.success) {
-    // In Zod, the array of errors is found in the 'issues' property
     const firstError = validated.error.issues[0].message;
     return { error: firstError };
   }
 
-  const existingUser = await prisma.user.findUnique({ where: { email: validated.data.email } });
-  if (existingUser) return { error: "This email is already registered." };
+  const normalizedEmail = validated.data.email.toLowerCase();
+
+  // 1. Check if EMAIL exists
+  const existingEmail = await prisma.user.findUnique({ where: { email: normalizedEmail } });
+  if (existingEmail) return { error: "This email is already registered." };
+
+  // 2. NEW: Check if USERNAME exists
+  // We use findFirst because username might not be marked as @unique in your schema yet
+  const existingUsername = await prisma.user.findFirst({ where: { username: validated.data.username } });
+  if (existingUsername) return { error: "This username is already taken. Please choose another." };
 
   const hashedPassword = await bcrypt.hash(validated.data.password, 10);
 
+  
   try {
- await prisma.user.create({
+    await prisma.user.create({
       data: {
         firstName: validated.data.firstName,
         lastName: validated.data.lastName,
         username: validated.data.username,
-        email: validated.data.email,
+        email: normalizedEmail, // 3. Save the strictly lowercase email to the database
         phoneNumber: validated.data.phone,
         password: hashedPassword,
         // Generate a random 10-digit account number

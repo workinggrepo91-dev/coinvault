@@ -50,7 +50,7 @@ model Asset {
   amount        Float    @default(0.0)
   walletAddress String?  // New Field: Admin sets this manually
   userId        String
-  user          User     @relation(fields: [userId], references: [id])
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 

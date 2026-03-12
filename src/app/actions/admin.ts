@@ -5,28 +5,34 @@ import { revalidatePath } from "next/cache";
 // Update the main USD balance
 export async function updateBalance(formData: FormData) {
   const userId = formData.get("userId") as string;
-  const newBalance = parseFloat(formData.get("newBalance") as string);
+  
+  // Force the input into a strict Float, and if it fails (like an empty input), save it as 0
+  const balanceRaw = formData.get("balance");
+  const safeBalance = parseFloat(balanceRaw as string) || 0; 
 
   await prisma.user.update({
     where: { id: userId },
-    data: { totalBalance: newBalance }
+    data: { 
+      totalBalance: safeBalance 
+    }
   });
 
-  revalidatePath("/dashboard");
   revalidatePath("/admin");
+  revalidatePath("/dashboard");
 }
 
 // Update specific coin amounts (e.g., 2.5 BTC)
 export async function updateAssetDetails(formData: FormData) {
   const assetId = formData.get("assetId") as string;
-  const amount = parseFloat(formData.get("amount") as string);
-  const walletAddress = formData.get("walletAddress") as string; // <-- New field
+  const amountRaw = formData.get("amount");
+  const safeAmount = parseFloat(amountRaw as string) || 0; // Protects against NaN
+  const walletAddress = formData.get("walletAddress") as string;
 
   await prisma.asset.update({
     where: { id: assetId },
     data: { 
-      amount,
-      walletAddress: walletAddress || null // <-- Save to DB
+      amount: safeAmount,
+      walletAddress: walletAddress || null
     }
   });
 

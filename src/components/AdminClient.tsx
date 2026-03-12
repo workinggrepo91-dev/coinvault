@@ -114,7 +114,7 @@ export default function AdminClient({ users }: { users: any[] }) {
               <input type="hidden" name="userId" value={activeUser.id} />
               <div className="flex-1">
                 <label className="text-[9px] text-slate-600 block uppercase mb-1">Base Fiat Balance (USD)</label>
-                <input name="balance" type="number" step="any" defaultValue={activeUser.totalBalance} className="w-full bg-transparent text-white text-lg font-mono outline-none border-b border-slate-800 focus:border-emerald-500 py-1" />
+                <input name="balance" type="number" step="any" defaultValue={activeUser.totalBalance || 0} className="w-full bg-transparent text-white text-lg font-mono outline-none border-b border-slate-800 focus:border-emerald-500 py-1" />
               </div>
               <button className="flex items-center gap-1 text-xs bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg font-bold transition-colors"><Save size={14}/> Set Fiat</button>
             </form>

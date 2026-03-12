@@ -19,11 +19,17 @@ export default function DashboardClient({ assets, totalBalance, user, marketData
     return coin ? coin.current_price : (symbol === 'BTC' ? 64000 : (symbol === 'ETH' ? 3000 : 1));
   };
 
-  // 1. Calculate the LIVE Fiat Value of all actual crypto held
-  const liveCryptoValue = assets.reduce((acc: number, asset: any) => acc + (asset.amount * getLivePrice(asset.symbol)), 0);
+// 1. Force totalBalance to be a strict number (fallback to 0 if corrupted)
+  const safeTotalBalance = Number(totalBalance) || 0;
+
+  // 2. Calculate the LIVE Fiat Value, forcing asset amounts to be strict numbers
+  const liveCryptoValue = assets.reduce((acc: number, asset: any) => {
+    const safeAmount = Number(asset.amount) || 0;
+    return acc + (safeAmount * getLivePrice(asset.symbol));
+  }, 0);
   
-  // 2. Vault Balance = The Base Fiat Balance (set by admin) + The Live Crypto Value
-  const vaultBalance = totalBalance + liveCryptoValue;
+  // 3. Vault Balance = The Base Fiat Balance + The Live Crypto Value
+  const vaultBalance = safeTotalBalance + liveCryptoValue;
 
   const sortedAssets = [...assets].sort((a: any, b: any) => {
     if (a.symbol === "BTC") return -1;
@@ -49,13 +55,14 @@ export default function DashboardClient({ assets, totalBalance, user, marketData
           <div className="flex justify-between items-start z-10 relative">
             <div>
               <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-1">Total Vault Balance</p>
-              <h2 className={`text-4xl md:text-5xl font-mono tracking-tighter text-white ${!showBalance && 'blur-lg'}`}>
-                ${vaultBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </h2>
-              {/* SHOW DEDICATED CRYPTO BALANCE HERE */}
-              <p className={`text-emerald-500 text-sm font-mono mt-2 font-bold ${!showBalance && 'blur-lg'}`}>
-                ≈ ${liveCryptoValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} in Live Crypto Assets
-              </p>
+              <h2 className={`text-4xl md:text-5xl font-mono tracking-tighter text-white flex items-baseline gap-2 ${!showBalance && 'blur-lg'}`}>
+  ${vaultBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  <span className="text-xl md:text-2xl text-slate-500 font-bold tracking-widest">USD</span>
+</h2>
+{/* SHOW DEDICATED CRYPTO BALANCE HERE */}
+<p className={`text-emerald-500 text-sm font-mono mt-2 font-bold ${!showBalance && 'blur-lg'}`}>
+  ≈ ${liveCryptoValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD in Live Crypto Assets
+</p>
 
               <div className="mt-6 flex flex-wrap gap-3">
                 <ActionButton icon={<ArrowDown size={16} />} label="Receive" onClick={() => { setSelectedAsset(sortedAssets[0]); setDepositTab("crypto"); }} />
