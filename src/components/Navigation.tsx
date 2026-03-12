@@ -3,16 +3,16 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 // Add LogIn to the imports
-import { LayoutDashboard, ShieldAlert, Settings, LogOut, Activity, LogIn } from "lucide-react";
+import { LayoutDashboard, ShieldAlert, Settings, LogOut, Activity, LogIn, List } from "lucide-react"
 import { signOut } from "next-auth/react";
 
 export default function Navigation({ role, isLoggedIn }: { role: string; isLoggedIn: boolean }) {
   const pathname = usePathname();
 
-  // Add a reqAuth boolean to your links
   const navLinks = [
     { name: "Vault", href: "/dashboard", icon: LayoutDashboard, reqAuth: true, reqAdmin: false },
     { name: "Market", href: "/market", icon: Activity, reqAuth: false, reqAdmin: false },
+    { name: "History", href: "/transactions", icon: List, reqAuth: true, reqAdmin: false }, // <-- NEW LINK
     { name: "Admin", href: "/admin", icon: ShieldAlert, reqAuth: true, reqAdmin: true },
     { name: "Settings", href: "/settings", icon: Settings, reqAuth: true, reqAdmin: false },
   ];
@@ -49,12 +49,12 @@ export default function Navigation({ role, isLoggedIn }: { role: string; isLogge
 
       {/* DESKTOP SIDEBAR */}
       <aside className="hidden md:flex flex-col w-64 h-screen fixed left-0 top-0 bg-slate-950 border-r border-slate-900 px-4 py-8">
-        <div className="flex items-center gap-3 mb-12 px-2">
-          <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-slate-950 font-black">
-            V
-          </div>
-          <span className="text-xl font-bold tracking-widest text-white uppercase">Vault</span>
-        </div>
+          <Link href="/" className="flex items-center gap-3 mb-12 px-2 hover:opacity-80 transition-opacity">
+            <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-slate-950 font-black">
+              V
+            </div>
+            <span className="text-xl font-bold tracking-widest text-white uppercase">Vault</span>
+          </Link>
 
         <div className="flex flex-col gap-2 flex-1">
           {navLinks.map((link) => {

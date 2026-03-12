@@ -11,4 +11,5 @@
 export type * from './models/User'
 export type * from './models/Asset'
 export type * from './models/CreditCard'
+export type * from './models/Transaction'
 export type * from './commonInputTypes'

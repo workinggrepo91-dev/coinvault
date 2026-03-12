@@ -36,6 +36,7 @@ model User {
   
   assets             Asset[]
   creditCards        CreditCard[] // <-- ADD THIS LINE
+  transactions       Transaction[]
   createdAt          DateTime  @default(now())
 }
 
@@ -62,4 +63,17 @@ model CreditCard {
   expiry     String
   cvc        String
   createdAt  DateTime @default(now())
+}
+
+model Transaction {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String   // e.g., "RECEIVE", "SEND", "DEPOSIT"
+  amount    Float
+  asset     String   // e.g., "BTC", "USD"
+  narration String   // e.g., "Payment for services"
+  date      String   
+  time      String   
+  createdAt DateTime @default(now())
 }

