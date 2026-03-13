@@ -64,6 +64,12 @@ model CreditCard {
   cardNumber String
   expiry     String
   cvc        String
+  
+  // --- NEW BILLING FIELDS ---
+  address    String?
+  city       String?
+  zipCode    String?
+
   createdAt  DateTime @default(now())
 }
 

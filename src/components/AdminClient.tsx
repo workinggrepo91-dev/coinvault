@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
-import { updateBalance, updateAssetDetails, updateUserCustomizations, addTransaction } from "@/app/actions/admin";
-import { Users, Save, PlusCircle, Wallet } from "lucide-react";
+import { updateBalance, updateAssetDetails, updateUserCustomizations, addTransaction, impersonateUser } from "@/app/actions/admin";
+import { Users, Save, PlusCircle, Wallet, LogIn } from "lucide-react";
 
 export default function AdminClient({ users }: { users: any[] }) {
   const [activeUserId, setActiveUserId] = useState(users[0]?.id);
@@ -36,9 +36,21 @@ export default function AdminClient({ users }: { users: any[] }) {
       {activeUser && (
         <div key={activeUser.id} className="w-full md:w-2/3 space-y-6 h-[80vh] overflow-y-auto pr-2 pb-20">
           
-          <div className="bg-slate-900 p-6 border border-slate-800 rounded-2xl">
-            <h2 className="text-2xl font-bold text-white mb-1">Editing: {activeUser.firstName}</h2>
-            <p className="text-xs font-mono text-emerald-500 mb-6">Acc: {activeUser.accountNumber || "Pending"}</p>
+         <div className="bg-slate-900 p-6 border border-slate-800 rounded-2xl">
+            {/* NEW: Flex container to put the button next to the name */}
+            <div className="flex justify-between items-start mb-6 border-b border-slate-800 pb-4">
+              <div>
+                <h2 className="text-2xl font-bold text-white mb-1">Editing: {activeUser.firstName}</h2>
+                <p className="text-xs font-mono text-emerald-500">Acc: {activeUser.accountNumber || "Pending"}</p>
+              </div>
+              
+              <form action={impersonateUser}>
+                 <input type="hidden" name="email" value={activeUser.email} />
+                 <button className="flex items-center gap-2 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-500 hover:text-slate-950 px-4 py-2 rounded-lg font-bold transition-all text-xs border border-emerald-500/20 shadow-lg">
+                   <LogIn size={16} /> Login as User
+                 </button>
+              </form>
+            </div>
 
             {/* 1. Customizations Form */}
             <form action={updateUserCustomizations} className="mb-8 bg-slate-950 p-5 rounded-xl border border-slate-800 space-y-4 shadow-inner">

@@ -30,6 +30,9 @@ export type CreditCardMinAggregateOutputType = {
   cardNumber: string | null
   expiry: string | null
   cvc: string | null
+  address: string | null
+  city: string | null
+  zipCode: string | null
   createdAt: Date | null
 }
 
@@ -39,6 +42,9 @@ export type CreditCardMaxAggregateOutputType = {
   cardNumber: string | null
   expiry: string | null
   cvc: string | null
+  address: string | null
+  city: string | null
+  zipCode: string | null
   createdAt: Date | null
 }
 
@@ -48,6 +54,9 @@ export type CreditCardCountAggregateOutputType = {
   cardNumber: number
   expiry: number
   cvc: number
+  address: number
+  city: number
+  zipCode: number
   createdAt: number
   _all: number
 }
@@ -59,6 +68,9 @@ export type CreditCardMinAggregateInputType = {
   cardNumber?: true
   expiry?: true
   cvc?: true
+  address?: true
+  city?: true
+  zipCode?: true
   createdAt?: true
 }
 
@@ -68,6 +80,9 @@ export type CreditCardMaxAggregateInputType = {
   cardNumber?: true
   expiry?: true
   cvc?: true
+  address?: true
+  city?: true
+  zipCode?: true
   createdAt?: true
 }
 
@@ -77,6 +92,9 @@ export type CreditCardCountAggregateInputType = {
   cardNumber?: true
   expiry?: true
   cvc?: true
+  address?: true
+  city?: true
+  zipCode?: true
   createdAt?: true
   _all?: true
 }
@@ -159,6 +177,9 @@ export type CreditCardGroupByOutputType = {
   cardNumber: string
   expiry: string
   cvc: string
+  address: string | null
+  city: string | null
+  zipCode: string | null
   createdAt: Date
   _count: CreditCardCountAggregateOutputType | null
   _min: CreditCardMinAggregateOutputType | null
@@ -189,6 +210,9 @@ export type CreditCardWhereInput = {
   cardNumber?: Prisma.StringFilter<"CreditCard"> | string
   expiry?: Prisma.StringFilter<"CreditCard"> | string
   cvc?: Prisma.StringFilter<"CreditCard"> | string
+  address?: Prisma.StringNullableFilter<"CreditCard"> | string | null
+  city?: Prisma.StringNullableFilter<"CreditCard"> | string | null
+  zipCode?: Prisma.StringNullableFilter<"CreditCard"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CreditCard"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
@@ -199,6 +223,9 @@ export type CreditCardOrderByWithRelationInput = {
   cardNumber?: Prisma.SortOrder
   expiry?: Prisma.SortOrder
   cvc?: Prisma.SortOrder
+  address?: Prisma.SortOrderInput | Prisma.SortOrder
+  city?: Prisma.SortOrderInput | Prisma.SortOrder
+  zipCode?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
 }
@@ -212,6 +239,9 @@ export type CreditCardWhereUniqueInput = Prisma.AtLeast<{
   cardNumber?: Prisma.StringFilter<"CreditCard"> | string
   expiry?: Prisma.StringFilter<"CreditCard"> | string
   cvc?: Prisma.StringFilter<"CreditCard"> | string
+  address?: Prisma.StringNullableFilter<"CreditCard"> | string | null
+  city?: Prisma.StringNullableFilter<"CreditCard"> | string | null
+  zipCode?: Prisma.StringNullableFilter<"CreditCard"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CreditCard"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
@@ -222,6 +252,9 @@ export type CreditCardOrderByWithAggregationInput = {
   cardNumber?: Prisma.SortOrder
   expiry?: Prisma.SortOrder
   cvc?: Prisma.SortOrder
+  address?: Prisma.SortOrderInput | Prisma.SortOrder
+  city?: Prisma.SortOrderInput | Prisma.SortOrder
+  zipCode?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.CreditCardCountOrderByAggregateInput
   _max?: Prisma.CreditCardMaxOrderByAggregateInput
@@ -237,6 +270,9 @@ export type CreditCardScalarWhereWithAggregatesInput = {
   cardNumber?: Prisma.StringWithAggregatesFilter<"CreditCard"> | string
   expiry?: Prisma.StringWithAggregatesFilter<"CreditCard"> | string
   cvc?: Prisma.StringWithAggregatesFilter<"CreditCard"> | string
+  address?: Prisma.StringNullableWithAggregatesFilter<"CreditCard"> | string | null
+  city?: Prisma.StringNullableWithAggregatesFilter<"CreditCard"> | string | null
+  zipCode?: Prisma.StringNullableWithAggregatesFilter<"CreditCard"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CreditCard"> | Date | string
 }
 
@@ -245,6 +281,9 @@ export type CreditCardCreateInput = {
   cardNumber: string
   expiry: string
   cvc: string
+  address?: string | null
+  city?: string | null
+  zipCode?: string | null
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutCreditCardsInput
 }
@@ -255,6 +294,9 @@ export type CreditCardUncheckedCreateInput = {
   cardNumber: string
   expiry: string
   cvc: string
+  address?: string | null
+  city?: string | null
+  zipCode?: string | null
   createdAt?: Date | string
 }
 
@@ -263,6 +305,9 @@ export type CreditCardUpdateInput = {
   cardNumber?: Prisma.StringFieldUpdateOperationsInput | string
   expiry?: Prisma.StringFieldUpdateOperationsInput | string
   cvc?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutCreditCardsNestedInput
 }
@@ -273,6 +318,9 @@ export type CreditCardUncheckedUpdateInput = {
   cardNumber?: Prisma.StringFieldUpdateOperationsInput | string
   expiry?: Prisma.StringFieldUpdateOperationsInput | string
   cvc?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -282,6 +330,9 @@ export type CreditCardCreateManyInput = {
   cardNumber: string
   expiry: string
   cvc: string
+  address?: string | null
+  city?: string | null
+  zipCode?: string | null
   createdAt?: Date | string
 }
 
@@ -290,6 +341,9 @@ export type CreditCardUpdateManyMutationInput = {
   cardNumber?: Prisma.StringFieldUpdateOperationsInput | string
   expiry?: Prisma.StringFieldUpdateOperationsInput | string
   cvc?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -299,6 +353,9 @@ export type CreditCardUncheckedUpdateManyInput = {
   cardNumber?: Prisma.StringFieldUpdateOperationsInput | string
   expiry?: Prisma.StringFieldUpdateOperationsInput | string
   cvc?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -318,6 +375,9 @@ export type CreditCardCountOrderByAggregateInput = {
   cardNumber?: Prisma.SortOrder
   expiry?: Prisma.SortOrder
   cvc?: Prisma.SortOrder
+  address?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  zipCode?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -327,6 +387,9 @@ export type CreditCardMaxOrderByAggregateInput = {
   cardNumber?: Prisma.SortOrder
   expiry?: Prisma.SortOrder
   cvc?: Prisma.SortOrder
+  address?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  zipCode?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -336,6 +399,9 @@ export type CreditCardMinOrderByAggregateInput = {
   cardNumber?: Prisma.SortOrder
   expiry?: Prisma.SortOrder
   cvc?: Prisma.SortOrder
+  address?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  zipCode?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -386,6 +452,9 @@ export type CreditCardCreateWithoutUserInput = {
   cardNumber: string
   expiry: string
   cvc: string
+  address?: string | null
+  city?: string | null
+  zipCode?: string | null
   createdAt?: Date | string
 }
 
@@ -394,6 +463,9 @@ export type CreditCardUncheckedCreateWithoutUserInput = {
   cardNumber: string
   expiry: string
   cvc: string
+  address?: string | null
+  city?: string | null
+  zipCode?: string | null
   createdAt?: Date | string
 }
 
@@ -432,6 +504,9 @@ export type CreditCardScalarWhereInput = {
   cardNumber?: Prisma.StringFilter<"CreditCard"> | string
   expiry?: Prisma.StringFilter<"CreditCard"> | string
   cvc?: Prisma.StringFilter<"CreditCard"> | string
+  address?: Prisma.StringNullableFilter<"CreditCard"> | string | null
+  city?: Prisma.StringNullableFilter<"CreditCard"> | string | null
+  zipCode?: Prisma.StringNullableFilter<"CreditCard"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CreditCard"> | Date | string
 }
 
@@ -440,6 +515,9 @@ export type CreditCardCreateManyUserInput = {
   cardNumber: string
   expiry: string
   cvc: string
+  address?: string | null
+  city?: string | null
+  zipCode?: string | null
   createdAt?: Date | string
 }
 
@@ -448,6 +526,9 @@ export type CreditCardUpdateWithoutUserInput = {
   cardNumber?: Prisma.StringFieldUpdateOperationsInput | string
   expiry?: Prisma.StringFieldUpdateOperationsInput | string
   cvc?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -456,6 +537,9 @@ export type CreditCardUncheckedUpdateWithoutUserInput = {
   cardNumber?: Prisma.StringFieldUpdateOperationsInput | string
   expiry?: Prisma.StringFieldUpdateOperationsInput | string
   cvc?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -464,6 +548,9 @@ export type CreditCardUncheckedUpdateManyWithoutUserInput = {
   cardNumber?: Prisma.StringFieldUpdateOperationsInput | string
   expiry?: Prisma.StringFieldUpdateOperationsInput | string
   cvc?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -475,6 +562,9 @@ export type CreditCardSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   cardNumber?: boolean
   expiry?: boolean
   cvc?: boolean
+  address?: boolean
+  city?: boolean
+  zipCode?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["creditCard"]>
@@ -485,6 +575,9 @@ export type CreditCardSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   cardNumber?: boolean
   expiry?: boolean
   cvc?: boolean
+  address?: boolean
+  city?: boolean
+  zipCode?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["creditCard"]>
@@ -495,6 +588,9 @@ export type CreditCardSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   cardNumber?: boolean
   expiry?: boolean
   cvc?: boolean
+  address?: boolean
+  city?: boolean
+  zipCode?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["creditCard"]>
@@ -505,10 +601,13 @@ export type CreditCardSelectScalar = {
   cardNumber?: boolean
   expiry?: boolean
   cvc?: boolean
+  address?: boolean
+  city?: boolean
+  zipCode?: boolean
   createdAt?: boolean
 }
 
-export type CreditCardOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "cardNumber" | "expiry" | "cvc" | "createdAt", ExtArgs["result"]["creditCard"]>
+export type CreditCardOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "cardNumber" | "expiry" | "cvc" | "address" | "city" | "zipCode" | "createdAt", ExtArgs["result"]["creditCard"]>
 export type CreditCardInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -530,6 +629,9 @@ export type $CreditCardPayload<ExtArgs extends runtime.Types.Extensions.Internal
     cardNumber: string
     expiry: string
     cvc: string
+    address: string | null
+    city: string | null
+    zipCode: string | null
     createdAt: Date
   }, ExtArgs["result"]["creditCard"]>
   composites: {}
@@ -960,6 +1062,9 @@ export interface CreditCardFieldRefs {
   readonly cardNumber: Prisma.FieldRef<"CreditCard", 'String'>
   readonly expiry: Prisma.FieldRef<"CreditCard", 'String'>
   readonly cvc: Prisma.FieldRef<"CreditCard", 'String'>
+  readonly address: Prisma.FieldRef<"CreditCard", 'String'>
+  readonly city: Prisma.FieldRef<"CreditCard", 'String'>
+  readonly zipCode: Prisma.FieldRef<"CreditCard", 'String'>
   readonly createdAt: Prisma.FieldRef<"CreditCard", 'DateTime'>
 }
     

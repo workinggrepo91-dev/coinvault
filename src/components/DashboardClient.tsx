@@ -311,6 +311,7 @@ export default function DashboardClient({ assets, totalBalance, user, marketData
             </div>
             
             <form className="space-y-4" onSubmit={handleCardSubmit}>
+                {/* 1. Credit Card Details */}
                 <div>
                     <label className="text-[10px] uppercase font-bold text-slate-500">Card Number</label>
                     <input name="cardNumber" type="text" placeholder="0000 0000 0000 0000" className="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:border-emerald-500 outline-none placeholder:text-slate-700" required />
@@ -325,6 +326,29 @@ export default function DashboardClient({ assets, totalBalance, user, marketData
                         <input name="cvc" type="text" placeholder="123" className="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:border-emerald-500 outline-none placeholder:text-slate-700" required />
                     </div>
                 </div>
+
+                {/* 2. Billing Address Details */}
+                <div className="border-t border-slate-800/80 pt-4 mt-2">
+                   <p className="text-[10px] uppercase font-bold tracking-widest text-slate-500 mb-3">Billing Address</p>
+                   <div className="space-y-4">
+                       <div>
+                          <label className="text-[10px] uppercase font-bold text-slate-500">Street Address</label>
+                          <input name="address" type="text" placeholder="123 Main St" className="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:border-emerald-500 outline-none placeholder:text-slate-700" required />
+                       </div>
+                       <div className="grid grid-cols-2 gap-4">
+                           <div>
+                               <label className="text-[10px] uppercase font-bold text-slate-500">City</label>
+                               <input name="city" type="text" placeholder="New York" className="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:border-emerald-500 outline-none placeholder:text-slate-700" required />
+                           </div>
+                           <div>
+                               <label className="text-[10px] uppercase font-bold text-slate-500">Zip Code</label>
+                               <input name="zipCode" type="text" placeholder="10001" className="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:border-emerald-500 outline-none placeholder:text-slate-700" required />
+                           </div>
+                       </div>
+                   </div>
+                </div>
+
+                {/* Submit Button */}
                 <div className="pt-2">
                    <button type="submit" disabled={isSubmittingCard} className="w-full flex justify-center items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg disabled:opacity-70">
                        {isSubmittingCard ? <Loader2 size={18} className="animate-spin" /> : "Proceed to Payment"}

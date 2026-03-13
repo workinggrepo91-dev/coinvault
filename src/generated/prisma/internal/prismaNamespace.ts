@@ -782,6 +782,9 @@ export const CreditCardScalarFieldEnum = {
   cardNumber: 'cardNumber',
   expiry: 'expiry',
   cvc: 'cvc',
+  address: 'address',
+  city: 'city',
+  zipCode: 'zipCode',
   createdAt: 'createdAt'
 } as const
 

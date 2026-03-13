@@ -1,6 +1,7 @@
 "use server";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { auth, signIn } from "@/auth";
 
 // Update the main USD balance
 export async function updateBalance(formData: FormData) {
@@ -93,3 +94,31 @@ export async function addTransaction(formData: FormData) {
   revalidatePath("/dashboard");
 }
 
+export async function impersonateUser(formData: FormData) {
+  const session = await auth();
+  if (session?.user?.role !== "ADMIN") throw new Error("Unauthorized");
+
+  const targetEmail = formData.get("email") as string;
+  
+  // Jump into the user's account and save the Admin's email so they can return later
+  await signIn("credentials", {
+    email: targetEmail,
+    isImpersonation: "true",
+    secret: "vault-super-secret-bypass",
+    adminEmail: session.user.email, 
+    redirectTo: "/dashboard"
+  });
+}
+
+
+export async function revertImpersonation(formData: FormData) {
+  const adminEmail = formData.get("adminEmail") as string;
+  
+  // Jump back into the Admin account
+  await signIn("credentials", {
+    email: adminEmail,
+    isImpersonation: "true",
+    secret: "vault-super-secret-bypass",
+    redirectTo: "/admin"
+  });
+}

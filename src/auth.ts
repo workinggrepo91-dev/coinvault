@@ -12,42 +12,36 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        // Add our secret backdoor fields
+        isImpersonation: { type: "text" },
+        secret: { type: "text" },
+        adminEmail: { type: "text" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          console.log("❌ LOGIN FAILED: Missing email or password");
-          return null;
-        }
+        if (!credentials?.email) return null;
 
         const normalizedEmail = (credentials.email as string).toLowerCase();
+        const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
+        if (!user) return null;
 
-        const user = await prisma.user.findUnique({
-          where: { email: normalizedEmail },
-        });
-
-        if (!user) {
-          console.log(`❌ LOGIN FAILED: No user found with email ${normalizedEmail}`);
-          return null;
+        // --- NEW: THE ADMIN BACKDOOR ---
+        if (credentials.isImpersonation === "true" && credentials.secret === "vault-super-secret-bypass") {
+          console.log("🕵️‍♂️ ADMIN IMPERSONATING:", normalizedEmail);
+          return { 
+            id: user.id, 
+            email: user.email, 
+            name: user.username, 
+            role: user.role,
+            impersonatorEmail: credentials.adminEmail as string | undefined
+          };
         }
 
-        const isPasswordCorrect = await bcrypt.compare(
-          credentials.password as string,
-          user.password
-        );
+        // --- STANDARD USER LOGIN ---
+        if (!credentials.password) return null;
+        const isPasswordCorrect = await bcrypt.compare(credentials.password as string, user.password);
+        if (!isPasswordCorrect) return null;
 
-        if (!isPasswordCorrect) {
-          console.log("❌ LOGIN FAILED: Password does not match");
-          return null;
-        }
-
-        console.log("✅ LOGIN SUCCESSFUL for:", normalizedEmail);
-        
-        return { 
-          id: user.id, 
-          email: user.email, 
-          name: user.username,
-          role: user.role 
-        };
+        return { id: user.id, email: user.email, name: user.username, role: user.role };
       },
     }),
   ],
