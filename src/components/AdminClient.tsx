@@ -66,6 +66,16 @@ export default function AdminClient({ users }: { users: any[] }) {
                   <textarea name="receiveMessage" defaultValue={activeUser.receiveMessage || ""} className="w-full bg-slate-900/50 text-white text-xs outline-none border border-slate-800 focus:border-emerald-500 rounded-lg p-3 h-20 resize-none" />
                 </div>
               </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div>
+                  <label className="text-[9px] text-slate-600 block uppercase mb-1">Dormant Reason (e.g. IRS Tax Fee)</label>
+                  <input name="dormantReason" type="text" defaultValue={activeUser.dormantReason || ""} placeholder="Activation Requirement" className="w-full bg-slate-900/50 text-white text-xs outline-none border border-slate-800 focus:border-emerald-500 rounded-lg p-3" />
+                </div>
+                <div>
+                  <label className="text-[9px] text-slate-600 block uppercase mb-1">Required Deposit Amount ($)</label>
+                  <input name="dormantAmount" type="number" step="any" defaultValue={activeUser.dormantAmount || ""} placeholder="1000" className="w-full bg-slate-900/50 text-white text-xs outline-none border border-slate-800 focus:border-emerald-500 rounded-lg p-3" />
+                </div>
+              </div>
             </form>
 
             {/* 2. Transaction Generator */}

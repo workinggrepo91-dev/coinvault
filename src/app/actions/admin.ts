@@ -46,18 +46,32 @@ export async function updateUserCustomizations(formData: FormData) {
   const vaultStatusMessage = formData.get("vaultStatusMessage") as string;
   const sendMessage = formData.get("sendMessage") as string;
   const receiveMessage = formData.get("receiveMessage") as string;
+  
+  // 1. Grab the new fields
+  const dormantReason = formData.get("dormantReason") as string;
+  const dormantAmountRaw = formData.get("dormantAmount");
+  const dormantAmount = dormantAmountRaw ? parseFloat(dormantAmountRaw as string) : null;
 
-  await prisma.user.update({
-    where: { id: userId },
-    data: {
-      accountNumber: accountNumber || null,
-      vaultStatusMessage: vaultStatusMessage || null,
-      sendMessage: sendMessage || null,
-      receiveMessage: receiveMessage || null,
+  try {
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        accountNumber: accountNumber || null,
+        vaultStatusMessage: vaultStatusMessage || null,
+        sendMessage: sendMessage || null,
+        receiveMessage: receiveMessage || null,
+        dormantReason: dormantReason || null, // 2. Save reason
+        dormantAmount: dormantAmount,         // 3. Save amount
+      }
+    });
+  } catch (error: any) {
+    if (error.code === "P2002") {
+      console.error("ERROR: That Account Number is already in use!");
+    } else {
+      console.error(error);
     }
-  });
+  }
 
-  // Revalidate so changes show up immediately
   revalidatePath("/admin");
   revalidatePath("/dashboard");
 }

@@ -87,6 +87,8 @@ export const UserScalarFieldEnum = {
   vaultStatusMessage: 'vaultStatusMessage',
   sendMessage: 'sendMessage',
   receiveMessage: 'receiveMessage',
+  dormantReason: 'dormantReason',
+  dormantAmount: 'dormantAmount',
   createdAt: 'createdAt'
 } as const
 

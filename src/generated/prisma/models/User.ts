@@ -28,10 +28,12 @@ export type AggregateUser = {
 
 export type UserAvgAggregateOutputType = {
   totalBalance: number | null
+  dormantAmount: number | null
 }
 
 export type UserSumAggregateOutputType = {
   totalBalance: number | null
+  dormantAmount: number | null
 }
 
 export type UserMinAggregateOutputType = {
@@ -48,6 +50,8 @@ export type UserMinAggregateOutputType = {
   vaultStatusMessage: string | null
   sendMessage: string | null
   receiveMessage: string | null
+  dormantReason: string | null
+  dormantAmount: number | null
   createdAt: Date | null
 }
 
@@ -65,6 +69,8 @@ export type UserMaxAggregateOutputType = {
   vaultStatusMessage: string | null
   sendMessage: string | null
   receiveMessage: string | null
+  dormantReason: string | null
+  dormantAmount: number | null
   createdAt: Date | null
 }
 
@@ -82,6 +88,8 @@ export type UserCountAggregateOutputType = {
   vaultStatusMessage: number
   sendMessage: number
   receiveMessage: number
+  dormantReason: number
+  dormantAmount: number
   createdAt: number
   _all: number
 }
@@ -89,10 +97,12 @@ export type UserCountAggregateOutputType = {
 
 export type UserAvgAggregateInputType = {
   totalBalance?: true
+  dormantAmount?: true
 }
 
 export type UserSumAggregateInputType = {
   totalBalance?: true
+  dormantAmount?: true
 }
 
 export type UserMinAggregateInputType = {
@@ -109,6 +119,8 @@ export type UserMinAggregateInputType = {
   vaultStatusMessage?: true
   sendMessage?: true
   receiveMessage?: true
+  dormantReason?: true
+  dormantAmount?: true
   createdAt?: true
 }
 
@@ -126,6 +138,8 @@ export type UserMaxAggregateInputType = {
   vaultStatusMessage?: true
   sendMessage?: true
   receiveMessage?: true
+  dormantReason?: true
+  dormantAmount?: true
   createdAt?: true
 }
 
@@ -143,6 +157,8 @@ export type UserCountAggregateInputType = {
   vaultStatusMessage?: true
   sendMessage?: true
   receiveMessage?: true
+  dormantReason?: true
+  dormantAmount?: true
   createdAt?: true
   _all?: true
 }
@@ -247,6 +263,8 @@ export type UserGroupByOutputType = {
   vaultStatusMessage: string | null
   sendMessage: string | null
   receiveMessage: string | null
+  dormantReason: string | null
+  dormantAmount: number | null
   createdAt: Date
   _count: UserCountAggregateOutputType | null
   _avg: UserAvgAggregateOutputType | null
@@ -287,6 +305,8 @@ export type UserWhereInput = {
   vaultStatusMessage?: Prisma.StringNullableFilter<"User"> | string | null
   sendMessage?: Prisma.StringNullableFilter<"User"> | string | null
   receiveMessage?: Prisma.StringNullableFilter<"User"> | string | null
+  dormantReason?: Prisma.StringNullableFilter<"User"> | string | null
+  dormantAmount?: Prisma.FloatNullableFilter<"User"> | number | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   assets?: Prisma.AssetListRelationFilter
   creditCards?: Prisma.CreditCardListRelationFilter
@@ -307,6 +327,8 @@ export type UserOrderByWithRelationInput = {
   vaultStatusMessage?: Prisma.SortOrderInput | Prisma.SortOrder
   sendMessage?: Prisma.SortOrderInput | Prisma.SortOrder
   receiveMessage?: Prisma.SortOrderInput | Prisma.SortOrder
+  dormantReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  dormantAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   assets?: Prisma.AssetOrderByRelationAggregateInput
   creditCards?: Prisma.CreditCardOrderByRelationAggregateInput
@@ -330,6 +352,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   vaultStatusMessage?: Prisma.StringNullableFilter<"User"> | string | null
   sendMessage?: Prisma.StringNullableFilter<"User"> | string | null
   receiveMessage?: Prisma.StringNullableFilter<"User"> | string | null
+  dormantReason?: Prisma.StringNullableFilter<"User"> | string | null
+  dormantAmount?: Prisma.FloatNullableFilter<"User"> | number | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   assets?: Prisma.AssetListRelationFilter
   creditCards?: Prisma.CreditCardListRelationFilter
@@ -350,6 +374,8 @@ export type UserOrderByWithAggregationInput = {
   vaultStatusMessage?: Prisma.SortOrderInput | Prisma.SortOrder
   sendMessage?: Prisma.SortOrderInput | Prisma.SortOrder
   receiveMessage?: Prisma.SortOrderInput | Prisma.SortOrder
+  dormantReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  dormantAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _avg?: Prisma.UserAvgOrderByAggregateInput
@@ -375,6 +401,8 @@ export type UserScalarWhereWithAggregatesInput = {
   vaultStatusMessage?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   sendMessage?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   receiveMessage?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  dormantReason?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  dormantAmount?: Prisma.FloatNullableWithAggregatesFilter<"User"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
 
@@ -392,6 +420,8 @@ export type UserCreateInput = {
   vaultStatusMessage?: string | null
   sendMessage?: string | null
   receiveMessage?: string | null
+  dormantReason?: string | null
+  dormantAmount?: number | null
   createdAt?: Date | string
   assets?: Prisma.AssetCreateNestedManyWithoutUserInput
   creditCards?: Prisma.CreditCardCreateNestedManyWithoutUserInput
@@ -412,6 +442,8 @@ export type UserUncheckedCreateInput = {
   vaultStatusMessage?: string | null
   sendMessage?: string | null
   receiveMessage?: string | null
+  dormantReason?: string | null
+  dormantAmount?: number | null
   createdAt?: Date | string
   assets?: Prisma.AssetUncheckedCreateNestedManyWithoutUserInput
   creditCards?: Prisma.CreditCardUncheckedCreateNestedManyWithoutUserInput
@@ -432,6 +464,8 @@ export type UserUpdateInput = {
   vaultStatusMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sendMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dormantReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dormantAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUpdateManyWithoutUserNestedInput
   creditCards?: Prisma.CreditCardUpdateManyWithoutUserNestedInput
@@ -452,6 +486,8 @@ export type UserUncheckedUpdateInput = {
   vaultStatusMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sendMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dormantReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dormantAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUncheckedUpdateManyWithoutUserNestedInput
   creditCards?: Prisma.CreditCardUncheckedUpdateManyWithoutUserNestedInput
@@ -472,6 +508,8 @@ export type UserCreateManyInput = {
   vaultStatusMessage?: string | null
   sendMessage?: string | null
   receiveMessage?: string | null
+  dormantReason?: string | null
+  dormantAmount?: number | null
   createdAt?: Date | string
 }
 
@@ -489,6 +527,8 @@ export type UserUpdateManyMutationInput = {
   vaultStatusMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sendMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dormantReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dormantAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -506,6 +546,8 @@ export type UserUncheckedUpdateManyInput = {
   vaultStatusMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sendMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dormantReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dormantAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -523,11 +565,14 @@ export type UserCountOrderByAggregateInput = {
   vaultStatusMessage?: Prisma.SortOrder
   sendMessage?: Prisma.SortOrder
   receiveMessage?: Prisma.SortOrder
+  dormantReason?: Prisma.SortOrder
+  dormantAmount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type UserAvgOrderByAggregateInput = {
   totalBalance?: Prisma.SortOrder
+  dormantAmount?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -544,6 +589,8 @@ export type UserMaxOrderByAggregateInput = {
   vaultStatusMessage?: Prisma.SortOrder
   sendMessage?: Prisma.SortOrder
   receiveMessage?: Prisma.SortOrder
+  dormantReason?: Prisma.SortOrder
+  dormantAmount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -561,11 +608,14 @@ export type UserMinOrderByAggregateInput = {
   vaultStatusMessage?: Prisma.SortOrder
   sendMessage?: Prisma.SortOrder
   receiveMessage?: Prisma.SortOrder
+  dormantReason?: Prisma.SortOrder
+  dormantAmount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type UserSumOrderByAggregateInput = {
   totalBalance?: Prisma.SortOrder
+  dormantAmount?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -587,6 +637,14 @@ export type EnumRoleFieldUpdateOperationsInput = {
 
 export type FloatFieldUpdateOperationsInput = {
   set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type NullableFloatFieldUpdateOperationsInput = {
+  set?: number | null
   increment?: number
   decrement?: number
   multiply?: number
@@ -653,6 +711,8 @@ export type UserCreateWithoutAssetsInput = {
   vaultStatusMessage?: string | null
   sendMessage?: string | null
   receiveMessage?: string | null
+  dormantReason?: string | null
+  dormantAmount?: number | null
   createdAt?: Date | string
   creditCards?: Prisma.CreditCardCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -672,6 +732,8 @@ export type UserUncheckedCreateWithoutAssetsInput = {
   vaultStatusMessage?: string | null
   sendMessage?: string | null
   receiveMessage?: string | null
+  dormantReason?: string | null
+  dormantAmount?: number | null
   createdAt?: Date | string
   creditCards?: Prisma.CreditCardUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -707,6 +769,8 @@ export type UserUpdateWithoutAssetsInput = {
   vaultStatusMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sendMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dormantReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dormantAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creditCards?: Prisma.CreditCardUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -726,6 +790,8 @@ export type UserUncheckedUpdateWithoutAssetsInput = {
   vaultStatusMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sendMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dormantReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dormantAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creditCards?: Prisma.CreditCardUncheckedUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -745,6 +811,8 @@ export type UserCreateWithoutCreditCardsInput = {
   vaultStatusMessage?: string | null
   sendMessage?: string | null
   receiveMessage?: string | null
+  dormantReason?: string | null
+  dormantAmount?: number | null
   createdAt?: Date | string
   assets?: Prisma.AssetCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -764,6 +832,8 @@ export type UserUncheckedCreateWithoutCreditCardsInput = {
   vaultStatusMessage?: string | null
   sendMessage?: string | null
   receiveMessage?: string | null
+  dormantReason?: string | null
+  dormantAmount?: number | null
   createdAt?: Date | string
   assets?: Prisma.AssetUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -799,6 +869,8 @@ export type UserUpdateWithoutCreditCardsInput = {
   vaultStatusMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sendMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dormantReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dormantAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -818,6 +890,8 @@ export type UserUncheckedUpdateWithoutCreditCardsInput = {
   vaultStatusMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sendMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dormantReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dormantAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUncheckedUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -837,6 +911,8 @@ export type UserCreateWithoutTransactionsInput = {
   vaultStatusMessage?: string | null
   sendMessage?: string | null
   receiveMessage?: string | null
+  dormantReason?: string | null
+  dormantAmount?: number | null
   createdAt?: Date | string
   assets?: Prisma.AssetCreateNestedManyWithoutUserInput
   creditCards?: Prisma.CreditCardCreateNestedManyWithoutUserInput
@@ -856,6 +932,8 @@ export type UserUncheckedCreateWithoutTransactionsInput = {
   vaultStatusMessage?: string | null
   sendMessage?: string | null
   receiveMessage?: string | null
+  dormantReason?: string | null
+  dormantAmount?: number | null
   createdAt?: Date | string
   assets?: Prisma.AssetUncheckedCreateNestedManyWithoutUserInput
   creditCards?: Prisma.CreditCardUncheckedCreateNestedManyWithoutUserInput
@@ -891,6 +969,8 @@ export type UserUpdateWithoutTransactionsInput = {
   vaultStatusMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sendMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dormantReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dormantAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUpdateManyWithoutUserNestedInput
   creditCards?: Prisma.CreditCardUpdateManyWithoutUserNestedInput
@@ -910,6 +990,8 @@ export type UserUncheckedUpdateWithoutTransactionsInput = {
   vaultStatusMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sendMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dormantReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dormantAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUncheckedUpdateManyWithoutUserNestedInput
   creditCards?: Prisma.CreditCardUncheckedUpdateManyWithoutUserNestedInput
@@ -978,6 +1060,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   vaultStatusMessage?: boolean
   sendMessage?: boolean
   receiveMessage?: boolean
+  dormantReason?: boolean
+  dormantAmount?: boolean
   createdAt?: boolean
   assets?: boolean | Prisma.User$assetsArgs<ExtArgs>
   creditCards?: boolean | Prisma.User$creditCardsArgs<ExtArgs>
@@ -999,6 +1083,8 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   vaultStatusMessage?: boolean
   sendMessage?: boolean
   receiveMessage?: boolean
+  dormantReason?: boolean
+  dormantAmount?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["user"]>
 
@@ -1016,6 +1102,8 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   vaultStatusMessage?: boolean
   sendMessage?: boolean
   receiveMessage?: boolean
+  dormantReason?: boolean
+  dormantAmount?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["user"]>
 
@@ -1033,10 +1121,12 @@ export type UserSelectScalar = {
   vaultStatusMessage?: boolean
   sendMessage?: boolean
   receiveMessage?: boolean
+  dormantReason?: boolean
+  dormantAmount?: boolean
   createdAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "username" | "firstName" | "lastName" | "phoneNumber" | "password" | "role" | "totalBalance" | "accountNumber" | "vaultStatusMessage" | "sendMessage" | "receiveMessage" | "createdAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "username" | "firstName" | "lastName" | "phoneNumber" | "password" | "role" | "totalBalance" | "accountNumber" | "vaultStatusMessage" | "sendMessage" | "receiveMessage" | "dormantReason" | "dormantAmount" | "createdAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   assets?: boolean | Prisma.User$assetsArgs<ExtArgs>
   creditCards?: boolean | Prisma.User$creditCardsArgs<ExtArgs>
@@ -1067,6 +1157,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     vaultStatusMessage: string | null
     sendMessage: string | null
     receiveMessage: string | null
+    dormantReason: string | null
+    dormantAmount: number | null
     createdAt: Date
   }, ExtArgs["result"]["user"]>
   composites: {}
@@ -1507,6 +1599,8 @@ export interface UserFieldRefs {
   readonly vaultStatusMessage: Prisma.FieldRef<"User", 'String'>
   readonly sendMessage: Prisma.FieldRef<"User", 'String'>
   readonly receiveMessage: Prisma.FieldRef<"User", 'String'>
+  readonly dormantReason: Prisma.FieldRef<"User", 'String'>
+  readonly dormantAmount: Prisma.FieldRef<"User", 'Float'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
 }
     

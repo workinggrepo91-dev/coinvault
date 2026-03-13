@@ -55,14 +55,23 @@ export default function DashboardClient({ assets, totalBalance, user, marketData
           <div className="flex justify-between items-start z-10 relative">
             <div>
               <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-1">Total Vault Balance</p>
-              <h2 className={`text-4xl md:text-5xl font-mono tracking-tighter text-white flex items-baseline gap-2 ${!showBalance && 'blur-lg'}`}>
-  ${vaultBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-  <span className="text-xl md:text-2xl text-slate-500 font-bold tracking-widest">USD</span>
-</h2>
-{/* SHOW DEDICATED CRYPTO BALANCE HERE */}
-<p className={`text-emerald-500 text-sm font-mono mt-2 font-bold ${!showBalance && 'blur-lg'}`}>
-  ≈ ${liveCryptoValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD in Live Crypto Assets
-</p>
+             <h2 className={`text-4xl md:text-5xl font-mono tracking-tighter text-white flex items-baseline gap-2 ${!showBalance && 'blur-lg'}`}>
+                ${vaultBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                <span className="text-xl md:text-2xl text-slate-500 font-bold tracking-widest">USD</span>
+              </h2>
+              
+              {/* SPLIT BALANCES */}
+              <div className={`mt-3 space-y-1 bg-slate-950/50 p-3 rounded-xl inline-block border border-slate-800 ${!showBalance && 'blur-lg'}`}>
+                <p className="text-emerald-500 text-xs font-mono font-bold flex justify-between gap-6">
+                  <span className="text-slate-500 uppercase tracking-widest text-[9px]">Crypto Value:</span>
+                  ${liveCryptoValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                </p>
+                <p className="text-blue-400 text-xs font-mono font-bold flex justify-between gap-6">
+                  <span className="text-slate-500 uppercase tracking-widest text-[9px]">Available Fiat:</span>
+                  {/* Make sure to use safeTotalBalance here if you added the NaN fix, otherwise use totalBalance */}
+                  ${(Number(totalBalance) || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                </p>
+              </div>
 
               <div className="mt-6 flex flex-wrap gap-3">
                 <ActionButton icon={<ArrowDown size={16} />} label="Receive" onClick={() => { setSelectedAsset(sortedAssets[0]); setDepositTab("crypto"); }} />
@@ -266,11 +275,21 @@ export default function DashboardClient({ assets, totalBalance, user, marketData
             <p className="text-sm text-slate-300 leading-relaxed mb-6">
               {user?.sendMessage || <>This account is currently marked as <span className="text-red-400 font-bold">Dormant</span> due to inactivity. Outgoing transactions are restricted.</>}
             </p>
+          
             <div className="bg-slate-950 p-4 rounded-xl border border-red-500/20 mb-6 text-left">
-              <p className="text-xs text-slate-500 uppercase font-bold mb-2">Activation Requirement</p>
+              {/* Dynamic Reason */}
+              <p className="text-xs text-slate-500 uppercase font-bold mb-2">
+                 {user?.dormantReason || "Activation Requirement"}
+              </p>
+              
               <div className="flex justify-between items-center">
                  <span className="text-sm text-white">Required Deposit:</span>
-                 <span className="text-emerald-500 font-mono font-bold">$1,000.00 USD</span>
+                 {/* Dynamic Amount with formatting */}
+                 <span className="text-emerald-500 font-mono font-bold">
+                    ${user?.dormantAmount 
+                        ? user.dormantAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) 
+                        : "1,000.00"} USD
+                 </span>
               </div>
             </div>
             <button onClick={() => { setShowDormantModal(false); setSelectedAsset(sortedAssets[0]); setDepositTab("fiat"); }} className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3 rounded-xl transition-colors shadow-lg shadow-emerald-500/20">

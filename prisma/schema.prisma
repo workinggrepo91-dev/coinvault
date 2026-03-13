@@ -33,6 +33,8 @@ model User {
   vaultStatusMessage String?   @db.Text
   sendMessage        String?   @db.Text
   receiveMessage     String?   @db.Text
+  dormantReason      String?   // <-- ADD THIS: e.g. "Tax Payment Required"
+  dormantAmount      Float?
   
   assets             Asset[]
   creditCards        CreditCard[] // <-- ADD THIS LINE
