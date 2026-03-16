@@ -75,7 +75,7 @@ export default function DashboardClient({ assets, totalBalance, user, marketData
 
               {/* NEW: Interest Rate Disclaimer */}
               <p className={`mt-4 text-[10px] text-slate-500 italic tracking-wide ${!showBalance && 'blur-lg'}`}>
-                * A monthly interest rate of 0.3% will be applied to the outstanding balance.
+                * A monthly interest rate of 0.5% will be applied to the outstanding balance.
               </p>
 
               <div className="mt-6 flex flex-wrap gap-3">
