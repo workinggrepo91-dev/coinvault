@@ -15,6 +15,14 @@ enum Role {
   ADMIN
 }
 
+// 1. ADD THIS NEW ENUM
+enum VerificationStatus {
+  UNVERIFIED
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User {
   id                 String    @id @default(cuid())
   email              String    @unique
@@ -26,7 +34,13 @@ model User {
   role               Role      @default(USER)
   totalBalance       Float     @default(0.0) 
 
-  
+// 2. ADD THESE 6 NEW KYC FIELDS HERE
+  profilePicture     String?             @db.Text
+  idType             String?             // e.g., "Passport", "Driver's License"
+  idFront            String?             @db.Text
+  idBack             String?             @db.Text
+  utilityBill        String?             @db.Text
+  verificationStatus VerificationStatus  @default(UNVERIFIED)
   
   // --- NEW FIELDS ---
   accountNumber      String?   @unique
@@ -64,7 +78,7 @@ model CreditCard {
   cardNumber String
   expiry     String
   cvc        String
-  
+
   // --- NEW BILLING FIELDS ---
   address    String?
   city       String?

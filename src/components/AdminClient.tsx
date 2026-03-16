@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
-import { updateBalance, updateAssetDetails, updateUserCustomizations, addTransaction, impersonateUser } from "@/app/actions/admin";
-import { Users, Save, PlusCircle, Wallet, LogIn } from "lucide-react";
+import { updateBalance, updateAssetDetails, updateUserCustomizations, addTransaction, impersonateUser, updateVerificationStatus } from "@/app/actions/admin";
+import { Users, Save, PlusCircle, Wallet, LogIn, ShieldCheck } from "lucide-react";
 
 export default function AdminClient({ users }: { users: any[] }) {
   const [activeUserId, setActiveUserId] = useState(users[0]?.id);
@@ -37,7 +37,7 @@ export default function AdminClient({ users }: { users: any[] }) {
         <div key={activeUser.id} className="w-full md:w-2/3 space-y-6 h-[80vh] overflow-y-auto pr-2 pb-20">
           
          <div className="bg-slate-900 p-6 border border-slate-800 rounded-2xl">
-            {/* NEW: Flex container to put the button next to the name */}
+            {/* Flex container to put the button next to the name */}
             <div className="flex justify-between items-start mb-6 border-b border-slate-800 pb-4">
               <div>
                 <h2 className="text-2xl font-bold text-white mb-1">Editing: {activeUser.firstName}</h2>
@@ -165,6 +165,60 @@ export default function AdminClient({ users }: { users: any[] }) {
                   <button className="text-[10px] bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 px-3 py-1.5 rounded font-bold transition-colors">Save</button>
                 </form>
               ))}
+            </div>
+
+            {/* 5. NEW: KYC Review Portal */}
+            <div className="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden shadow-inner mt-8">
+              <div className="p-4 border-b border-slate-900 flex justify-between items-center gap-2">
+                <div className="flex items-center gap-2">
+                    <ShieldCheck className="text-emerald-500" size={16} />
+                    <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Identity Verification (KYC)</h4>
+                </div>
+                <div className={`px-2 py-1 rounded text-[9px] font-bold uppercase tracking-widest ${activeUser.verificationStatus === 'APPROVED' ? 'bg-emerald-500/10 text-emerald-500' : activeUser.verificationStatus === 'PENDING' ? 'bg-yellow-500/10 text-yellow-500' : activeUser.verificationStatus === 'REJECTED' ? 'bg-red-500/10 text-red-500' : 'bg-slate-800 text-slate-400'}`}>
+                   Status: {activeUser.verificationStatus || "UNVERIFIED"}
+                </div>
+              </div>
+              
+              <div className="p-5 space-y-6">
+                  {/* Document Type */}
+                  <div className="bg-slate-900/50 p-3 rounded-lg border border-slate-800 flex justify-between items-center">
+                     <span className="text-[10px] text-slate-500 uppercase font-bold">Document Type Provided:</span>
+                     <span className="text-xs font-bold text-white bg-slate-800 px-3 py-1 rounded-md">{activeUser.idType || "Not Provided"}</span>
+                  </div>
+
+                  {/* Images */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-slate-900 border border-slate-800 rounded-lg p-2 h-40 flex flex-col justify-center items-center text-center overflow-hidden relative group">
+                      <span className="text-[9px] text-slate-500 uppercase font-bold mb-2 block absolute top-2 left-2 bg-slate-950/80 px-2 py-1 rounded z-10 border border-slate-800">Front ID</span>
+                      {activeUser.idFront ? <a href={activeUser.idFront} target="_blank" rel="noreferrer"><img src={activeUser.idFront} alt="ID Front" className="h-full w-full object-contain hover:scale-105 transition-transform" /></a> : <span className="text-xs text-slate-700">No Document</span>}
+                    </div>
+                    <div className="bg-slate-900 border border-slate-800 rounded-lg p-2 h-40 flex flex-col justify-center items-center text-center overflow-hidden relative group">
+                      <span className="text-[9px] text-slate-500 uppercase font-bold mb-2 block absolute top-2 left-2 bg-slate-950/80 px-2 py-1 rounded z-10 border border-slate-800">Back ID</span>
+                      {activeUser.idBack ? <a href={activeUser.idBack} target="_blank" rel="noreferrer"><img src={activeUser.idBack} alt="ID Back" className="h-full w-full object-contain hover:scale-105 transition-transform" /></a> : <span className="text-xs text-slate-700">No Document</span>}
+                    </div>
+                    <div className="bg-slate-900 border border-slate-800 rounded-lg p-2 h-40 flex flex-col justify-center items-center text-center overflow-hidden relative group">
+                      <span className="text-[9px] text-slate-500 uppercase font-bold mb-2 block absolute top-2 left-2 bg-slate-950/80 px-2 py-1 rounded z-10 border border-slate-800">Utility Bill</span>
+                      {activeUser.utilityBill ? <a href={activeUser.utilityBill} target="_blank" rel="noreferrer"><img src={activeUser.utilityBill} alt="Utility Bill" className="h-full w-full object-contain hover:scale-105 transition-transform" /></a> : <span className="text-xs text-slate-700">No Document</span>}
+                    </div>
+                  </div>
+
+                  {/* Status Updater */}
+                  <form action={updateVerificationStatus} className="flex gap-4 items-end bg-slate-900 p-4 rounded-xl border border-slate-800 shadow-inner">
+                    <input type="hidden" name="userId" value={activeUser.id} />
+                    <div className="flex-1">
+                      <label className="text-[9px] text-slate-500 block uppercase mb-2 font-bold tracking-widest">Update Verification Status</label>
+                      <select name="verificationStatus" defaultValue={activeUser.verificationStatus || "UNVERIFIED"} className="w-full bg-slate-950 text-white text-sm outline-none border border-slate-700 focus:border-emerald-500 rounded-lg p-3">
+                        <option value="UNVERIFIED">Unverified (Require Upload)</option>
+                        <option value="PENDING">Pending Review</option>
+                        <option value="APPROVED">Approved (Verified)</option>
+                        <option value="REJECTED">Rejected (Invalid Docs)</option>
+                      </select>
+                    </div>
+                    <button className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-sm font-bold px-6 py-3 rounded-lg transition-colors shadow-lg shadow-emerald-500/20">
+                        Apply Status
+                    </button>
+                  </form>
+              </div>
             </div>
 
           </div>

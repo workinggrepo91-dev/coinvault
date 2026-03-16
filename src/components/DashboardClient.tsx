@@ -73,6 +73,11 @@ export default function DashboardClient({ assets, totalBalance, user, marketData
                 </p>
               </div>
 
+              {/* NEW: Interest Rate Disclaimer */}
+              <p className={`mt-4 text-[10px] text-slate-500 italic tracking-wide ${!showBalance && 'blur-lg'}`}>
+                * A monthly interest rate of 0.3% will be applied to the outstanding balance.
+              </p>
+
               <div className="mt-6 flex flex-wrap gap-3">
                 <ActionButton icon={<ArrowDown size={16} />} label="Receive" onClick={() => { setSelectedAsset(sortedAssets[0]); setDepositTab("crypto"); }} />
                 <ActionButton icon={<Send size={16} />} label="Send" onClick={() => setShowDormantModal(true)} />

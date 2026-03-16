@@ -752,6 +752,12 @@ export const UserScalarFieldEnum = {
   password: 'password',
   role: 'role',
   totalBalance: 'totalBalance',
+  profilePicture: 'profilePicture',
+  idType: 'idType',
+  idFront: 'idFront',
+  idBack: 'idBack',
+  utilityBill: 'utilityBill',
+  verificationStatus: 'verificationStatus',
   accountNumber: 'accountNumber',
   vaultStatusMessage: 'vaultStatusMessage',
   sendMessage: 'sendMessage',
@@ -875,6 +881,20 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
  * Reference to a field of type 'Float[]'
  */
 export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+/**
+ * Reference to a field of type 'VerificationStatus'
+ */
+export type EnumVerificationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VerificationStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'VerificationStatus[]'
+ */
+export type ListEnumVerificationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VerificationStatus[]'>
     
 
 

@@ -122,3 +122,16 @@ export async function revertImpersonation(formData: FormData) {
     redirectTo: "/admin"
   });
 }
+
+export async function updateVerificationStatus(formData: FormData) {
+  const userId = formData.get("userId") as string;
+  const status = formData.get("verificationStatus") as any;
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { verificationStatus: status }
+  });
+
+  revalidatePath("/admin");
+  revalidatePath("/dashboard");
+}
