@@ -7,7 +7,7 @@ export default function CTA() {
       <div className="max-w-4xl mx-auto text-center relative z-10 px-6">
         <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Start building your portfolio today</h2>
         <p className="text-slate-400 text-lg mb-10">
-          Join the world's largest simulated crypto exchange. Register now and get full control of your financial future.
+          Join the world's largest digital crypto exchange. Register now and get full control of your financial future.
         </p>
         <Link 
           href="/register" 
