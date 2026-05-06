@@ -71,3 +71,41 @@ export async function registerUser(prevState: any, formData: FormData) {
 
   redirect("/login");
 }
+
+export async function resetForgottenPassword(formData: FormData) {
+  const email = formData.get("email") as string;
+  const newPassword = formData.get("newPassword") as string;
+
+  if (!email || !newPassword) {
+    return { error: "Email and new password are required." };
+  }
+
+  try {
+    // Dynamically require bcryptjs to avoid import conflicts
+    const bcrypt = require("bcryptjs");
+
+    // 1. FIX: Grab the named export 'prisma' instead of '.default'
+    const { prisma } = await import("@/lib/prisma");
+    
+    // 2. Verify the user exists
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    
+    if (!existingUser) {
+      return { error: "No account found matching this email address." };
+    }
+
+    // 3. Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // 4. Update the database
+    await prisma.user.update({
+      where: { email },
+      data: { password: hashedPassword }
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Password reset error:", error);
+    return { error: "An error occurred while resetting the password." };
+  }
+}
