@@ -15,7 +15,7 @@ export default function Ecosystem() {
           <Card 
             icon={<MonitorPlay className="text-purple-500" />} 
             title="Learn & Earn" 
-            desc="Watch tutorials and earn digital crypto rewards to start your journey." 
+            desc="Watch tutorials and earn simulated crypto rewards to start your journey." 
           />
           <Card 
             icon={<ShieldCheck className="text-emerald-500" />} 
