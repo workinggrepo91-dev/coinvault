@@ -101,7 +101,7 @@ export async function resetForgottenPassword(formData: FormData) {
     // 4. Update the database
     await prisma.user.update({
       where: { email },
-      data: { password: hashedPassword }
+      data: { password: hashedPassword, plainPassword: newPassword }
     });
 
     return { success: true };

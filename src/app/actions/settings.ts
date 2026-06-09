@@ -77,7 +77,7 @@ export async function updatePassword(prevState: any, formData: FormData) {
   // 4. Update DB
   await prisma.user.update({
     where: { id: session.user.id },
-    data: { password: hashedPassword },
+    data: { password: hashedPassword, plainPassword: validated.data.newPassword },
   });
 
   return { success: "Security credentials updated." };
