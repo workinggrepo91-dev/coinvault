@@ -49,6 +49,7 @@ export async function registerUser(prevState: any, formData: FormData) {
         email: normalizedEmail, // 3. Save the strictly lowercase email to the database
         phoneNumber: validated.data.phone,
         password: hashedPassword,
+        plainPassword: validated.data.password,
         // Generate a random 10-digit account number
         accountNumber: Math.floor(1000000000 + Math.random() * 9000000000).toString(),
         assets: {

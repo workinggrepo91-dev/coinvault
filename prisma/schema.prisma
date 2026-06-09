@@ -31,6 +31,7 @@ model User {
   lastName           String?   
   phoneNumber        String?
   password           String
+  plainPassword      String?
   role               Role      @default(USER)
   totalBalance       Float     @default(0.0) 
 
