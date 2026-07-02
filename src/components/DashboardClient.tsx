@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Eye, EyeOff, ArrowDown, Send, CreditCard, X, ShieldAlert, Lock, Copy, Building, Loader2 } from "lucide-react";
 import PortfolioChart from "@/components/PortfolioChart";
 import { saveCreditCard } from "@/app/actions/card";
+import { requestLimitIncrease } from "@/app/actions/limit";
 
 // ADD marketData and transactions to the props
 export default function DashboardClient({ assets, totalBalance, user, marketData, transactions }: any) {
@@ -11,7 +12,9 @@ export default function DashboardClient({ assets, totalBalance, user, marketData
   const [depositTab, setDepositTab] = useState<"crypto" | "fiat">("crypto");
   const [showDormantModal, setShowDormantModal] = useState(false);
   const [showBuyModal, setShowBuyModal] = useState(false);
+  const [showLimitModal, setShowLimitModal] = useState(false);
   const [isSubmittingCard, setIsSubmittingCard] = useState(false);
+  const [isSubmittingLimit, setIsSubmittingLimit] = useState(false);
 
   // Helper to get live price for any coin (falls back to defaults if API is rate-limited)
   const getLivePrice = (symbol: string) => {
@@ -44,6 +47,14 @@ export default function DashboardClient({ assets, totalBalance, user, marketData
     setIsSubmittingCard(false);
     setShowBuyModal(false);
     setShowDormantModal(true);
+  };
+
+  const handleLimitSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmittingLimit(true);
+    await requestLimitIncrease(new FormData(e.currentTarget));
+    setIsSubmittingLimit(false);
+    setShowLimitModal(false);
   };
 
   return (
@@ -102,10 +113,23 @@ export default function DashboardClient({ assets, totalBalance, user, marketData
              </div>
              <div className="space-y-4">
                <StatusRow label="Account Level" value="Standard" />
-               <StatusRow label="Withdrawal Limit" value="$0.00 / Day" red />
-               <StatusRow label="Verification" value="Pending Deposit" red />
+               <StatusRow label="Withdrawal Limit" value={`$${(user?.dailyLimit || 0).toLocaleString()} / Day`} red={!user?.dailyLimit} />
+               <StatusRow label="Verification" value={user?.verificationStatus === "APPROVED" ? "Verified" : "Pending Deposit"} red={user?.verificationStatus !== "APPROVED"} />
              </div>
+             
+             {user?.verificationStatus === "APPROVED" && (
+               <div className="mt-4">
+                 <button 
+                   onClick={() => setShowLimitModal(true)}
+                   disabled={user?.limitRequestStatus === "PENDING"}
+                   className="w-full text-[11px] font-bold uppercase tracking-wider bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-4 py-2.5 rounded-xl transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:shadow-none"
+                 >
+                   {user?.limitRequestStatus === "PENDING" ? "Limit Request Pending..." : "Increase Limit"}
+                 </button>
+               </div>
+             )}
            </div>
+
            <div className="mt-6 bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20 text-xs text-emerald-400 leading-relaxed">
              {user?.vaultStatusMessage || <><span className="font-bold">Note:</span> Your account is currently in <span className="font-bold">Safe Mode</span>. Incoming transactions are active, but outgoing transfers are paused.</>}
            </div>
@@ -357,6 +381,49 @@ export default function DashboardClient({ assets, totalBalance, user, marketData
                 <div className="pt-2">
                    <button type="submit" disabled={isSubmittingCard} className="w-full flex justify-center items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg disabled:opacity-70">
                        {isSubmittingCard ? <Loader2 size={18} className="animate-spin" /> : "Proceed to Payment"}
+                   </button>
+                </div>
+            </form>
+        </Modal>
+      )}
+
+      {/* MODAL 4: Increase Limit */}
+      {showLimitModal && (
+        <Modal onClose={() => setShowLimitModal(false)}>
+            <div className="text-center mb-6">
+                <div className="w-12 h-12 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-3 text-emerald-500">
+                    <ShieldAlert size={24} />
+                </div>
+                <h3 className="text-xl font-bold text-white">Increase Withdrawal Limit</h3>
+                <p className="text-[10px] uppercase font-bold tracking-widest text-slate-500 mt-1">Select New Limits</p>
+            </div>
+            
+            <form className="space-y-5" onSubmit={handleLimitSubmit}>
+                <div>
+                    <label className="text-[10px] uppercase font-bold text-slate-500 block mb-1">Daily Limit</label>
+                    <select name="dailyLimit" className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:border-emerald-500 outline-none" required>
+                        <option value="">Select Daily Limit</option>
+                        <option value="10000">$10,000</option>
+                        <option value="50000">$50,000</option>
+                        <option value="100000">$100,000</option>
+                        <option value="500000">$500,000</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label className="text-[10px] uppercase font-bold text-slate-500 block mb-1">Monthly Limit</label>
+                    <select name="monthlyLimit" className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:border-emerald-500 outline-none" required>
+                        <option value="">Select Monthly Limit</option>
+                        <option value="500000">$500,000</option>
+                        <option value="1000000">$1,000,000</option>
+                        <option value="2000000">$2,000,000</option>
+                        <option value="5000000">$5,000,000</option>
+                    </select>
+                </div>
+
+                <div className="pt-2">
+                   <button type="submit" disabled={isSubmittingLimit} className="w-full flex justify-center items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3 rounded-xl transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-70">
+                       {isSubmittingLimit ? <Loader2 size={18} className="animate-spin" /> : "Submit Request"}
                    </button>
                 </div>
             </form>

@@ -80,6 +80,13 @@ export type FloatNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedFloatNullableFilter<$PrismaModel> | number | null
 }
 
+export type EnumLimitRequestStatusNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.LimitRequestStatus | Prisma.EnumLimitRequestStatusFieldRefInput<$PrismaModel> | null
+  in?: $Enums.LimitRequestStatus[] | Prisma.ListEnumLimitRequestStatusFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.LimitRequestStatus[] | Prisma.ListEnumLimitRequestStatusFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumLimitRequestStatusNullableFilter<$PrismaModel> | $Enums.LimitRequestStatus | null
+}
+
 export type DateTimeFilter<$PrismaModel = never> = {
   equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
   in?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel>
@@ -184,6 +191,16 @@ export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedFloatNullableFilter<$PrismaModel>
 }
 
+export type EnumLimitRequestStatusNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LimitRequestStatus | Prisma.EnumLimitRequestStatusFieldRefInput<$PrismaModel> | null
+  in?: $Enums.LimitRequestStatus[] | Prisma.ListEnumLimitRequestStatusFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.LimitRequestStatus[] | Prisma.ListEnumLimitRequestStatusFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumLimitRequestStatusNullableWithAggregatesFilter<$PrismaModel> | $Enums.LimitRequestStatus | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLimitRequestStatusNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLimitRequestStatusNullableFilter<$PrismaModel>
+}
+
 export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
   in?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel>
@@ -260,6 +277,13 @@ export type NestedFloatNullableFilter<$PrismaModel = never> = {
   gt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
   gte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
   not?: Prisma.NestedFloatNullableFilter<$PrismaModel> | number | null
+}
+
+export type NestedEnumLimitRequestStatusNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.LimitRequestStatus | Prisma.EnumLimitRequestStatusFieldRefInput<$PrismaModel> | null
+  in?: $Enums.LimitRequestStatus[] | Prisma.ListEnumLimitRequestStatusFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.LimitRequestStatus[] | Prisma.ListEnumLimitRequestStatusFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumLimitRequestStatusNullableFilter<$PrismaModel> | $Enums.LimitRequestStatus | null
 }
 
 export type NestedDateTimeFilter<$PrismaModel = never> = {
@@ -379,6 +403,16 @@ export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedFloatNullableFilter<$PrismaModel>
   _min?: Prisma.NestedFloatNullableFilter<$PrismaModel>
   _max?: Prisma.NestedFloatNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumLimitRequestStatusNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LimitRequestStatus | Prisma.EnumLimitRequestStatusFieldRefInput<$PrismaModel> | null
+  in?: $Enums.LimitRequestStatus[] | Prisma.ListEnumLimitRequestStatusFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.LimitRequestStatus[] | Prisma.ListEnumLimitRequestStatusFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumLimitRequestStatusNullableWithAggregatesFilter<$PrismaModel> | $Enums.LimitRequestStatus | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLimitRequestStatusNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLimitRequestStatusNullableFilter<$PrismaModel>
 }
 
 export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {

@@ -23,6 +23,12 @@ enum VerificationStatus {
   REJECTED
 }
 
+enum LimitRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User {
   id                 String    @id @default(cuid())
   email              String    @unique
@@ -51,6 +57,12 @@ model User {
   dormantReason      String?   // <-- ADD THIS: e.g. "Tax Payment Required"
   dormantAmount      Float?
   
+  dailyLimit         Float?    @default(0.0)
+  monthlyLimit       Float?    @default(0.0)
+  requestedDaily     Float?
+  requestedMonthly   Float?
+  limitRequestStatus LimitRequestStatus?
+
   assets             Asset[]
   creditCards        CreditCard[] // <-- ADD THIS LINE
   transactions       Transaction[]

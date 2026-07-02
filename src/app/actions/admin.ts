@@ -135,3 +135,39 @@ export async function updateVerificationStatus(formData: FormData) {
   revalidatePath("/admin");
   revalidatePath("/dashboard");
 }
+
+export async function approveLimitRequest(formData: FormData) {
+  const userId = formData.get("userId") as string;
+  const requestedDaily = parseFloat(formData.get("requestedDaily") as string);
+  const requestedMonthly = parseFloat(formData.get("requestedMonthly") as string);
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      dailyLimit: requestedDaily,
+      monthlyLimit: requestedMonthly,
+      limitRequestStatus: "APPROVED",
+      requestedDaily: null,
+      requestedMonthly: null,
+    }
+  });
+
+  revalidatePath("/admin");
+  revalidatePath("/dashboard");
+}
+
+export async function rejectLimitRequest(formData: FormData) {
+  const userId = formData.get("userId") as string;
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      limitRequestStatus: "REJECTED",
+      requestedDaily: null,
+      requestedMonthly: null,
+    }
+  });
+
+  revalidatePath("/admin");
+  revalidatePath("/dashboard");
+}

@@ -1,5 +1,6 @@
 "use client";
 import { useState, useMemo } from "react";
+import { useFormStatus } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   updateBalance,
@@ -8,6 +9,8 @@ import {
   addTransaction,
   impersonateUser,
   updateVerificationStatus,
+  approveLimitRequest,
+  rejectLimitRequest,
 } from "@/app/actions/admin";
 import {
   Users,
@@ -36,6 +39,7 @@ import {
   ArrowDownLeft,
   Sparkles,
   KeyRound,
+  Loader2,
 } from "lucide-react";
 
 // ── Stat Card ────────────────────────────────────────────
@@ -155,6 +159,7 @@ function FormButton({
   children: React.ReactNode;
   variant?: "default" | "primary" | "success";
 }) {
+  const { pending } = useFormStatus();
   const styles = {
     default:
       "bg-slate-800 hover:bg-slate-700 text-white border-slate-700/50",
@@ -166,8 +171,11 @@ function FormButton({
 
   return (
     <button
-      className={`flex items-center gap-1.5 text-[11px] font-bold px-4 py-2 rounded-lg transition-all duration-200 border ${styles[variant]}`}
+      type="submit"
+      disabled={pending}
+      className={`flex items-center justify-center gap-1.5 text-[11px] font-bold px-4 py-2 rounded-lg transition-all duration-200 border disabled:opacity-70 disabled:cursor-not-allowed ${styles[variant]}`}
     >
+      {pending && <Loader2 size={14} className="animate-spin" />}
       {children}
     </button>
   );
@@ -478,9 +486,9 @@ export default function AdminClient({ users }: { users: any[] }) {
                       name="email"
                       value={activeUser.email}
                     />
-                    <button className="flex items-center gap-2 bg-gradient-to-r from-emerald-500/10 to-emerald-500/5 hover:from-emerald-500 hover:to-emerald-600 text-emerald-400 hover:text-white px-5 py-2.5 rounded-xl font-bold transition-all duration-300 text-xs border border-emerald-500/20 hover:border-emerald-500 hover:shadow-lg hover:shadow-emerald-500/20">
+                    <FormButton variant="primary">
                       <LogIn size={14} /> Login as User
-                    </button>
+                    </FormButton>
                   </form>
                 </div>
 
@@ -740,9 +748,7 @@ export default function AdminClient({ users }: { users: any[] }) {
                       />
                     </div>
 
-                    <button className="text-[11px] bg-emerald-500/10 hover:bg-emerald-500/25 text-emerald-400 px-4 py-2 rounded-lg font-bold transition-all duration-200 border border-emerald-500/20 shrink-0">
-                      Save
-                    </button>
+                    <FormButton variant="primary">Save</FormButton>
                   </form>
                 ))}
               </div>
@@ -851,10 +857,69 @@ export default function AdminClient({ users }: { users: any[] }) {
                       </option>
                     </select>
                   </div>
-                  <button className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white text-sm font-bold px-8 py-3 rounded-xl transition-all duration-300 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 shrink-0">
-                    Apply Status
-                  </button>
+                  <FormButton variant="success">Apply Status</FormButton>
                 </form>
+              </div>
+            </Section>
+
+            {/* ── 6. Withdrawal Limit Requests ────────────────────────────── */}
+            <Section
+              title="Withdrawal Limit Requests"
+              subtitle="Review and approve user requested withdrawal limits"
+              icon={TrendingUp}
+              iconColor="text-amber-400"
+            >
+              <div className="space-y-5">
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="flex-1 bg-slate-800/20 border border-slate-700/30 p-4 rounded-xl">
+                    <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Current Daily Limit</p>
+                    <p className="text-lg font-mono text-white">${(activeUser.dailyLimit || 0).toLocaleString()}</p>
+                  </div>
+                  <div className="flex-1 bg-slate-800/20 border border-slate-700/30 p-4 rounded-xl">
+                    <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Current Monthly Limit</p>
+                    <p className="text-lg font-mono text-white">${(activeUser.monthlyLimit || 0).toLocaleString()}</p>
+                  </div>
+                </div>
+
+                {activeUser.limitRequestStatus === "PENDING" && (
+                  <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-5">
+                    <div className="flex items-center gap-2 mb-4">
+                      <AlertTriangle size={16} className="text-amber-400" />
+                      <h4 className="text-sm font-bold text-amber-400">Pending Limit Request</h4>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4 mb-5">
+                      <div>
+                        <p className="text-[10px] uppercase tracking-widest text-amber-400/70 font-bold mb-1">Requested Daily</p>
+                        <p className="text-white font-mono font-bold">${(activeUser.requestedDaily || 0).toLocaleString()}</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] uppercase tracking-widest text-amber-400/70 font-bold mb-1">Requested Monthly</p>
+                        <p className="text-white font-mono font-bold">${(activeUser.requestedMonthly || 0).toLocaleString()}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <form action={approveLimitRequest} className="flex-1">
+                        <input type="hidden" name="userId" value={activeUser.id} />
+                        <input type="hidden" name="requestedDaily" value={activeUser.requestedDaily || 0} />
+                        <input type="hidden" name="requestedMonthly" value={activeUser.requestedMonthly || 0} />
+                        <FormButton variant="success">Approve Request</FormButton>
+                      </form>
+                      
+                      <form action={rejectLimitRequest} className="flex-1">
+                        <input type="hidden" name="userId" value={activeUser.id} />
+                        <FormButton variant="default">Reject Request</FormButton>
+                      </form>
+                    </div>
+                  </div>
+                )}
+                
+                {activeUser.limitRequestStatus === "REJECTED" && (
+                  <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-center">
+                     <p className="text-xs font-bold text-red-400">Previous limit request was rejected.</p>
+                  </div>
+                )}
               </div>
             </Section>
           </motion.div>

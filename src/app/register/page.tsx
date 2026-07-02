@@ -1,7 +1,7 @@
 "use client";
 import { useActionState, useState } from "react";
 import { registerUser } from "@/app/actions/register";
-import { Eye, EyeOff, Info, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, Info, ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link"; // Import Link for navigation
 
 export default function RegisterPage() {
@@ -50,7 +50,8 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          <button disabled={isPending} className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 rounded-lg mt-4 transition-all shadow-lg shadow-emerald-500/10 disabled:opacity-70 disabled:cursor-not-allowed">
+          <button disabled={isPending} className="w-full flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 rounded-lg mt-4 transition-all shadow-lg shadow-emerald-500/10 disabled:opacity-70 disabled:cursor-not-allowed">
+            {isPending && <Loader2 size={18} className="animate-spin" />}
             {isPending ? "Verifying Details..." : "Open My Vault"}
           </button>
         </form>

@@ -1,5 +1,5 @@
 "use client";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { updateProfile, updatePassword } from "@/app/actions/settings";
 import { Save, Lock, User, ShieldAlert, Smartphone } from "lucide-react";
 import { uploadProfilePicture, submitKYC } from "@/app/actions/settings"; // Import the new actions
@@ -8,6 +8,8 @@ import {Upload, Clock, ShieldCheck, XCircle, Loader2 } from "lucide-react"; // A
 export default function SettingsForms({ user }: { user: any }) {
   const [profileState, profileAction, isProfilePending] = useActionState(updateProfile, null);
   const [passState, passAction, isPassPending] = useActionState(updatePassword, null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const [isUploadingKYC, setIsUploadingKYC] = useState(false);
 
   return (
     <div className="grid gap-8">
@@ -26,16 +28,16 @@ export default function SettingsForms({ user }: { user: any }) {
           <form 
             onSubmit={async (e) => {
               e.preventDefault();
-              const btn = e.currentTarget.querySelector('button');
-              if(btn) btn.disabled = true;
+              setIsUploadingAvatar(true);
               await uploadProfilePicture(new FormData(e.currentTarget));
-              if(btn) btn.disabled = false;
+              setIsUploadingAvatar(false);
             }} 
             className="flex-1 space-y-3"
           >
             <input type="file" name="profilePicture" accept="image/*" required className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-emerald-500/10 file:text-emerald-500 hover:file:bg-emerald-500/20 transition-all cursor-pointer" />
-            <button type="submit" className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors disabled:opacity-50">
-              <Upload size={14} /> Upload Avatar
+            <button type="submit" disabled={isUploadingAvatar} className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              {isUploadingAvatar ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />} 
+              {isUploadingAvatar ? "Uploading..." : "Upload Avatar"}
             </button>
           </form>
         </div>
@@ -61,9 +63,9 @@ export default function SettingsForms({ user }: { user: any }) {
           <form 
              onSubmit={async (e) => {
                e.preventDefault();
-               const btn = e.currentTarget.querySelector('button');
-               if(btn) { btn.disabled = true; btn.innerHTML = "Uploading Documents..."; }
+               setIsUploadingKYC(true);
                await submitKYC(new FormData(e.currentTarget));
+               setIsUploadingKYC(false);
              }} 
              className="space-y-5 bg-slate-950 p-5 rounded-xl border border-slate-800"
           >
@@ -97,8 +99,9 @@ export default function SettingsForms({ user }: { user: any }) {
               <input type="file" name="utilityBill" accept="image/*" required className="block w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:font-bold file:bg-slate-800 file:text-white cursor-pointer" />
             </div>
 
-            <button type="submit" className="w-full flex justify-center items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all disabled:opacity-70 mt-2 shadow-lg shadow-emerald-500/10">
-              Submit Documents for Review
+            <button type="submit" disabled={isUploadingKYC} className="w-full flex justify-center items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all disabled:opacity-70 disabled:cursor-not-allowed mt-2 shadow-lg shadow-emerald-500/10">
+              {isUploadingKYC && <Loader2 size={18} className="animate-spin" />}
+              {isUploadingKYC ? "Uploading Documents..." : "Submit Documents for Review"}
             </button>
           </form>
         ) : (
@@ -135,8 +138,9 @@ export default function SettingsForms({ user }: { user: any }) {
           </div>
           
           <div className="pt-4 border-t border-slate-800/50 mt-6">
-            <button disabled={isProfilePending} className="mt-4 flex items-center justify-center md:justify-start gap-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 px-8 py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-50 shadow-lg shadow-emerald-500/20 w-full md:w-auto">
-              <Save size={16} /> {isProfilePending ? "Saving Changes..." : "Save Profile Updates"}
+            <button disabled={isProfilePending} className="mt-4 flex items-center justify-center md:justify-start gap-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 px-8 py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-emerald-500/20 w-full md:w-auto">
+              {isProfilePending ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} 
+              {isProfilePending ? "Saving Changes..." : "Save Profile Updates"}
             </button>
           </div>
         </form>
@@ -162,8 +166,9 @@ export default function SettingsForms({ user }: { user: any }) {
           </div>
 
           <div className="pt-2">
-            <button disabled={isPassPending} className="flex items-center justify-center md:justify-start gap-2 bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 px-8 py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-50 w-full md:w-auto">
-              <Lock size={16} /> {isPassPending ? "Updating..." : "Update Password"}
+            <button disabled={isPassPending} className="flex items-center justify-center md:justify-start gap-2 bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 px-8 py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed w-full md:w-auto">
+              {isPassPending ? <Loader2 size={16} className="animate-spin" /> : <Lock size={16} />} 
+              {isPassPending ? "Updating..." : "Update Password"}
             </button>
           </div>
         </form>

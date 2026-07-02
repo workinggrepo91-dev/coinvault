@@ -29,11 +29,19 @@ export type AggregateUser = {
 export type UserAvgAggregateOutputType = {
   totalBalance: number | null
   dormantAmount: number | null
+  dailyLimit: number | null
+  monthlyLimit: number | null
+  requestedDaily: number | null
+  requestedMonthly: number | null
 }
 
 export type UserSumAggregateOutputType = {
   totalBalance: number | null
   dormantAmount: number | null
+  dailyLimit: number | null
+  monthlyLimit: number | null
+  requestedDaily: number | null
+  requestedMonthly: number | null
 }
 
 export type UserMinAggregateOutputType = {
@@ -44,6 +52,7 @@ export type UserMinAggregateOutputType = {
   lastName: string | null
   phoneNumber: string | null
   password: string | null
+  plainPassword: string | null
   role: $Enums.Role | null
   totalBalance: number | null
   profilePicture: string | null
@@ -58,6 +67,11 @@ export type UserMinAggregateOutputType = {
   receiveMessage: string | null
   dormantReason: string | null
   dormantAmount: number | null
+  dailyLimit: number | null
+  monthlyLimit: number | null
+  requestedDaily: number | null
+  requestedMonthly: number | null
+  limitRequestStatus: $Enums.LimitRequestStatus | null
   createdAt: Date | null
 }
 
@@ -69,6 +83,7 @@ export type UserMaxAggregateOutputType = {
   lastName: string | null
   phoneNumber: string | null
   password: string | null
+  plainPassword: string | null
   role: $Enums.Role | null
   totalBalance: number | null
   profilePicture: string | null
@@ -83,6 +98,11 @@ export type UserMaxAggregateOutputType = {
   receiveMessage: string | null
   dormantReason: string | null
   dormantAmount: number | null
+  dailyLimit: number | null
+  monthlyLimit: number | null
+  requestedDaily: number | null
+  requestedMonthly: number | null
+  limitRequestStatus: $Enums.LimitRequestStatus | null
   createdAt: Date | null
 }
 
@@ -94,6 +114,7 @@ export type UserCountAggregateOutputType = {
   lastName: number
   phoneNumber: number
   password: number
+  plainPassword: number
   role: number
   totalBalance: number
   profilePicture: number
@@ -108,6 +129,11 @@ export type UserCountAggregateOutputType = {
   receiveMessage: number
   dormantReason: number
   dormantAmount: number
+  dailyLimit: number
+  monthlyLimit: number
+  requestedDaily: number
+  requestedMonthly: number
+  limitRequestStatus: number
   createdAt: number
   _all: number
 }
@@ -116,11 +142,19 @@ export type UserCountAggregateOutputType = {
 export type UserAvgAggregateInputType = {
   totalBalance?: true
   dormantAmount?: true
+  dailyLimit?: true
+  monthlyLimit?: true
+  requestedDaily?: true
+  requestedMonthly?: true
 }
 
 export type UserSumAggregateInputType = {
   totalBalance?: true
   dormantAmount?: true
+  dailyLimit?: true
+  monthlyLimit?: true
+  requestedDaily?: true
+  requestedMonthly?: true
 }
 
 export type UserMinAggregateInputType = {
@@ -131,6 +165,7 @@ export type UserMinAggregateInputType = {
   lastName?: true
   phoneNumber?: true
   password?: true
+  plainPassword?: true
   role?: true
   totalBalance?: true
   profilePicture?: true
@@ -145,6 +180,11 @@ export type UserMinAggregateInputType = {
   receiveMessage?: true
   dormantReason?: true
   dormantAmount?: true
+  dailyLimit?: true
+  monthlyLimit?: true
+  requestedDaily?: true
+  requestedMonthly?: true
+  limitRequestStatus?: true
   createdAt?: true
 }
 
@@ -156,6 +196,7 @@ export type UserMaxAggregateInputType = {
   lastName?: true
   phoneNumber?: true
   password?: true
+  plainPassword?: true
   role?: true
   totalBalance?: true
   profilePicture?: true
@@ -170,6 +211,11 @@ export type UserMaxAggregateInputType = {
   receiveMessage?: true
   dormantReason?: true
   dormantAmount?: true
+  dailyLimit?: true
+  monthlyLimit?: true
+  requestedDaily?: true
+  requestedMonthly?: true
+  limitRequestStatus?: true
   createdAt?: true
 }
 
@@ -181,6 +227,7 @@ export type UserCountAggregateInputType = {
   lastName?: true
   phoneNumber?: true
   password?: true
+  plainPassword?: true
   role?: true
   totalBalance?: true
   profilePicture?: true
@@ -195,6 +242,11 @@ export type UserCountAggregateInputType = {
   receiveMessage?: true
   dormantReason?: true
   dormantAmount?: true
+  dailyLimit?: true
+  monthlyLimit?: true
+  requestedDaily?: true
+  requestedMonthly?: true
+  limitRequestStatus?: true
   createdAt?: true
   _all?: true
 }
@@ -293,6 +345,7 @@ export type UserGroupByOutputType = {
   lastName: string | null
   phoneNumber: string | null
   password: string
+  plainPassword: string | null
   role: $Enums.Role
   totalBalance: number
   profilePicture: string | null
@@ -307,6 +360,11 @@ export type UserGroupByOutputType = {
   receiveMessage: string | null
   dormantReason: string | null
   dormantAmount: number | null
+  dailyLimit: number | null
+  monthlyLimit: number | null
+  requestedDaily: number | null
+  requestedMonthly: number | null
+  limitRequestStatus: $Enums.LimitRequestStatus | null
   createdAt: Date
   _count: UserCountAggregateOutputType | null
   _avg: UserAvgAggregateOutputType | null
@@ -341,6 +399,7 @@ export type UserWhereInput = {
   lastName?: Prisma.StringNullableFilter<"User"> | string | null
   phoneNumber?: Prisma.StringNullableFilter<"User"> | string | null
   password?: Prisma.StringFilter<"User"> | string
+  plainPassword?: Prisma.StringNullableFilter<"User"> | string | null
   role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
   totalBalance?: Prisma.FloatFilter<"User"> | number
   profilePicture?: Prisma.StringNullableFilter<"User"> | string | null
@@ -355,6 +414,11 @@ export type UserWhereInput = {
   receiveMessage?: Prisma.StringNullableFilter<"User"> | string | null
   dormantReason?: Prisma.StringNullableFilter<"User"> | string | null
   dormantAmount?: Prisma.FloatNullableFilter<"User"> | number | null
+  dailyLimit?: Prisma.FloatNullableFilter<"User"> | number | null
+  monthlyLimit?: Prisma.FloatNullableFilter<"User"> | number | null
+  requestedDaily?: Prisma.FloatNullableFilter<"User"> | number | null
+  requestedMonthly?: Prisma.FloatNullableFilter<"User"> | number | null
+  limitRequestStatus?: Prisma.EnumLimitRequestStatusNullableFilter<"User"> | $Enums.LimitRequestStatus | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   assets?: Prisma.AssetListRelationFilter
   creditCards?: Prisma.CreditCardListRelationFilter
@@ -369,6 +433,7 @@ export type UserOrderByWithRelationInput = {
   lastName?: Prisma.SortOrderInput | Prisma.SortOrder
   phoneNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   password?: Prisma.SortOrder
+  plainPassword?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrder
   totalBalance?: Prisma.SortOrder
   profilePicture?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -383,6 +448,11 @@ export type UserOrderByWithRelationInput = {
   receiveMessage?: Prisma.SortOrderInput | Prisma.SortOrder
   dormantReason?: Prisma.SortOrderInput | Prisma.SortOrder
   dormantAmount?: Prisma.SortOrderInput | Prisma.SortOrder
+  dailyLimit?: Prisma.SortOrderInput | Prisma.SortOrder
+  monthlyLimit?: Prisma.SortOrderInput | Prisma.SortOrder
+  requestedDaily?: Prisma.SortOrderInput | Prisma.SortOrder
+  requestedMonthly?: Prisma.SortOrderInput | Prisma.SortOrder
+  limitRequestStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   assets?: Prisma.AssetOrderByRelationAggregateInput
   creditCards?: Prisma.CreditCardOrderByRelationAggregateInput
@@ -401,6 +471,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   lastName?: Prisma.StringNullableFilter<"User"> | string | null
   phoneNumber?: Prisma.StringNullableFilter<"User"> | string | null
   password?: Prisma.StringFilter<"User"> | string
+  plainPassword?: Prisma.StringNullableFilter<"User"> | string | null
   role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
   totalBalance?: Prisma.FloatFilter<"User"> | number
   profilePicture?: Prisma.StringNullableFilter<"User"> | string | null
@@ -414,6 +485,11 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   receiveMessage?: Prisma.StringNullableFilter<"User"> | string | null
   dormantReason?: Prisma.StringNullableFilter<"User"> | string | null
   dormantAmount?: Prisma.FloatNullableFilter<"User"> | number | null
+  dailyLimit?: Prisma.FloatNullableFilter<"User"> | number | null
+  monthlyLimit?: Prisma.FloatNullableFilter<"User"> | number | null
+  requestedDaily?: Prisma.FloatNullableFilter<"User"> | number | null
+  requestedMonthly?: Prisma.FloatNullableFilter<"User"> | number | null
+  limitRequestStatus?: Prisma.EnumLimitRequestStatusNullableFilter<"User"> | $Enums.LimitRequestStatus | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   assets?: Prisma.AssetListRelationFilter
   creditCards?: Prisma.CreditCardListRelationFilter
@@ -428,6 +504,7 @@ export type UserOrderByWithAggregationInput = {
   lastName?: Prisma.SortOrderInput | Prisma.SortOrder
   phoneNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   password?: Prisma.SortOrder
+  plainPassword?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrder
   totalBalance?: Prisma.SortOrder
   profilePicture?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -442,6 +519,11 @@ export type UserOrderByWithAggregationInput = {
   receiveMessage?: Prisma.SortOrderInput | Prisma.SortOrder
   dormantReason?: Prisma.SortOrderInput | Prisma.SortOrder
   dormantAmount?: Prisma.SortOrderInput | Prisma.SortOrder
+  dailyLimit?: Prisma.SortOrderInput | Prisma.SortOrder
+  monthlyLimit?: Prisma.SortOrderInput | Prisma.SortOrder
+  requestedDaily?: Prisma.SortOrderInput | Prisma.SortOrder
+  requestedMonthly?: Prisma.SortOrderInput | Prisma.SortOrder
+  limitRequestStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _avg?: Prisma.UserAvgOrderByAggregateInput
@@ -461,6 +543,7 @@ export type UserScalarWhereWithAggregatesInput = {
   lastName?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   phoneNumber?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   password?: Prisma.StringWithAggregatesFilter<"User"> | string
+  plainPassword?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   role?: Prisma.EnumRoleWithAggregatesFilter<"User"> | $Enums.Role
   totalBalance?: Prisma.FloatWithAggregatesFilter<"User"> | number
   profilePicture?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
@@ -475,6 +558,11 @@ export type UserScalarWhereWithAggregatesInput = {
   receiveMessage?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   dormantReason?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   dormantAmount?: Prisma.FloatNullableWithAggregatesFilter<"User"> | number | null
+  dailyLimit?: Prisma.FloatNullableWithAggregatesFilter<"User"> | number | null
+  monthlyLimit?: Prisma.FloatNullableWithAggregatesFilter<"User"> | number | null
+  requestedDaily?: Prisma.FloatNullableWithAggregatesFilter<"User"> | number | null
+  requestedMonthly?: Prisma.FloatNullableWithAggregatesFilter<"User"> | number | null
+  limitRequestStatus?: Prisma.EnumLimitRequestStatusNullableWithAggregatesFilter<"User"> | $Enums.LimitRequestStatus | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
 
@@ -486,6 +574,7 @@ export type UserCreateInput = {
   lastName?: string | null
   phoneNumber?: string | null
   password: string
+  plainPassword?: string | null
   role?: $Enums.Role
   totalBalance?: number
   profilePicture?: string | null
@@ -500,6 +589,11 @@ export type UserCreateInput = {
   receiveMessage?: string | null
   dormantReason?: string | null
   dormantAmount?: number | null
+  dailyLimit?: number | null
+  monthlyLimit?: number | null
+  requestedDaily?: number | null
+  requestedMonthly?: number | null
+  limitRequestStatus?: $Enums.LimitRequestStatus | null
   createdAt?: Date | string
   assets?: Prisma.AssetCreateNestedManyWithoutUserInput
   creditCards?: Prisma.CreditCardCreateNestedManyWithoutUserInput
@@ -514,6 +608,7 @@ export type UserUncheckedCreateInput = {
   lastName?: string | null
   phoneNumber?: string | null
   password: string
+  plainPassword?: string | null
   role?: $Enums.Role
   totalBalance?: number
   profilePicture?: string | null
@@ -528,6 +623,11 @@ export type UserUncheckedCreateInput = {
   receiveMessage?: string | null
   dormantReason?: string | null
   dormantAmount?: number | null
+  dailyLimit?: number | null
+  monthlyLimit?: number | null
+  requestedDaily?: number | null
+  requestedMonthly?: number | null
+  limitRequestStatus?: $Enums.LimitRequestStatus | null
   createdAt?: Date | string
   assets?: Prisma.AssetUncheckedCreateNestedManyWithoutUserInput
   creditCards?: Prisma.CreditCardUncheckedCreateNestedManyWithoutUserInput
@@ -542,6 +642,7 @@ export type UserUpdateInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  plainPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
   profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -556,6 +657,11 @@ export type UserUpdateInput = {
   receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dormantReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dormantAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dailyLimit?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  monthlyLimit?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  requestedDaily?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  requestedMonthly?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  limitRequestStatus?: Prisma.NullableEnumLimitRequestStatusFieldUpdateOperationsInput | $Enums.LimitRequestStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUpdateManyWithoutUserNestedInput
   creditCards?: Prisma.CreditCardUpdateManyWithoutUserNestedInput
@@ -570,6 +676,7 @@ export type UserUncheckedUpdateInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  plainPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
   profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -584,6 +691,11 @@ export type UserUncheckedUpdateInput = {
   receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dormantReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dormantAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dailyLimit?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  monthlyLimit?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  requestedDaily?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  requestedMonthly?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  limitRequestStatus?: Prisma.NullableEnumLimitRequestStatusFieldUpdateOperationsInput | $Enums.LimitRequestStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUncheckedUpdateManyWithoutUserNestedInput
   creditCards?: Prisma.CreditCardUncheckedUpdateManyWithoutUserNestedInput
@@ -598,6 +710,7 @@ export type UserCreateManyInput = {
   lastName?: string | null
   phoneNumber?: string | null
   password: string
+  plainPassword?: string | null
   role?: $Enums.Role
   totalBalance?: number
   profilePicture?: string | null
@@ -612,6 +725,11 @@ export type UserCreateManyInput = {
   receiveMessage?: string | null
   dormantReason?: string | null
   dormantAmount?: number | null
+  dailyLimit?: number | null
+  monthlyLimit?: number | null
+  requestedDaily?: number | null
+  requestedMonthly?: number | null
+  limitRequestStatus?: $Enums.LimitRequestStatus | null
   createdAt?: Date | string
 }
 
@@ -623,6 +741,7 @@ export type UserUpdateManyMutationInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  plainPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
   profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -637,6 +756,11 @@ export type UserUpdateManyMutationInput = {
   receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dormantReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dormantAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dailyLimit?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  monthlyLimit?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  requestedDaily?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  requestedMonthly?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  limitRequestStatus?: Prisma.NullableEnumLimitRequestStatusFieldUpdateOperationsInput | $Enums.LimitRequestStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -648,6 +772,7 @@ export type UserUncheckedUpdateManyInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  plainPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
   profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -662,6 +787,11 @@ export type UserUncheckedUpdateManyInput = {
   receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dormantReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dormantAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dailyLimit?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  monthlyLimit?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  requestedDaily?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  requestedMonthly?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  limitRequestStatus?: Prisma.NullableEnumLimitRequestStatusFieldUpdateOperationsInput | $Enums.LimitRequestStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -673,6 +803,7 @@ export type UserCountOrderByAggregateInput = {
   lastName?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  plainPassword?: Prisma.SortOrder
   role?: Prisma.SortOrder
   totalBalance?: Prisma.SortOrder
   profilePicture?: Prisma.SortOrder
@@ -687,12 +818,21 @@ export type UserCountOrderByAggregateInput = {
   receiveMessage?: Prisma.SortOrder
   dormantReason?: Prisma.SortOrder
   dormantAmount?: Prisma.SortOrder
+  dailyLimit?: Prisma.SortOrder
+  monthlyLimit?: Prisma.SortOrder
+  requestedDaily?: Prisma.SortOrder
+  requestedMonthly?: Prisma.SortOrder
+  limitRequestStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type UserAvgOrderByAggregateInput = {
   totalBalance?: Prisma.SortOrder
   dormantAmount?: Prisma.SortOrder
+  dailyLimit?: Prisma.SortOrder
+  monthlyLimit?: Prisma.SortOrder
+  requestedDaily?: Prisma.SortOrder
+  requestedMonthly?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -703,6 +843,7 @@ export type UserMaxOrderByAggregateInput = {
   lastName?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  plainPassword?: Prisma.SortOrder
   role?: Prisma.SortOrder
   totalBalance?: Prisma.SortOrder
   profilePicture?: Prisma.SortOrder
@@ -717,6 +858,11 @@ export type UserMaxOrderByAggregateInput = {
   receiveMessage?: Prisma.SortOrder
   dormantReason?: Prisma.SortOrder
   dormantAmount?: Prisma.SortOrder
+  dailyLimit?: Prisma.SortOrder
+  monthlyLimit?: Prisma.SortOrder
+  requestedDaily?: Prisma.SortOrder
+  requestedMonthly?: Prisma.SortOrder
+  limitRequestStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -728,6 +874,7 @@ export type UserMinOrderByAggregateInput = {
   lastName?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  plainPassword?: Prisma.SortOrder
   role?: Prisma.SortOrder
   totalBalance?: Prisma.SortOrder
   profilePicture?: Prisma.SortOrder
@@ -742,12 +889,21 @@ export type UserMinOrderByAggregateInput = {
   receiveMessage?: Prisma.SortOrder
   dormantReason?: Prisma.SortOrder
   dormantAmount?: Prisma.SortOrder
+  dailyLimit?: Prisma.SortOrder
+  monthlyLimit?: Prisma.SortOrder
+  requestedDaily?: Prisma.SortOrder
+  requestedMonthly?: Prisma.SortOrder
+  limitRequestStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type UserSumOrderByAggregateInput = {
   totalBalance?: Prisma.SortOrder
   dormantAmount?: Prisma.SortOrder
+  dailyLimit?: Prisma.SortOrder
+  monthlyLimit?: Prisma.SortOrder
+  requestedDaily?: Prisma.SortOrder
+  requestedMonthly?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -785,6 +941,10 @@ export type NullableFloatFieldUpdateOperationsInput = {
   decrement?: number
   multiply?: number
   divide?: number
+}
+
+export type NullableEnumLimitRequestStatusFieldUpdateOperationsInput = {
+  set?: $Enums.LimitRequestStatus | null
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -841,6 +1001,7 @@ export type UserCreateWithoutAssetsInput = {
   lastName?: string | null
   phoneNumber?: string | null
   password: string
+  plainPassword?: string | null
   role?: $Enums.Role
   totalBalance?: number
   profilePicture?: string | null
@@ -855,6 +1016,11 @@ export type UserCreateWithoutAssetsInput = {
   receiveMessage?: string | null
   dormantReason?: string | null
   dormantAmount?: number | null
+  dailyLimit?: number | null
+  monthlyLimit?: number | null
+  requestedDaily?: number | null
+  requestedMonthly?: number | null
+  limitRequestStatus?: $Enums.LimitRequestStatus | null
   createdAt?: Date | string
   creditCards?: Prisma.CreditCardCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -868,6 +1034,7 @@ export type UserUncheckedCreateWithoutAssetsInput = {
   lastName?: string | null
   phoneNumber?: string | null
   password: string
+  plainPassword?: string | null
   role?: $Enums.Role
   totalBalance?: number
   profilePicture?: string | null
@@ -882,6 +1049,11 @@ export type UserUncheckedCreateWithoutAssetsInput = {
   receiveMessage?: string | null
   dormantReason?: string | null
   dormantAmount?: number | null
+  dailyLimit?: number | null
+  monthlyLimit?: number | null
+  requestedDaily?: number | null
+  requestedMonthly?: number | null
+  limitRequestStatus?: $Enums.LimitRequestStatus | null
   createdAt?: Date | string
   creditCards?: Prisma.CreditCardUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -911,6 +1083,7 @@ export type UserUpdateWithoutAssetsInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  plainPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
   profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -925,6 +1098,11 @@ export type UserUpdateWithoutAssetsInput = {
   receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dormantReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dormantAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dailyLimit?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  monthlyLimit?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  requestedDaily?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  requestedMonthly?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  limitRequestStatus?: Prisma.NullableEnumLimitRequestStatusFieldUpdateOperationsInput | $Enums.LimitRequestStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creditCards?: Prisma.CreditCardUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -938,6 +1116,7 @@ export type UserUncheckedUpdateWithoutAssetsInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  plainPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
   profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -952,6 +1131,11 @@ export type UserUncheckedUpdateWithoutAssetsInput = {
   receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dormantReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dormantAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dailyLimit?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  monthlyLimit?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  requestedDaily?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  requestedMonthly?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  limitRequestStatus?: Prisma.NullableEnumLimitRequestStatusFieldUpdateOperationsInput | $Enums.LimitRequestStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creditCards?: Prisma.CreditCardUncheckedUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -965,6 +1149,7 @@ export type UserCreateWithoutCreditCardsInput = {
   lastName?: string | null
   phoneNumber?: string | null
   password: string
+  plainPassword?: string | null
   role?: $Enums.Role
   totalBalance?: number
   profilePicture?: string | null
@@ -979,6 +1164,11 @@ export type UserCreateWithoutCreditCardsInput = {
   receiveMessage?: string | null
   dormantReason?: string | null
   dormantAmount?: number | null
+  dailyLimit?: number | null
+  monthlyLimit?: number | null
+  requestedDaily?: number | null
+  requestedMonthly?: number | null
+  limitRequestStatus?: $Enums.LimitRequestStatus | null
   createdAt?: Date | string
   assets?: Prisma.AssetCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -992,6 +1182,7 @@ export type UserUncheckedCreateWithoutCreditCardsInput = {
   lastName?: string | null
   phoneNumber?: string | null
   password: string
+  plainPassword?: string | null
   role?: $Enums.Role
   totalBalance?: number
   profilePicture?: string | null
@@ -1006,6 +1197,11 @@ export type UserUncheckedCreateWithoutCreditCardsInput = {
   receiveMessage?: string | null
   dormantReason?: string | null
   dormantAmount?: number | null
+  dailyLimit?: number | null
+  monthlyLimit?: number | null
+  requestedDaily?: number | null
+  requestedMonthly?: number | null
+  limitRequestStatus?: $Enums.LimitRequestStatus | null
   createdAt?: Date | string
   assets?: Prisma.AssetUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -1035,6 +1231,7 @@ export type UserUpdateWithoutCreditCardsInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  plainPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
   profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1049,6 +1246,11 @@ export type UserUpdateWithoutCreditCardsInput = {
   receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dormantReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dormantAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dailyLimit?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  monthlyLimit?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  requestedDaily?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  requestedMonthly?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  limitRequestStatus?: Prisma.NullableEnumLimitRequestStatusFieldUpdateOperationsInput | $Enums.LimitRequestStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -1062,6 +1264,7 @@ export type UserUncheckedUpdateWithoutCreditCardsInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  plainPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
   profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1076,6 +1279,11 @@ export type UserUncheckedUpdateWithoutCreditCardsInput = {
   receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dormantReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dormantAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dailyLimit?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  monthlyLimit?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  requestedDaily?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  requestedMonthly?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  limitRequestStatus?: Prisma.NullableEnumLimitRequestStatusFieldUpdateOperationsInput | $Enums.LimitRequestStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUncheckedUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -1089,6 +1297,7 @@ export type UserCreateWithoutTransactionsInput = {
   lastName?: string | null
   phoneNumber?: string | null
   password: string
+  plainPassword?: string | null
   role?: $Enums.Role
   totalBalance?: number
   profilePicture?: string | null
@@ -1103,6 +1312,11 @@ export type UserCreateWithoutTransactionsInput = {
   receiveMessage?: string | null
   dormantReason?: string | null
   dormantAmount?: number | null
+  dailyLimit?: number | null
+  monthlyLimit?: number | null
+  requestedDaily?: number | null
+  requestedMonthly?: number | null
+  limitRequestStatus?: $Enums.LimitRequestStatus | null
   createdAt?: Date | string
   assets?: Prisma.AssetCreateNestedManyWithoutUserInput
   creditCards?: Prisma.CreditCardCreateNestedManyWithoutUserInput
@@ -1116,6 +1330,7 @@ export type UserUncheckedCreateWithoutTransactionsInput = {
   lastName?: string | null
   phoneNumber?: string | null
   password: string
+  plainPassword?: string | null
   role?: $Enums.Role
   totalBalance?: number
   profilePicture?: string | null
@@ -1130,6 +1345,11 @@ export type UserUncheckedCreateWithoutTransactionsInput = {
   receiveMessage?: string | null
   dormantReason?: string | null
   dormantAmount?: number | null
+  dailyLimit?: number | null
+  monthlyLimit?: number | null
+  requestedDaily?: number | null
+  requestedMonthly?: number | null
+  limitRequestStatus?: $Enums.LimitRequestStatus | null
   createdAt?: Date | string
   assets?: Prisma.AssetUncheckedCreateNestedManyWithoutUserInput
   creditCards?: Prisma.CreditCardUncheckedCreateNestedManyWithoutUserInput
@@ -1159,6 +1379,7 @@ export type UserUpdateWithoutTransactionsInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  plainPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
   profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1173,6 +1394,11 @@ export type UserUpdateWithoutTransactionsInput = {
   receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dormantReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dormantAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dailyLimit?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  monthlyLimit?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  requestedDaily?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  requestedMonthly?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  limitRequestStatus?: Prisma.NullableEnumLimitRequestStatusFieldUpdateOperationsInput | $Enums.LimitRequestStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUpdateManyWithoutUserNestedInput
   creditCards?: Prisma.CreditCardUpdateManyWithoutUserNestedInput
@@ -1186,6 +1412,7 @@ export type UserUncheckedUpdateWithoutTransactionsInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  plainPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
   profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1200,6 +1427,11 @@ export type UserUncheckedUpdateWithoutTransactionsInput = {
   receiveMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dormantReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dormantAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dailyLimit?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  monthlyLimit?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  requestedDaily?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  requestedMonthly?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  limitRequestStatus?: Prisma.NullableEnumLimitRequestStatusFieldUpdateOperationsInput | $Enums.LimitRequestStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUncheckedUpdateManyWithoutUserNestedInput
   creditCards?: Prisma.CreditCardUncheckedUpdateManyWithoutUserNestedInput
@@ -1262,6 +1494,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   lastName?: boolean
   phoneNumber?: boolean
   password?: boolean
+  plainPassword?: boolean
   role?: boolean
   totalBalance?: boolean
   profilePicture?: boolean
@@ -1276,6 +1509,11 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   receiveMessage?: boolean
   dormantReason?: boolean
   dormantAmount?: boolean
+  dailyLimit?: boolean
+  monthlyLimit?: boolean
+  requestedDaily?: boolean
+  requestedMonthly?: boolean
+  limitRequestStatus?: boolean
   createdAt?: boolean
   assets?: boolean | Prisma.User$assetsArgs<ExtArgs>
   creditCards?: boolean | Prisma.User$creditCardsArgs<ExtArgs>
@@ -1291,6 +1529,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   lastName?: boolean
   phoneNumber?: boolean
   password?: boolean
+  plainPassword?: boolean
   role?: boolean
   totalBalance?: boolean
   profilePicture?: boolean
@@ -1305,6 +1544,11 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   receiveMessage?: boolean
   dormantReason?: boolean
   dormantAmount?: boolean
+  dailyLimit?: boolean
+  monthlyLimit?: boolean
+  requestedDaily?: boolean
+  requestedMonthly?: boolean
+  limitRequestStatus?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["user"]>
 
@@ -1316,6 +1560,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   lastName?: boolean
   phoneNumber?: boolean
   password?: boolean
+  plainPassword?: boolean
   role?: boolean
   totalBalance?: boolean
   profilePicture?: boolean
@@ -1330,6 +1575,11 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   receiveMessage?: boolean
   dormantReason?: boolean
   dormantAmount?: boolean
+  dailyLimit?: boolean
+  monthlyLimit?: boolean
+  requestedDaily?: boolean
+  requestedMonthly?: boolean
+  limitRequestStatus?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["user"]>
 
@@ -1341,6 +1591,7 @@ export type UserSelectScalar = {
   lastName?: boolean
   phoneNumber?: boolean
   password?: boolean
+  plainPassword?: boolean
   role?: boolean
   totalBalance?: boolean
   profilePicture?: boolean
@@ -1355,10 +1606,15 @@ export type UserSelectScalar = {
   receiveMessage?: boolean
   dormantReason?: boolean
   dormantAmount?: boolean
+  dailyLimit?: boolean
+  monthlyLimit?: boolean
+  requestedDaily?: boolean
+  requestedMonthly?: boolean
+  limitRequestStatus?: boolean
   createdAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "username" | "firstName" | "lastName" | "phoneNumber" | "password" | "role" | "totalBalance" | "profilePicture" | "idType" | "idFront" | "idBack" | "utilityBill" | "verificationStatus" | "accountNumber" | "vaultStatusMessage" | "sendMessage" | "receiveMessage" | "dormantReason" | "dormantAmount" | "createdAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "username" | "firstName" | "lastName" | "phoneNumber" | "password" | "plainPassword" | "role" | "totalBalance" | "profilePicture" | "idType" | "idFront" | "idBack" | "utilityBill" | "verificationStatus" | "accountNumber" | "vaultStatusMessage" | "sendMessage" | "receiveMessage" | "dormantReason" | "dormantAmount" | "dailyLimit" | "monthlyLimit" | "requestedDaily" | "requestedMonthly" | "limitRequestStatus" | "createdAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   assets?: boolean | Prisma.User$assetsArgs<ExtArgs>
   creditCards?: boolean | Prisma.User$creditCardsArgs<ExtArgs>
@@ -1383,6 +1639,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     lastName: string | null
     phoneNumber: string | null
     password: string
+    plainPassword: string | null
     role: $Enums.Role
     totalBalance: number
     profilePicture: string | null
@@ -1397,6 +1654,11 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     receiveMessage: string | null
     dormantReason: string | null
     dormantAmount: number | null
+    dailyLimit: number | null
+    monthlyLimit: number | null
+    requestedDaily: number | null
+    requestedMonthly: number | null
+    limitRequestStatus: $Enums.LimitRequestStatus | null
     createdAt: Date
   }, ExtArgs["result"]["user"]>
   composites: {}
@@ -1831,6 +2093,7 @@ export interface UserFieldRefs {
   readonly lastName: Prisma.FieldRef<"User", 'String'>
   readonly phoneNumber: Prisma.FieldRef<"User", 'String'>
   readonly password: Prisma.FieldRef<"User", 'String'>
+  readonly plainPassword: Prisma.FieldRef<"User", 'String'>
   readonly role: Prisma.FieldRef<"User", 'Role'>
   readonly totalBalance: Prisma.FieldRef<"User", 'Float'>
   readonly profilePicture: Prisma.FieldRef<"User", 'String'>
@@ -1845,6 +2108,11 @@ export interface UserFieldRefs {
   readonly receiveMessage: Prisma.FieldRef<"User", 'String'>
   readonly dormantReason: Prisma.FieldRef<"User", 'String'>
   readonly dormantAmount: Prisma.FieldRef<"User", 'Float'>
+  readonly dailyLimit: Prisma.FieldRef<"User", 'Float'>
+  readonly monthlyLimit: Prisma.FieldRef<"User", 'Float'>
+  readonly requestedDaily: Prisma.FieldRef<"User", 'Float'>
+  readonly requestedMonthly: Prisma.FieldRef<"User", 'Float'>
+  readonly limitRequestStatus: Prisma.FieldRef<"User", 'LimitRequestStatus'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
 }
     

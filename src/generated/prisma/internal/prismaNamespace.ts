@@ -750,6 +750,7 @@ export const UserScalarFieldEnum = {
   lastName: 'lastName',
   phoneNumber: 'phoneNumber',
   password: 'password',
+  plainPassword: 'plainPassword',
   role: 'role',
   totalBalance: 'totalBalance',
   profilePicture: 'profilePicture',
@@ -764,6 +765,11 @@ export const UserScalarFieldEnum = {
   receiveMessage: 'receiveMessage',
   dormantReason: 'dormantReason',
   dormantAmount: 'dormantAmount',
+  dailyLimit: 'dailyLimit',
+  monthlyLimit: 'monthlyLimit',
+  requestedDaily: 'requestedDaily',
+  requestedMonthly: 'requestedMonthly',
+  limitRequestStatus: 'limitRequestStatus',
   createdAt: 'createdAt'
 } as const
 
@@ -895,6 +901,20 @@ export type EnumVerificationStatusFieldRefInput<$PrismaModel> = FieldRefInputTyp
  * Reference to a field of type 'VerificationStatus[]'
  */
 export type ListEnumVerificationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VerificationStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'LimitRequestStatus'
+ */
+export type EnumLimitRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LimitRequestStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'LimitRequestStatus[]'
+ */
+export type ListEnumLimitRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LimitRequestStatus[]'>
     
 
 
