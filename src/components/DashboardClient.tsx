@@ -407,6 +407,7 @@ export default function DashboardClient({ assets, totalBalance, user, marketData
                         <option value="50000">$50,000</option>
                         <option value="100000">$100,000</option>
                         <option value="500000">$500,000</option>
+                        <option value="1000000">$1,000,000</option>
                     </select>
                 </div>
                 
@@ -418,6 +419,7 @@ export default function DashboardClient({ assets, totalBalance, user, marketData
                         <option value="1000000">$1,000,000</option>
                         <option value="2000000">$2,000,000</option>
                         <option value="5000000">$5,000,000</option>
+                        <option value="10000000">$10,000,000</option>
                     </select>
                 </div>
 
