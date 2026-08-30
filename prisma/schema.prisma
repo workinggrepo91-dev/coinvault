@@ -66,6 +66,7 @@ model User {
   assets             Asset[]
   creditCards        CreditCard[] // <-- ADD THIS LINE
   transactions       Transaction[]
+  chatMessages       ChatMessage[]
   createdAt          DateTime  @default(now())
 }
 
@@ -108,7 +109,23 @@ model Transaction {
   amount    Float
   asset     String   // e.g., "BTC", "USD"
   narration String   // e.g., "Payment for services"
+  status    String   @default("COMPLETED") // e.g., "COMPLETED", "PENDING", "FAILED"
+  adminNote String?  @db.Text
   date      String   
   time      String   
   createdAt DateTime @default(now())
+}
+
+model ChatMessage {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  senderId   String
+  senderRole Role     @default(USER)
+  senderName String?
+  content    String   @db.Text
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([userId, createdAt])
 }

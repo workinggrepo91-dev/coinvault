@@ -10,6 +10,11 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient({ adapter });
+const createPrismaClient = () => new PrismaClient({ adapter });
+
+export const prisma =
+  globalForPrisma.prisma && (globalForPrisma.prisma as any).chatMessage
+    ? globalForPrisma.prisma
+    : createPrismaClient();
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;

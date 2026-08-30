@@ -37,3 +37,8 @@ export type CreditCard = Prisma.CreditCardModel
  * 
  */
 export type Transaction = Prisma.TransactionModel
+/**
+ * Model ChatMessage
+ * 
+ */
+export type ChatMessage = Prisma.ChatMessageModel

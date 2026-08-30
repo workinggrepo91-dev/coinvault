@@ -41,6 +41,8 @@ export type TransactionMinAggregateOutputType = {
   amount: number | null
   asset: string | null
   narration: string | null
+  status: string | null
+  adminNote: string | null
   date: string | null
   time: string | null
   createdAt: Date | null
@@ -53,6 +55,8 @@ export type TransactionMaxAggregateOutputType = {
   amount: number | null
   asset: string | null
   narration: string | null
+  status: string | null
+  adminNote: string | null
   date: string | null
   time: string | null
   createdAt: Date | null
@@ -65,6 +69,8 @@ export type TransactionCountAggregateOutputType = {
   amount: number
   asset: number
   narration: number
+  status: number
+  adminNote: number
   date: number
   time: number
   createdAt: number
@@ -87,6 +93,8 @@ export type TransactionMinAggregateInputType = {
   amount?: true
   asset?: true
   narration?: true
+  status?: true
+  adminNote?: true
   date?: true
   time?: true
   createdAt?: true
@@ -99,6 +107,8 @@ export type TransactionMaxAggregateInputType = {
   amount?: true
   asset?: true
   narration?: true
+  status?: true
+  adminNote?: true
   date?: true
   time?: true
   createdAt?: true
@@ -111,6 +121,8 @@ export type TransactionCountAggregateInputType = {
   amount?: true
   asset?: true
   narration?: true
+  status?: true
+  adminNote?: true
   date?: true
   time?: true
   createdAt?: true
@@ -210,6 +222,8 @@ export type TransactionGroupByOutputType = {
   amount: number
   asset: string
   narration: string
+  status: string
+  adminNote: string | null
   date: string
   time: string
   createdAt: Date
@@ -245,6 +259,8 @@ export type TransactionWhereInput = {
   amount?: Prisma.FloatFilter<"Transaction"> | number
   asset?: Prisma.StringFilter<"Transaction"> | string
   narration?: Prisma.StringFilter<"Transaction"> | string
+  status?: Prisma.StringFilter<"Transaction"> | string
+  adminNote?: Prisma.StringNullableFilter<"Transaction"> | string | null
   date?: Prisma.StringFilter<"Transaction"> | string
   time?: Prisma.StringFilter<"Transaction"> | string
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
@@ -258,6 +274,8 @@ export type TransactionOrderByWithRelationInput = {
   amount?: Prisma.SortOrder
   asset?: Prisma.SortOrder
   narration?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  adminNote?: Prisma.SortOrderInput | Prisma.SortOrder
   date?: Prisma.SortOrder
   time?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -274,6 +292,8 @@ export type TransactionWhereUniqueInput = Prisma.AtLeast<{
   amount?: Prisma.FloatFilter<"Transaction"> | number
   asset?: Prisma.StringFilter<"Transaction"> | string
   narration?: Prisma.StringFilter<"Transaction"> | string
+  status?: Prisma.StringFilter<"Transaction"> | string
+  adminNote?: Prisma.StringNullableFilter<"Transaction"> | string | null
   date?: Prisma.StringFilter<"Transaction"> | string
   time?: Prisma.StringFilter<"Transaction"> | string
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
@@ -287,6 +307,8 @@ export type TransactionOrderByWithAggregationInput = {
   amount?: Prisma.SortOrder
   asset?: Prisma.SortOrder
   narration?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  adminNote?: Prisma.SortOrderInput | Prisma.SortOrder
   date?: Prisma.SortOrder
   time?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -307,6 +329,8 @@ export type TransactionScalarWhereWithAggregatesInput = {
   amount?: Prisma.FloatWithAggregatesFilter<"Transaction"> | number
   asset?: Prisma.StringWithAggregatesFilter<"Transaction"> | string
   narration?: Prisma.StringWithAggregatesFilter<"Transaction"> | string
+  status?: Prisma.StringWithAggregatesFilter<"Transaction"> | string
+  adminNote?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
   date?: Prisma.StringWithAggregatesFilter<"Transaction"> | string
   time?: Prisma.StringWithAggregatesFilter<"Transaction"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
@@ -318,6 +342,8 @@ export type TransactionCreateInput = {
   amount: number
   asset: string
   narration: string
+  status?: string
+  adminNote?: string | null
   date: string
   time: string
   createdAt?: Date | string
@@ -331,6 +357,8 @@ export type TransactionUncheckedCreateInput = {
   amount: number
   asset: string
   narration: string
+  status?: string
+  adminNote?: string | null
   date: string
   time: string
   createdAt?: Date | string
@@ -342,6 +370,8 @@ export type TransactionUpdateInput = {
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   asset?: Prisma.StringFieldUpdateOperationsInput | string
   narration?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.StringFieldUpdateOperationsInput | string
   time?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -355,6 +385,8 @@ export type TransactionUncheckedUpdateInput = {
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   asset?: Prisma.StringFieldUpdateOperationsInput | string
   narration?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.StringFieldUpdateOperationsInput | string
   time?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -367,6 +399,8 @@ export type TransactionCreateManyInput = {
   amount: number
   asset: string
   narration: string
+  status?: string
+  adminNote?: string | null
   date: string
   time: string
   createdAt?: Date | string
@@ -378,6 +412,8 @@ export type TransactionUpdateManyMutationInput = {
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   asset?: Prisma.StringFieldUpdateOperationsInput | string
   narration?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.StringFieldUpdateOperationsInput | string
   time?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -390,6 +426,8 @@ export type TransactionUncheckedUpdateManyInput = {
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   asset?: Prisma.StringFieldUpdateOperationsInput | string
   narration?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.StringFieldUpdateOperationsInput | string
   time?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -412,6 +450,8 @@ export type TransactionCountOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   asset?: Prisma.SortOrder
   narration?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  adminNote?: Prisma.SortOrder
   date?: Prisma.SortOrder
   time?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -428,6 +468,8 @@ export type TransactionMaxOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   asset?: Prisma.SortOrder
   narration?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  adminNote?: Prisma.SortOrder
   date?: Prisma.SortOrder
   time?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -440,6 +482,8 @@ export type TransactionMinOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   asset?: Prisma.SortOrder
   narration?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  adminNote?: Prisma.SortOrder
   date?: Prisma.SortOrder
   time?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -497,6 +541,8 @@ export type TransactionCreateWithoutUserInput = {
   amount: number
   asset: string
   narration: string
+  status?: string
+  adminNote?: string | null
   date: string
   time: string
   createdAt?: Date | string
@@ -508,6 +554,8 @@ export type TransactionUncheckedCreateWithoutUserInput = {
   amount: number
   asset: string
   narration: string
+  status?: string
+  adminNote?: string | null
   date: string
   time: string
   createdAt?: Date | string
@@ -549,6 +597,8 @@ export type TransactionScalarWhereInput = {
   amount?: Prisma.FloatFilter<"Transaction"> | number
   asset?: Prisma.StringFilter<"Transaction"> | string
   narration?: Prisma.StringFilter<"Transaction"> | string
+  status?: Prisma.StringFilter<"Transaction"> | string
+  adminNote?: Prisma.StringNullableFilter<"Transaction"> | string | null
   date?: Prisma.StringFilter<"Transaction"> | string
   time?: Prisma.StringFilter<"Transaction"> | string
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
@@ -560,6 +610,8 @@ export type TransactionCreateManyUserInput = {
   amount: number
   asset: string
   narration: string
+  status?: string
+  adminNote?: string | null
   date: string
   time: string
   createdAt?: Date | string
@@ -571,6 +623,8 @@ export type TransactionUpdateWithoutUserInput = {
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   asset?: Prisma.StringFieldUpdateOperationsInput | string
   narration?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.StringFieldUpdateOperationsInput | string
   time?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -582,6 +636,8 @@ export type TransactionUncheckedUpdateWithoutUserInput = {
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   asset?: Prisma.StringFieldUpdateOperationsInput | string
   narration?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.StringFieldUpdateOperationsInput | string
   time?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -593,6 +649,8 @@ export type TransactionUncheckedUpdateManyWithoutUserInput = {
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   asset?: Prisma.StringFieldUpdateOperationsInput | string
   narration?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.StringFieldUpdateOperationsInput | string
   time?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -607,6 +665,8 @@ export type TransactionSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   amount?: boolean
   asset?: boolean
   narration?: boolean
+  status?: boolean
+  adminNote?: boolean
   date?: boolean
   time?: boolean
   createdAt?: boolean
@@ -620,6 +680,8 @@ export type TransactionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   amount?: boolean
   asset?: boolean
   narration?: boolean
+  status?: boolean
+  adminNote?: boolean
   date?: boolean
   time?: boolean
   createdAt?: boolean
@@ -633,6 +695,8 @@ export type TransactionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   amount?: boolean
   asset?: boolean
   narration?: boolean
+  status?: boolean
+  adminNote?: boolean
   date?: boolean
   time?: boolean
   createdAt?: boolean
@@ -646,12 +710,14 @@ export type TransactionSelectScalar = {
   amount?: boolean
   asset?: boolean
   narration?: boolean
+  status?: boolean
+  adminNote?: boolean
   date?: boolean
   time?: boolean
   createdAt?: boolean
 }
 
-export type TransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "type" | "amount" | "asset" | "narration" | "date" | "time" | "createdAt", ExtArgs["result"]["transaction"]>
+export type TransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "type" | "amount" | "asset" | "narration" | "status" | "adminNote" | "date" | "time" | "createdAt", ExtArgs["result"]["transaction"]>
 export type TransactionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -674,6 +740,8 @@ export type $TransactionPayload<ExtArgs extends runtime.Types.Extensions.Interna
     amount: number
     asset: string
     narration: string
+    status: string
+    adminNote: string | null
     date: string
     time: string
     createdAt: Date
@@ -1107,6 +1175,8 @@ export interface TransactionFieldRefs {
   readonly amount: Prisma.FieldRef<"Transaction", 'Float'>
   readonly asset: Prisma.FieldRef<"Transaction", 'String'>
   readonly narration: Prisma.FieldRef<"Transaction", 'String'>
+  readonly status: Prisma.FieldRef<"Transaction", 'String'>
+  readonly adminNote: Prisma.FieldRef<"Transaction", 'String'>
   readonly date: Prisma.FieldRef<"Transaction", 'String'>
   readonly time: Prisma.FieldRef<"Transaction", 'String'>
   readonly createdAt: Prisma.FieldRef<"Transaction", 'DateTime'>

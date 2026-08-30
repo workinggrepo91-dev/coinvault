@@ -2,18 +2,20 @@ import Navigation from "./Navigation";
 import { auth } from "@/auth";
 import { revertImpersonation } from "@/app/actions/admin";
 import { UserCheck } from "lucide-react";
+import SupportChatWidget from "./SupportChatWidget";
 
 export default async function AppShell({ children, role }: any) {
   const session = await auth();
   
   // Check if our secret email token exists in the current session
   const isImpersonating = !!session?.user?.impersonatorEmail;
+  const isRegularUser = role !== "ADMIN" || isImpersonating;
 
   return (
     <div className="flex bg-slate-950 min-h-screen">
       <Navigation role={role} isLoggedIn={true} />
       
-      <main className="flex-1 ml-0 md:ml-64 w-full flex flex-col h-screen overflow-hidden">
+      <main className="flex-1 ml-0 md:ml-64 w-full flex flex-col h-screen overflow-hidden relative">
         
         {/* THE ADMIN DISGUISE BANNER */}
         {isImpersonating && (
@@ -21,11 +23,11 @@ export default async function AppShell({ children, role }: any) {
             <div className="flex items-center gap-3 text-red-400">
               <UserCheck size={18} className="animate-pulse" />
               <p className="text-xs font-bold uppercase tracking-widest">
-                Admin Viewing Mode: {session.user.name}
+                Admin Viewing Mode: {session?.user?.name}
               </p>
             </div>
             <form action={revertImpersonation}>
-              <input type="hidden" name="adminEmail" value={session.user.impersonatorEmail} />
+              <input type="hidden" name="adminEmail" value={session?.user?.impersonatorEmail} />
               <button className="bg-red-500 hover:bg-red-400 text-slate-950 font-bold px-4 py-1.5 rounded-md text-xs transition-colors shadow-lg shadow-red-500/20">
                 End Session & Return
               </button>
@@ -36,6 +38,9 @@ export default async function AppShell({ children, role }: any) {
         <div className="flex-1 overflow-y-auto">
           {children}
         </div>
+
+        {/* Global Support Live Chat for users */}
+        {isRegularUser && <SupportChatWidget userRole={role} />}
       </main>
     </div>
   );

@@ -54,7 +54,8 @@ export const ModelName = {
   User: 'User',
   Asset: 'Asset',
   CreditCard: 'CreditCard',
-  Transaction: 'Transaction'
+  Transaction: 'Transaction',
+  ChatMessage: 'ChatMessage'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -141,12 +142,28 @@ export const TransactionScalarFieldEnum = {
   amount: 'amount',
   asset: 'asset',
   narration: 'narration',
+  status: 'status',
+  adminNote: 'adminNote',
   date: 'date',
   time: 'time',
   createdAt: 'createdAt'
 } as const
 
 export type TransactionScalarFieldEnum = (typeof TransactionScalarFieldEnum)[keyof typeof TransactionScalarFieldEnum]
+
+
+export const ChatMessageScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  senderId: 'senderId',
+  senderRole: 'senderRole',
+  senderName: 'senderName',
+  content: 'content',
+  isRead: 'isRead',
+  createdAt: 'createdAt'
+} as const
+
+export type ChatMessageScalarFieldEnum = (typeof ChatMessageScalarFieldEnum)[keyof typeof ChatMessageScalarFieldEnum]
 
 
 export const SortOrder = {

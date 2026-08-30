@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useFormStatus } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -7,6 +7,8 @@ import {
   updateAssetDetails,
   updateUserCustomizations,
   addTransaction,
+  updateTransactionStatus,
+  deleteTransaction,
   impersonateUser,
   updateVerificationStatus,
   approveLimitRequest,
@@ -40,7 +42,15 @@ import {
   Sparkles,
   KeyRound,
   Loader2,
+  MessageSquare,
+  Headphones,
+  CheckCircle2,
+  XCircle,
+  Trash2,
+  Edit3,
+  AlertCircle,
 } from "lucide-react";
+import AdminChatCenter from "./AdminChatCenter";
 
 // ── Stat Card ────────────────────────────────────────────
 function StatCard({
@@ -252,6 +262,215 @@ function TextareaField({
   );
 }
 
+// ── Transaction Admin Card Component ────────────────────
+function TransactionAdminCard({ tx, userId }: { tx: any; userId: string }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState(tx.status || "COMPLETED");
+  const [customNarration, setCustomNarration] = useState(tx.narration || "");
+  const [adminNote, setAdminNote] = useState(tx.adminNote || "");
+
+  const status = tx.status || "COMPLETED";
+
+  return (
+    <div
+      className={`p-4 rounded-xl border transition-all ${
+        status === "PENDING"
+          ? "bg-amber-500/5 border-amber-500/30 hover:border-amber-500/50"
+          : status === "FAILED"
+            ? "bg-red-500/5 border-red-500/30 hover:border-red-500/50"
+            : "bg-slate-800/20 border-slate-700/30 hover:border-slate-600/50"
+      }`}
+    >
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="flex items-start gap-3">
+          <span
+            className={`text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider ${
+              tx.type === "RECEIVE" || tx.type === "DEPOSIT"
+                ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                : "bg-red-500/10 text-red-400 border border-red-500/20"
+            }`}
+          >
+            {tx.type}
+          </span>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-mono font-bold text-white text-sm">
+                {tx.amount.toLocaleString()} {tx.asset}
+              </span>
+              {status === "COMPLETED" && (
+                <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  <CheckCircle2 size={10} /> Success
+                </span>
+              )}
+              {status === "PENDING" && (
+                <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20 animate-pulse">
+                  <Clock size={10} /> Pending Confirmation
+                </span>
+              )}
+              {status === "FAILED" && (
+                <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider bg-red-500/10 text-red-400 border border-red-500/20">
+                  <XCircle size={10} /> Payment Failed
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-slate-300 mt-1">{tx.narration}</p>
+            {tx.adminNote && (
+              <p className="text-xs text-red-400 mt-0.5 font-medium flex items-center gap-1">
+                <AlertCircle size={11} className="shrink-0" />
+                <span>Reason / Note: {tx.adminNote}</span>
+              </p>
+            )}
+            <p className="text-[10px] text-slate-500 mt-1 font-mono">
+              {tx.date} at {tx.time} • ID: {tx.id}
+            </p>
+          </div>
+        </div>
+
+        {/* Action Controls */}
+        <div className="flex items-center gap-2 shrink-0 self-end md:self-center">
+          {/* Quick Confirmation Button */}
+          {status !== "COMPLETED" && (
+            <form action={updateTransactionStatus}>
+              <input type="hidden" name="transactionId" value={tx.id} />
+              <input type="hidden" name="status" value="COMPLETED" />
+              <input type="hidden" name="narration" value={tx.narration} />
+              <button
+                type="submit"
+                className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 text-xs font-bold transition-colors"
+                title="Approve / Confirm Transaction"
+              >
+                <CheckCircle2 size={12} /> Confirm Success
+              </button>
+            </form>
+          )}
+
+          {/* Quick Fail Button */}
+          {status !== "FAILED" && (
+            <button
+              type="button"
+              onClick={() => {
+                setIsEditing(true);
+                setSelectedStatus("FAILED");
+                if (!adminNote)
+                  setAdminNote(
+                    "Payment failed: Security / Compliance check required"
+                  );
+              }}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 text-xs font-bold transition-colors"
+              title="Mark as Failed and input reason"
+            >
+              <XCircle size={12} /> Mark Failed
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={() => setIsEditing(!isEditing)}
+            className="p-1.5 text-slate-400 hover:text-white rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors"
+            title="Edit message / status"
+          >
+            <Edit3 size={13} />
+          </button>
+
+          <form action={deleteTransaction}>
+            <input type="hidden" name="transactionId" value={tx.id} />
+            <button
+              type="submit"
+              className="p-1.5 text-red-400/70 hover:text-red-400 rounded-lg bg-red-500/10 hover:bg-red-500/20 transition-colors"
+              title="Delete transaction"
+              onClick={(e) => {
+                if (
+                  !confirm(
+                    "Are you sure you want to delete this transaction record?"
+                  )
+                )
+                  e.preventDefault();
+              }}
+            >
+              <Trash2 size={13} />
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {/* Edit Status & Input Reason Form */}
+      {isEditing && (
+        <form
+          action={updateTransactionStatus}
+          className="mt-4 pt-4 border-t border-slate-700/50 space-y-3 bg-slate-900/60 p-4 rounded-xl"
+        >
+          <input type="hidden" name="transactionId" value={tx.id} />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block mb-1">
+                Transaction Status
+              </label>
+              <select
+                name="status"
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                className="w-full bg-slate-800 text-white text-xs font-bold rounded-lg p-2.5 border border-slate-700 outline-none focus:border-emerald-500"
+              >
+                <option value="COMPLETED">
+                  COMPLETED (Confirmed / Success)
+                </option>
+                <option value="FAILED">FAILED (Payment Failed)</option>
+                <option value="PENDING">PENDING (Pending Confirmation)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block mb-1">
+                Failure Reason / Admin Note (Shown to user)
+              </label>
+              <input
+                type="text"
+                name="adminNote"
+                value={adminNote}
+                onChange={(e) => setAdminNote(e.target.value)}
+                placeholder="e.g. Payment failed: Incorrect beneficiary details or KYC needed"
+                className="w-full bg-slate-800 text-white text-xs rounded-lg p-2.5 border border-slate-700 outline-none focus:border-emerald-500 placeholder:text-slate-600"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block mb-1">
+              Transaction Narration / Statement Message
+            </label>
+            <input
+              type="text"
+              name="narration"
+              value={customNarration}
+              onChange={(e) => setCustomNarration(e.target.value)}
+              placeholder="e.g. Outgoing Wire Transfer to Chase Bank (*1234)"
+              className="w-full bg-slate-800 text-white text-xs rounded-lg p-2.5 border border-slate-700 outline-none focus:border-emerald-500 placeholder:text-slate-600"
+            />
+          </div>
+
+          <div className="flex justify-end gap-2 pt-1">
+            <button
+              type="button"
+              onClick={() => setIsEditing(false)}
+              className="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white bg-slate-800 text-xs font-semibold"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              onClick={() => setTimeout(() => setIsEditing(false), 200)}
+              className="px-4 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20"
+            >
+              Save Message & Status
+            </button>
+          </div>
+        </form>
+      )}
+    </div>
+  );
+}
+
 // ═════════════════════════════════════════════════════════
 // ██  MAIN COMPONENT
 // ═════════════════════════════════════════════════════════
@@ -259,8 +478,27 @@ function TextareaField({
 export default function AdminClient({ users }: { users: any[] }) {
   const [activeUserId, setActiveUserId] = useState(users[0]?.id);
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab] = useState<"users" | "support">("users");
+  const [unreadChatCount, setUnreadChatCount] = useState(0);
 
   const activeUser = users.find((u) => u.id === activeUserId);
+
+  useEffect(() => {
+    const fetchUnread = async () => {
+      try {
+        const res = await fetch("/api/chat?unreadOnly=true");
+        if (res.ok) {
+          const data = await res.json();
+          setUnreadChatCount(data.unreadCount || 0);
+        }
+      } catch (err) {
+        console.error("Failed to fetch unread chat count:", err);
+      }
+    };
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const filteredUsers = useMemo(() => {
     if (!searchQuery.trim()) return users;
@@ -326,8 +564,60 @@ export default function AdminClient({ users }: { users: any[] }) {
         />
       </div>
 
-      {/* ── Main Layout ───────────────────────────────── */}
-      <div className="flex flex-col lg:flex-row gap-6">
+      {/* ── Tab Switcher ──────────────────────────────── */}
+      <div className="flex flex-wrap items-center gap-2 border-b border-slate-800/80 pb-3">
+        <button
+          type="button"
+          onClick={() => setActiveTab("users")}
+          className={`flex items-center gap-2.5 px-5 py-3 rounded-2xl font-bold text-sm transition-all duration-200 ${
+            activeTab === "users"
+              ? "bg-slate-800 text-white border border-slate-700 shadow-lg shadow-black/30"
+              : "text-slate-400 hover:text-white hover:bg-slate-900/60 border border-transparent"
+          }`}
+        >
+          <Users
+            size={17}
+            className={activeTab === "users" ? "text-emerald-400" : "text-slate-500"}
+          />
+          <span>User Vaults & Controls</span>
+          <span className="text-[10px] bg-slate-900 text-slate-400 px-2 py-0.5 rounded-full font-mono border border-slate-800">
+            {users.length}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("support")}
+          className={`flex items-center gap-2.5 px-5 py-3 rounded-2xl font-bold text-sm transition-all duration-200 ${
+            activeTab === "support"
+              ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 shadow-lg shadow-emerald-500/5"
+              : "text-slate-400 hover:text-white hover:bg-slate-900/60 border border-transparent"
+          }`}
+        >
+          <MessageSquare
+            size={17}
+            className={activeTab === "support" ? "text-emerald-400" : "text-slate-500"}
+          />
+          <span>Live Support Inbox</span>
+          {unreadChatCount > 0 && (
+            <span className="flex h-5 min-w-[20px] px-1.5 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white shadow-lg shadow-red-500/40 animate-pulse">
+              {unreadChatCount}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {activeTab === "support" ? (
+        <AdminChatCenter
+          initialUserId={activeUserId}
+          onSelectUserForInspection={(uid) => {
+            setActiveUserId(uid);
+            setActiveTab("users");
+          }}
+        />
+      ) : (
+        /* ── Main Layout ───────────────────────────────── */
+        <div className="flex flex-col lg:flex-row gap-6">
         {/* ──────────────── LEFT: User List Panel ──────────────── */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -480,16 +770,27 @@ export default function AdminClient({ users }: { users: any[] }) {
                     </div>
                   </div>
 
-                  <form action={impersonateUser}>
-                    <input
-                      type="hidden"
-                      name="email"
-                      value={activeUser.email}
-                    />
-                    <FormButton variant="primary">
-                      <LogIn size={14} /> Login as User
-                    </FormButton>
-                  </form>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab("support")}
+                      className="flex items-center justify-center gap-1.5 text-[11px] font-bold px-3.5 py-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 transition-all"
+                    >
+                      <MessageSquare size={13} />
+                      <span>Chat with User</span>
+                    </button>
+
+                    <form action={impersonateUser}>
+                      <input
+                        type="hidden"
+                        name="email"
+                        value={activeUser.email}
+                      />
+                      <FormButton variant="primary">
+                        <LogIn size={14} /> Login as User
+                      </FormButton>
+                    </form>
+                  </div>
                 </div>
 
                 {/* Quick info row */}
@@ -610,61 +911,109 @@ export default function AdminClient({ users }: { users: any[] }) {
               </form>
             </Section>
 
-            {/* ── 2. Transaction Generator ────────────────── */}
+            {/* ── 2. Transaction Hub: Confirmation & History ── */}
             <Section
-              title="Manual Transaction Entry"
-              subtitle="Create synthetic transactions for this user"
+              title="Transactions & Confirmation Hub"
+              subtitle="Review, approve, fail, and input reasons on user transactions"
               icon={Activity}
               iconColor="text-blue-400"
             >
-              <form action={addTransaction} className="space-y-4">
-                <input type="hidden" name="userId" value={activeUser.id} />
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 block mb-1.5">
-                      Type
-                    </label>
-                    <select
-                      name="type"
-                      className="w-full bg-slate-800/40 text-white text-sm outline-none border border-slate-700/50 focus:border-blue-500/60 rounded-lg p-2.5 transition-colors"
-                    >
-                      <option value="RECEIVE">↓ Receive / Deposit</option>
-                      <option value="SEND">↑ Send / Withdrawal</option>
-                    </select>
+              <div className="space-y-6">
+                {/* Transaction History & Review List */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs uppercase font-bold text-slate-400 tracking-wider">
+                      User Transaction Records ({activeUser.transactions?.length || 0})
+                    </h4>
+                    <span className="text-[10px] text-slate-500 font-medium">
+                      Pending transfers can be confirmed or marked as failed with a custom reason.
+                    </span>
                   </div>
-                  <InputField
-                    label="Amount"
-                    name="amount"
-                    type="number"
-                    placeholder="e.g. 1.5"
-                  />
-                  <InputField
-                    label="Asset Symbol"
-                    name="asset"
-                    placeholder="e.g. BTC or USD"
-                  />
+
+                  {(!activeUser.transactions || activeUser.transactions.length === 0) ? (
+                    <div className="p-6 bg-slate-800/20 border border-slate-700/30 rounded-xl text-center text-slate-500 text-xs">
+                      No transactions recorded for this user yet.
+                    </div>
+                  ) : (
+                    <div className="space-y-3 max-h-[450px] overflow-y-auto pr-1">
+                      {activeUser.transactions.map((tx: any) => (
+                        <TransactionAdminCard key={tx.id} tx={tx} userId={activeUser.id} />
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <InputField label="Date" name="date" type="date" />
-                  <InputField label="Time" name="time" type="time" />
-                  <div className="col-span-2">
-                    <InputField
-                      label="Narration / Memo"
-                      name="narration"
-                      placeholder="e.g. Payment for Contract"
-                      icon={FileText}
-                    />
-                  </div>
-                </div>
+                {/* Manual Transaction Generator */}
+                <div className="pt-4 border-t border-slate-800/60">
+                  <h4 className="text-xs uppercase font-bold text-slate-400 tracking-wider mb-3">
+                    + Create New Manual Transaction
+                  </h4>
+                  <form action={addTransaction} className="space-y-4 bg-slate-800/20 border border-slate-700/30 p-4 rounded-xl">
+                    <input type="hidden" name="userId" value={activeUser.id} />
 
-                <div className="flex justify-end pt-2">
-                  <FormButton variant="primary">
-                    <PlusCircle size={13} /> Post Transaction
-                  </FormButton>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div>
+                        <label className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 block mb-1.5">
+                          Type
+                        </label>
+                        <select
+                          name="type"
+                          className="w-full bg-slate-800/50 text-white text-sm outline-none border border-slate-700/50 focus:border-blue-500/60 rounded-lg p-2.5 transition-colors"
+                        >
+                          <option value="RECEIVE">↓ Receive / Deposit</option>
+                          <option value="SEND">↑ Send / Withdrawal</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 block mb-1.5">
+                          Status
+                        </label>
+                        <select
+                          name="status"
+                          defaultValue="COMPLETED"
+                          className="w-full bg-slate-800/50 text-white text-sm outline-none border border-slate-700/50 focus:border-blue-500/60 rounded-lg p-2.5 transition-colors"
+                        >
+                          <option value="COMPLETED">Completed (Success)</option>
+                          <option value="PENDING">Pending Confirmation</option>
+                          <option value="FAILED">Payment Failed</option>
+                        </select>
+                      </div>
+
+                      <InputField
+                        label="Amount"
+                        name="amount"
+                        type="number"
+                        placeholder="e.g. 1.5"
+                      />
+                      <InputField
+                        label="Asset Symbol"
+                        name="asset"
+                        placeholder="e.g. BTC or USD"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <InputField label="Date" name="date" type="date" />
+                      <InputField label="Time" name="time" type="time" />
+                      <div className="col-span-2">
+                        <InputField
+                          label="Narration / Memo"
+                          name="narration"
+                          placeholder="e.g. Payment for Contract"
+                          icon={FileText}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end pt-1">
+                      <FormButton variant="primary">
+                        <PlusCircle size={13} /> Post Transaction
+                      </FormButton>
+                    </div>
+                  </form>
                 </div>
-              </form>
+              </div>
             </Section>
 
             {/* ── 3. Base Balance ──────────────────────────── */}
@@ -925,6 +1274,7 @@ export default function AdminClient({ users }: { users: any[] }) {
           </motion.div>
         )}
       </div>
+      )}
     </div>
   );
 }

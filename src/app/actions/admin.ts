@@ -80,18 +80,69 @@ export async function updateUserCustomizations(formData: FormData) {
 export async function addTransaction(formData: FormData) {
   const userId = formData.get("userId") as string;
   const type = formData.get("type") as string;
-  const amount = parseFloat(formData.get("amount") as string);
+  const amount = parseFloat(formData.get("amount") as string) || 0;
   const asset = formData.get("asset") as string;
   const narration = formData.get("narration") as string;
+  const status = (formData.get("status") as string) || "COMPLETED";
+  const adminNote = formData.get("adminNote") as string;
   const date = formData.get("date") as string;
   const time = formData.get("time") as string;
 
   await prisma.transaction.create({
-    data: { userId, type, amount, asset, narration, date, time }
+    data: {
+      userId,
+      type,
+      amount,
+      asset,
+      narration,
+      status,
+      adminNote: adminNote || null,
+      date,
+      time,
+    },
   });
 
   revalidatePath("/admin");
   revalidatePath("/dashboard");
+  revalidatePath("/transactions");
+}
+
+export async function updateTransactionStatus(formData: FormData) {
+  const session = await auth();
+  if (session?.user?.role !== "ADMIN") throw new Error("Unauthorized");
+
+  const transactionId = formData.get("transactionId") as string;
+  const status = formData.get("status") as string;
+  const narration = formData.get("narration") as string;
+  const adminNote = formData.get("adminNote") as string;
+
+  await prisma.transaction.update({
+    where: { id: transactionId },
+    data: {
+      status,
+      narration: narration || undefined,
+      adminNote: adminNote || null,
+    },
+  });
+
+  revalidatePath("/admin");
+  revalidatePath("/dashboard");
+  revalidatePath("/transactions");
+}
+
+export async function deleteTransaction(formData: FormData) {
+  const session = await auth();
+  if (session?.user?.role !== "ADMIN") throw new Error("Unauthorized");
+
+  const transactionId = formData.get("transactionId") as string;
+
+  await prisma.transaction.delete({
+    where: { id: transactionId },
+  });
+
+  revalidatePath("/admin");
+  revalidatePath("/dashboard");
+  revalidatePath("/transactions");
 }
 
 export async function impersonateUser(formData: FormData) {
