@@ -35,7 +35,7 @@ export default async function AppShell({ children, role }: any) {
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto pb-24 md:pb-8">
           {children}
         </div>
 

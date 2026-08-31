@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Eye,
   EyeOff,
@@ -20,6 +20,7 @@ import {
   AlertTriangle,
   AlertCircle,
   XCircle,
+  Radio,
 } from "lucide-react";
 import PortfolioChart from "@/components/PortfolioChart";
 import { saveCreditCard } from "@/app/actions/card";
@@ -41,6 +42,27 @@ export default function DashboardClient({
   const [showLimitModal, setShowLimitModal] = useState(false);
   const [isSubmittingCard, setIsSubmittingCard] = useState(false);
   const [isSubmittingLimit, setIsSubmittingLimit] = useState(false);
+  const [livePrices, setLivePrices] = useState<any[]>(marketData || []);
+
+  useEffect(() => {
+    const fetchPrices = async () => {
+      try {
+        const res = await fetch("/api/market");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.coins && data.coins.length > 0) {
+            setLivePrices(data.coins);
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
+    };
+
+    fetchPrices();
+    const interval = setInterval(fetchPrices, 6000);
+    return () => clearInterval(interval);
+  }, []);
 
   // --- WITHDRAW STATE ---
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
@@ -68,18 +90,22 @@ export default function DashboardClient({
     time: string;
   } | null>(null);
 
-  // Helper to get live price for any coin (falls back to defaults if API is rate-limited)
+  // Helper to get live price for any coin with live streaming updates
   const getLivePrice = (symbol: string) => {
-    const coin = marketData?.find(
+    const coin = livePrices?.find(
       (c: any) => c.symbol.toLowerCase() === symbol.toLowerCase()
     );
     return coin
       ? coin.current_price
       : symbol === "BTC"
-        ? 64000
+        ? 66420
         : symbol === "ETH"
-          ? 3000
-          : 1;
+          ? 3450
+          : symbol === "SOL"
+            ? 154
+            : symbol === "USDT"
+              ? 1
+              : 1;
   };
 
   // 1. Force totalBalance to be a strict number (fallback to 0 if corrupted)
@@ -382,6 +408,13 @@ export default function DashboardClient({
           <h3 className="font-bold text-white text-sm uppercase tracking-wider">
             Market / Assets
           </h3>
+          <span className="flex items-center gap-1.5 text-[10px] uppercase font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <Radio size={11} /> Live Ticker
+          </span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left">

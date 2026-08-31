@@ -19,6 +19,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const threads = searchParams.get("threads");
     const unreadOnly = searchParams.get("unreadOnly");
+    const markRead = searchParams.get("markRead") === "true";
     const userId = searchParams.get("userId") || undefined;
 
     if (unreadOnly === "true") {
@@ -34,7 +35,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ threads: threadList });
     }
 
-    const messages = await getChatMessages(userId);
+    const messages = await getChatMessages(userId, markRead);
     return NextResponse.json({ messages });
   } catch (error: any) {
     console.error("GET /api/chat error:", error);

@@ -13,7 +13,10 @@ import {
   CheckCheck,
   Sparkles,
   ArrowDown,
-  Minimize2,
+  Bell,
+  Clock,
+  ChevronRight,
+  Radio,
 } from "lucide-react";
 
 type Message = {
@@ -35,8 +38,35 @@ const QUICK_PROMPTS = [
   "General account security inquiry",
 ];
 
+// Gentle Web Audio API synthesizer for incoming message chime (no external audio files needed)
+function playNotificationChime() {
+  try {
+    const AudioContextClass =
+      window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContextClass) return;
+    const ctx = new AudioContextClass();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = "sine";
+    // Friendly two-tone chime (F5 -> A5)
+    osc.frequency.setValueAtTime(698.46, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(880.0, ctx.currentTime + 0.12);
+
+    gain.gain.setValueAtTime(0.18, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start();
+    osc.stop(ctx.currentTime + 0.35);
+  } catch (e) {
+    // Audio autoplay policy catch
+  }
+}
+
 export default function SupportChatWidget({ userRole }: { userRole?: string }) {
-  // If the user is an admin acting in admin dashboard, they use the AdminChatCenter instead
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
@@ -44,7 +74,14 @@ export default function SupportChatWidget({ userRole }: { userRole?: string }) {
   const [isSending, setIsSending] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showScrollBottom, setShowScrollBottom] = useState(false);
+  const [incomingToast, setIncomingToast] = useState<{
+    id: string;
+    content: string;
+    sender: string;
+    count: number;
+  } | null>(null);
 
+  const prevUnreadCountRef = useRef(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -55,17 +92,18 @@ export default function SupportChatWidget({ userRole }: { userRole?: string }) {
     });
   };
 
-  // Poll for messages when open
+  // Poll for messages when chat is open -> Mark as read in DB
   const fetchMessages = async (showLoading = false) => {
     if (showLoading) setIsLoading(true);
     try {
-      const res = await fetch("/api/chat");
+      const res = await fetch("/api/chat?markRead=true");
       if (res.ok) {
         const data = await res.json();
         if (data.messages) {
           setMessages(data.messages);
-          // If open, all incoming admin messages get marked as read automatically by API
           setUnreadCount(0);
+          prevUnreadCountRef.current = 0;
+          setIncomingToast(null);
         }
       }
     } catch (err) {
@@ -75,13 +113,44 @@ export default function SupportChatWidget({ userRole }: { userRole?: string }) {
     }
   };
 
-  // Poll for unread count when widget is closed
+  // Poll for unread count when widget is closed -> DOES NOT mark as read
   const fetchUnreadCount = async () => {
     try {
       const res = await fetch("/api/chat?unreadOnly=true");
       if (res.ok) {
         const data = await res.json();
-        setUnreadCount(data.unreadCount || 0);
+        const newCount = data.unreadCount || 0;
+
+        if (newCount > 0) {
+          // If new message arrived while closed
+          if (newCount > prevUnreadCountRef.current && !isOpen) {
+            playNotificationChime();
+          }
+
+          // Fetch preview without marking as read
+          const previewRes = await fetch("/api/chat?markRead=false");
+          if (previewRes.ok) {
+            const previewData = await previewRes.json();
+            const latestAdminMsg = (previewData.messages || [])
+              .filter((m: Message) => m.senderRole === "ADMIN")
+              .slice(-1)[0];
+
+            if (latestAdminMsg && !isOpen) {
+              // Set persistent notification toast (stays until opened)
+              setIncomingToast({
+                id: latestAdminMsg.id,
+                content: latestAdminMsg.content,
+                sender: "CoinVault Support",
+                count: newCount,
+              });
+            }
+          }
+        } else {
+          setIncomingToast(null);
+        }
+
+        setUnreadCount(newCount);
+        prevUnreadCountRef.current = newCount;
       }
     } catch (err) {
       console.error("Failed to fetch unread count:", err);
@@ -91,6 +160,7 @@ export default function SupportChatWidget({ userRole }: { userRole?: string }) {
   // Initial and interval fetch
   useEffect(() => {
     if (isOpen) {
+      setIncomingToast(null);
       fetchMessages(messages.length === 0);
       const interval = setInterval(() => {
         fetchMessages(false);
@@ -100,7 +170,7 @@ export default function SupportChatWidget({ userRole }: { userRole?: string }) {
       fetchUnreadCount();
       const interval = setInterval(() => {
         fetchUnreadCount();
-      }, 10000);
+      }, 5000);
       return () => clearInterval(interval);
     }
   }, [isOpen]);
@@ -180,8 +250,73 @@ export default function SupportChatWidget({ userRole }: { userRole?: string }) {
     }
   };
 
+  const handleOpenChat = () => {
+    setIncomingToast(null);
+    setIsOpen(true);
+  };
+
   return (
-    <div className="fixed bottom-5 right-5 z-50">
+    // Responsive positioning: bottom-20 on mobile (above 64px mobile bottom nav) and bottom-6 on desktop
+    <div className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-40">
+      {/* ── PERSISTENT INCOMING MESSAGE NOTIFICATION TOAST ── */}
+      {/* Stays permanently visible until the user explicitly opens the chat */}
+      <AnimatePresence>
+        {!isOpen && incomingToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 15, scale: 0.9 }}
+            transition={{ duration: 0.25 }}
+            className="mb-3 w-[88vw] sm:w-[360px] bg-slate-900/98 border-2 border-emerald-500/60 rounded-2xl p-3.5 shadow-2xl shadow-emerald-500/25 backdrop-blur-2xl ring-1 ring-emerald-400/20"
+          >
+            <div className="flex items-start justify-between gap-2.5">
+              <div className="flex items-center gap-2">
+                <div className="relative h-8 w-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30 shrink-0">
+                  <Bell size={16} className="animate-bounce" />
+                  <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 animate-ping" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+                    <span>{incomingToast.sender}</span>
+                    <span className="text-[9px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 px-1.5 py-0.2 rounded font-mono font-bold animate-pulse">
+                      {incomingToast.count > 1
+                        ? `${incomingToast.count} UNREAD`
+                        : "UNREAD"}
+                    </span>
+                  </h4>
+                  <p className="text-[10px] text-slate-400 font-medium">
+                    Compliance team responded to your inquiry
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div
+              onClick={handleOpenChat}
+              className="mt-2.5 bg-slate-950/90 rounded-xl p-3 border border-slate-800 hover:border-emerald-500/40 cursor-pointer transition-all group"
+            >
+              <p className="text-xs text-slate-200 line-clamp-2 leading-relaxed">
+                "{incomingToast.content}"
+              </p>
+              <span className="text-[10px] text-emerald-400 group-hover:underline font-semibold mt-1 inline-block">
+                Click to read full message →
+              </span>
+            </div>
+
+            <div className="mt-3 flex justify-end items-center gap-2">
+              <button
+                type="button"
+                onClick={handleOpenChat}
+                className="w-full flex items-center justify-center gap-1.5 text-xs font-bold text-slate-950 bg-gradient-to-r from-emerald-400 to-teal-400 hover:from-emerald-300 hover:to-teal-300 py-2 rounded-xl shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
+              >
+                <span>Open & Read Message</span>
+                <ChevronRight size={14} />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Floating Chat Trigger Button */}
       <AnimatePresence>
         {!isOpen && (
@@ -191,7 +326,7 @@ export default function SupportChatWidget({ userRole }: { userRole?: string }) {
             exit={{ scale: 0.8, opacity: 0 }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => setIsOpen(true)}
+            onClick={handleOpenChat}
             className="group relative flex items-center gap-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 px-4 py-3.5 rounded-full font-bold shadow-2xl shadow-emerald-500/30 transition-all border border-emerald-400/40"
           >
             <div className="relative">
@@ -207,7 +342,7 @@ export default function SupportChatWidget({ userRole }: { userRole?: string }) {
 
             {/* Unread Message Badge */}
             {unreadCount > 0 && (
-              <span className="absolute -top-2 -right-1 flex h-5 min-w-[20px] px-1 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white shadow-lg shadow-red-500/50 animate-bounce">
+              <span className="absolute -top-2 -right-1 flex h-5 min-w-[20px] px-1.5 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white shadow-lg shadow-red-500/50 animate-bounce">
                 {unreadCount}
               </span>
             )}
@@ -223,7 +358,7 @@ export default function SupportChatWidget({ userRole }: { userRole?: string }) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.95 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
-            className="flex flex-col w-[92vw] sm:w-[410px] h-[560px] max-h-[82vh] bg-slate-950/95 border border-slate-800/90 rounded-3xl shadow-2xl shadow-black/80 backdrop-blur-2xl overflow-hidden"
+            className="flex flex-col w-[92vw] sm:w-[410px] h-[540px] max-h-[72vh] sm:max-h-[82vh] bg-slate-950/95 border border-slate-800/90 rounded-3xl shadow-2xl shadow-black/90 backdrop-blur-2xl overflow-hidden"
           >
             {/* Header */}
             <div className="relative bg-gradient-to-r from-slate-900 via-slate-900/95 to-emerald-950/40 border-b border-slate-800/80 px-5 py-4 flex items-center justify-between shrink-0">
@@ -243,7 +378,7 @@ export default function SupportChatWidget({ userRole }: { userRole?: string }) {
                   </div>
                   <p className="text-[11px] text-slate-400 flex items-center gap-1.5 mt-0.5">
                     <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    Support Team Active
+                    Support Team Active • Encrypted
                   </p>
                 </div>
               </div>
@@ -263,7 +398,7 @@ export default function SupportChatWidget({ userRole }: { userRole?: string }) {
             <div className="bg-emerald-500/5 border-b border-emerald-500/10 px-4 py-2 flex items-center gap-2 shrink-0">
               <Sparkles size={12} className="text-emerald-400 shrink-0" />
               <p className="text-[10px] text-slate-400 leading-tight">
-                Direct encrypted line with CoinVault administrative compliance officers.
+                Direct line with CoinVault administrative compliance officers.
               </p>
             </div>
 
@@ -275,7 +410,10 @@ export default function SupportChatWidget({ userRole }: { userRole?: string }) {
             >
               {isLoading ? (
                 <div className="flex flex-col items-center justify-center h-full text-slate-500 space-y-2">
-                  <Loader2 size={24} className="animate-spin text-emerald-500" />
+                  <Loader2
+                    size={24}
+                    className="animate-spin text-emerald-500"
+                  />
                   <p className="text-xs">Connecting to secure chat...</p>
                 </div>
               ) : messages.length === 0 ? (
@@ -288,7 +426,8 @@ export default function SupportChatWidget({ userRole }: { userRole?: string }) {
                       How can we help today?
                     </h4>
                     <p className="text-slate-400 text-xs mt-1">
-                      Send a message and an administrative agent will assist you shortly.
+                      Send a message and an administrative agent will assist you
+                      shortly.
                     </p>
                   </div>
 
@@ -328,17 +467,17 @@ export default function SupportChatWidget({ userRole }: { userRole?: string }) {
                               CoinVault Support
                             </span>
                             <span className="text-[9px] text-slate-500 font-mono">
-                              Admin
+                              Compliance Officer
                             </span>
                           </div>
                         )}
 
                         {/* Bubble */}
                         <div
-                          className={`max-w-[82%] rounded-2xl px-4 py-2.5 text-xs sm:text-sm leading-relaxed shadow-md ${
+                          className={`max-w-[84%] rounded-2xl px-4 py-2.5 text-xs sm:text-sm leading-relaxed shadow-md ${
                             isUser
                               ? "bg-gradient-to-r from-emerald-600 to-emerald-500 text-slate-950 font-medium rounded-br-xs"
-                              : "bg-slate-850 bg-slate-900 border border-slate-800 text-white rounded-bl-xs"
+                              : "bg-slate-900 border border-slate-800 text-white rounded-bl-xs"
                           }`}
                         >
                           <p className="whitespace-pre-wrap break-words">
@@ -346,7 +485,7 @@ export default function SupportChatWidget({ userRole }: { userRole?: string }) {
                           </p>
                         </div>
 
-                        {/* Timestamp & Status */}
+                        {/* Timestamp & Delivery Status */}
                         <div
                           className={`flex items-center gap-1 mt-1 px-1 text-[10px] text-slate-500 ${isUser ? "flex-row-reverse" : ""}`}
                         >
@@ -357,13 +496,37 @@ export default function SupportChatWidget({ userRole }: { userRole?: string }) {
                             })}
                           </span>
                           {isUser && (
-                            <span>
+                            <span className="flex items-center gap-0.5">
                               {msg.pending ? (
-                                <Loader2 size={10} className="animate-spin text-slate-400" />
+                                <>
+                                  <Clock
+                                    size={10}
+                                    className="animate-pulse text-amber-400"
+                                  />
+                                  <span className="text-[9px] text-amber-400 font-mono">
+                                    Sending...
+                                  </span>
+                                </>
                               ) : msg.isRead ? (
-                                <CheckCheck size={12} className="text-emerald-400" />
+                                <>
+                                  <CheckCheck
+                                    size={12}
+                                    className="text-emerald-400"
+                                  />
+                                  <span className="text-[9px] text-emerald-400 font-mono">
+                                    Read
+                                  </span>
+                                </>
                               ) : (
-                                <Check size={12} className="text-slate-400" />
+                                <>
+                                  <CheckCheck
+                                    size={12}
+                                    className="text-slate-400"
+                                  />
+                                  <span className="text-[9px] text-slate-400 font-mono">
+                                    Delivered
+                                  </span>
+                                </>
                               )}
                             </span>
                           )}

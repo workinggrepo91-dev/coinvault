@@ -87,7 +87,7 @@ export default function AdminChatCenter({
   const fetchMessagesForUser = async (userId: string, showLoading = false) => {
     if (showLoading) setIsLoadingMessages(true);
     try {
-      const res = await fetch(`/api/chat?userId=${userId}`);
+      const res = await fetch(`/api/chat?userId=${userId}&markRead=true`);
       if (res.ok) {
         const data = await res.json();
         if (data.messages) {

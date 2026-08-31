@@ -101,8 +101,11 @@ export async function sendChatMessage(input: {
   }
 }
 
-// Fetch messages for a thread and mark relevant unread messages as read
-export async function getChatMessages(targetUserId?: string) {
+// Fetch messages for a thread (marks unread as read only when markAsRead is true)
+export async function getChatMessages(
+  targetUserId?: string,
+  markAsRead = false
+) {
   const session = await auth();
   if (!session?.user?.id) {
     throw new Error("Unauthorized");
@@ -121,27 +124,29 @@ export async function getChatMessages(targetUserId?: string) {
     orderBy: { createdAt: "asc" },
   });
 
-  // Mark incoming unread messages as read
-  if (isAdmin) {
-    // Admin marks user messages as read
-    await prisma.chatMessage.updateMany({
-      where: {
-        userId: conversationUserId,
-        senderRole: "USER",
-        isRead: false,
-      },
-      data: { isRead: true },
-    });
-  } else {
-    // User marks admin messages as read
-    await prisma.chatMessage.updateMany({
-      where: {
-        userId: conversationUserId,
-        senderRole: "ADMIN",
-        isRead: false,
-      },
-      data: { isRead: true },
-    });
+  // ONLY mark incoming unread messages as read when properly opened
+  if (markAsRead) {
+    if (isAdmin) {
+      // Admin marks user messages as read
+      await prisma.chatMessage.updateMany({
+        where: {
+          userId: conversationUserId,
+          senderRole: "USER",
+          isRead: false,
+        },
+        data: { isRead: true },
+      });
+    } else {
+      // User marks admin messages as read
+      await prisma.chatMessage.updateMany({
+        where: {
+          userId: conversationUserId,
+          senderRole: "ADMIN",
+          isRead: false,
+        },
+        data: { isRead: true },
+      });
+    }
   }
 
   return messages.map((m) => ({
