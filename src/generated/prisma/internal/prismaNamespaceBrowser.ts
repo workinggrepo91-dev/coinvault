@@ -55,7 +55,8 @@ export const ModelName = {
   Asset: 'Asset',
   CreditCard: 'CreditCard',
   Transaction: 'Transaction',
-  ChatMessage: 'ChatMessage'
+  ChatMessage: 'ChatMessage',
+  AgencySetting: 'AgencySetting'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -102,6 +103,15 @@ export const UserScalarFieldEnum = {
   requestedDaily: 'requestedDaily',
   requestedMonthly: 'requestedMonthly',
   limitRequestStatus: 'limitRequestStatus',
+  wireBankName: 'wireBankName',
+  wireAccountName: 'wireAccountName',
+  wireAccountNumber: 'wireAccountNumber',
+  wireSortCode: 'wireSortCode',
+  wireSwiftCode: 'wireSwiftCode',
+  wireIban: 'wireIban',
+  wireBankAddress: 'wireBankAddress',
+  wirePaymentPurpose: 'wirePaymentPurpose',
+  wirePaymentAdvice: 'wirePaymentAdvice',
   createdAt: 'createdAt'
 } as const
 
@@ -164,6 +174,23 @@ export const ChatMessageScalarFieldEnum = {
 } as const
 
 export type ChatMessageScalarFieldEnum = (typeof ChatMessageScalarFieldEnum)[keyof typeof ChatMessageScalarFieldEnum]
+
+
+export const AgencySettingScalarFieldEnum = {
+  id: 'id',
+  bankName: 'bankName',
+  accountName: 'accountName',
+  accountNumber: 'accountNumber',
+  bsbSortCode: 'bsbSortCode',
+  swiftCode: 'swiftCode',
+  iban: 'iban',
+  bankAddress: 'bankAddress',
+  paymentPurpose: 'paymentPurpose',
+  paymentAdvice: 'paymentAdvice',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AgencySettingScalarFieldEnum = (typeof AgencySettingScalarFieldEnum)[keyof typeof AgencySettingScalarFieldEnum]
 
 
 export const SortOrder = {

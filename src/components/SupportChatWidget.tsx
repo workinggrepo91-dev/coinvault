@@ -157,6 +157,13 @@ export default function SupportChatWidget({ userRole }: { userRole?: string }) {
     }
   };
 
+  // Listen for open-support-chat event from modal buttons
+  useEffect(() => {
+    const handleOpen = () => setIsOpen(true);
+    window.addEventListener("open-support-chat", handleOpen);
+    return () => window.removeEventListener("open-support-chat", handleOpen);
+  }, []);
+
   // Initial and interval fetch
   useEffect(() => {
     if (isOpen) {

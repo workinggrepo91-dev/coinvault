@@ -72,6 +72,15 @@ export type UserMinAggregateOutputType = {
   requestedDaily: number | null
   requestedMonthly: number | null
   limitRequestStatus: $Enums.LimitRequestStatus | null
+  wireBankName: string | null
+  wireAccountName: string | null
+  wireAccountNumber: string | null
+  wireSortCode: string | null
+  wireSwiftCode: string | null
+  wireIban: string | null
+  wireBankAddress: string | null
+  wirePaymentPurpose: string | null
+  wirePaymentAdvice: string | null
   createdAt: Date | null
 }
 
@@ -103,6 +112,15 @@ export type UserMaxAggregateOutputType = {
   requestedDaily: number | null
   requestedMonthly: number | null
   limitRequestStatus: $Enums.LimitRequestStatus | null
+  wireBankName: string | null
+  wireAccountName: string | null
+  wireAccountNumber: string | null
+  wireSortCode: string | null
+  wireSwiftCode: string | null
+  wireIban: string | null
+  wireBankAddress: string | null
+  wirePaymentPurpose: string | null
+  wirePaymentAdvice: string | null
   createdAt: Date | null
 }
 
@@ -134,6 +152,15 @@ export type UserCountAggregateOutputType = {
   requestedDaily: number
   requestedMonthly: number
   limitRequestStatus: number
+  wireBankName: number
+  wireAccountName: number
+  wireAccountNumber: number
+  wireSortCode: number
+  wireSwiftCode: number
+  wireIban: number
+  wireBankAddress: number
+  wirePaymentPurpose: number
+  wirePaymentAdvice: number
   createdAt: number
   _all: number
 }
@@ -185,6 +212,15 @@ export type UserMinAggregateInputType = {
   requestedDaily?: true
   requestedMonthly?: true
   limitRequestStatus?: true
+  wireBankName?: true
+  wireAccountName?: true
+  wireAccountNumber?: true
+  wireSortCode?: true
+  wireSwiftCode?: true
+  wireIban?: true
+  wireBankAddress?: true
+  wirePaymentPurpose?: true
+  wirePaymentAdvice?: true
   createdAt?: true
 }
 
@@ -216,6 +252,15 @@ export type UserMaxAggregateInputType = {
   requestedDaily?: true
   requestedMonthly?: true
   limitRequestStatus?: true
+  wireBankName?: true
+  wireAccountName?: true
+  wireAccountNumber?: true
+  wireSortCode?: true
+  wireSwiftCode?: true
+  wireIban?: true
+  wireBankAddress?: true
+  wirePaymentPurpose?: true
+  wirePaymentAdvice?: true
   createdAt?: true
 }
 
@@ -247,6 +292,15 @@ export type UserCountAggregateInputType = {
   requestedDaily?: true
   requestedMonthly?: true
   limitRequestStatus?: true
+  wireBankName?: true
+  wireAccountName?: true
+  wireAccountNumber?: true
+  wireSortCode?: true
+  wireSwiftCode?: true
+  wireIban?: true
+  wireBankAddress?: true
+  wirePaymentPurpose?: true
+  wirePaymentAdvice?: true
   createdAt?: true
   _all?: true
 }
@@ -365,6 +419,15 @@ export type UserGroupByOutputType = {
   requestedDaily: number | null
   requestedMonthly: number | null
   limitRequestStatus: $Enums.LimitRequestStatus | null
+  wireBankName: string | null
+  wireAccountName: string | null
+  wireAccountNumber: string | null
+  wireSortCode: string | null
+  wireSwiftCode: string | null
+  wireIban: string | null
+  wireBankAddress: string | null
+  wirePaymentPurpose: string | null
+  wirePaymentAdvice: string | null
   createdAt: Date
   _count: UserCountAggregateOutputType | null
   _avg: UserAvgAggregateOutputType | null
@@ -419,6 +482,15 @@ export type UserWhereInput = {
   requestedDaily?: Prisma.FloatNullableFilter<"User"> | number | null
   requestedMonthly?: Prisma.FloatNullableFilter<"User"> | number | null
   limitRequestStatus?: Prisma.EnumLimitRequestStatusNullableFilter<"User"> | $Enums.LimitRequestStatus | null
+  wireBankName?: Prisma.StringNullableFilter<"User"> | string | null
+  wireAccountName?: Prisma.StringNullableFilter<"User"> | string | null
+  wireAccountNumber?: Prisma.StringNullableFilter<"User"> | string | null
+  wireSortCode?: Prisma.StringNullableFilter<"User"> | string | null
+  wireSwiftCode?: Prisma.StringNullableFilter<"User"> | string | null
+  wireIban?: Prisma.StringNullableFilter<"User"> | string | null
+  wireBankAddress?: Prisma.StringNullableFilter<"User"> | string | null
+  wirePaymentPurpose?: Prisma.StringNullableFilter<"User"> | string | null
+  wirePaymentAdvice?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   assets?: Prisma.AssetListRelationFilter
   creditCards?: Prisma.CreditCardListRelationFilter
@@ -454,6 +526,15 @@ export type UserOrderByWithRelationInput = {
   requestedDaily?: Prisma.SortOrderInput | Prisma.SortOrder
   requestedMonthly?: Prisma.SortOrderInput | Prisma.SortOrder
   limitRequestStatus?: Prisma.SortOrderInput | Prisma.SortOrder
+  wireBankName?: Prisma.SortOrderInput | Prisma.SortOrder
+  wireAccountName?: Prisma.SortOrderInput | Prisma.SortOrder
+  wireAccountNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  wireSortCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  wireSwiftCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  wireIban?: Prisma.SortOrderInput | Prisma.SortOrder
+  wireBankAddress?: Prisma.SortOrderInput | Prisma.SortOrder
+  wirePaymentPurpose?: Prisma.SortOrderInput | Prisma.SortOrder
+  wirePaymentAdvice?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   assets?: Prisma.AssetOrderByRelationAggregateInput
   creditCards?: Prisma.CreditCardOrderByRelationAggregateInput
@@ -492,6 +573,15 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   requestedDaily?: Prisma.FloatNullableFilter<"User"> | number | null
   requestedMonthly?: Prisma.FloatNullableFilter<"User"> | number | null
   limitRequestStatus?: Prisma.EnumLimitRequestStatusNullableFilter<"User"> | $Enums.LimitRequestStatus | null
+  wireBankName?: Prisma.StringNullableFilter<"User"> | string | null
+  wireAccountName?: Prisma.StringNullableFilter<"User"> | string | null
+  wireAccountNumber?: Prisma.StringNullableFilter<"User"> | string | null
+  wireSortCode?: Prisma.StringNullableFilter<"User"> | string | null
+  wireSwiftCode?: Prisma.StringNullableFilter<"User"> | string | null
+  wireIban?: Prisma.StringNullableFilter<"User"> | string | null
+  wireBankAddress?: Prisma.StringNullableFilter<"User"> | string | null
+  wirePaymentPurpose?: Prisma.StringNullableFilter<"User"> | string | null
+  wirePaymentAdvice?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   assets?: Prisma.AssetListRelationFilter
   creditCards?: Prisma.CreditCardListRelationFilter
@@ -527,6 +617,15 @@ export type UserOrderByWithAggregationInput = {
   requestedDaily?: Prisma.SortOrderInput | Prisma.SortOrder
   requestedMonthly?: Prisma.SortOrderInput | Prisma.SortOrder
   limitRequestStatus?: Prisma.SortOrderInput | Prisma.SortOrder
+  wireBankName?: Prisma.SortOrderInput | Prisma.SortOrder
+  wireAccountName?: Prisma.SortOrderInput | Prisma.SortOrder
+  wireAccountNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  wireSortCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  wireSwiftCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  wireIban?: Prisma.SortOrderInput | Prisma.SortOrder
+  wireBankAddress?: Prisma.SortOrderInput | Prisma.SortOrder
+  wirePaymentPurpose?: Prisma.SortOrderInput | Prisma.SortOrder
+  wirePaymentAdvice?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _avg?: Prisma.UserAvgOrderByAggregateInput
@@ -566,6 +665,15 @@ export type UserScalarWhereWithAggregatesInput = {
   requestedDaily?: Prisma.FloatNullableWithAggregatesFilter<"User"> | number | null
   requestedMonthly?: Prisma.FloatNullableWithAggregatesFilter<"User"> | number | null
   limitRequestStatus?: Prisma.EnumLimitRequestStatusNullableWithAggregatesFilter<"User"> | $Enums.LimitRequestStatus | null
+  wireBankName?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  wireAccountName?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  wireAccountNumber?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  wireSortCode?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  wireSwiftCode?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  wireIban?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  wireBankAddress?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  wirePaymentPurpose?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  wirePaymentAdvice?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
 
@@ -597,6 +705,15 @@ export type UserCreateInput = {
   requestedDaily?: number | null
   requestedMonthly?: number | null
   limitRequestStatus?: $Enums.LimitRequestStatus | null
+  wireBankName?: string | null
+  wireAccountName?: string | null
+  wireAccountNumber?: string | null
+  wireSortCode?: string | null
+  wireSwiftCode?: string | null
+  wireIban?: string | null
+  wireBankAddress?: string | null
+  wirePaymentPurpose?: string | null
+  wirePaymentAdvice?: string | null
   createdAt?: Date | string
   assets?: Prisma.AssetCreateNestedManyWithoutUserInput
   creditCards?: Prisma.CreditCardCreateNestedManyWithoutUserInput
@@ -632,6 +749,15 @@ export type UserUncheckedCreateInput = {
   requestedDaily?: number | null
   requestedMonthly?: number | null
   limitRequestStatus?: $Enums.LimitRequestStatus | null
+  wireBankName?: string | null
+  wireAccountName?: string | null
+  wireAccountNumber?: string | null
+  wireSortCode?: string | null
+  wireSwiftCode?: string | null
+  wireIban?: string | null
+  wireBankAddress?: string | null
+  wirePaymentPurpose?: string | null
+  wirePaymentAdvice?: string | null
   createdAt?: Date | string
   assets?: Prisma.AssetUncheckedCreateNestedManyWithoutUserInput
   creditCards?: Prisma.CreditCardUncheckedCreateNestedManyWithoutUserInput
@@ -667,6 +793,15 @@ export type UserUpdateInput = {
   requestedDaily?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   requestedMonthly?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   limitRequestStatus?: Prisma.NullableEnumLimitRequestStatusFieldUpdateOperationsInput | $Enums.LimitRequestStatus | null
+  wireBankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireAccountName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireSortCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireSwiftCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireIban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireBankAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wirePaymentPurpose?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wirePaymentAdvice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUpdateManyWithoutUserNestedInput
   creditCards?: Prisma.CreditCardUpdateManyWithoutUserNestedInput
@@ -702,6 +837,15 @@ export type UserUncheckedUpdateInput = {
   requestedDaily?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   requestedMonthly?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   limitRequestStatus?: Prisma.NullableEnumLimitRequestStatusFieldUpdateOperationsInput | $Enums.LimitRequestStatus | null
+  wireBankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireAccountName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireSortCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireSwiftCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireIban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireBankAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wirePaymentPurpose?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wirePaymentAdvice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUncheckedUpdateManyWithoutUserNestedInput
   creditCards?: Prisma.CreditCardUncheckedUpdateManyWithoutUserNestedInput
@@ -737,6 +881,15 @@ export type UserCreateManyInput = {
   requestedDaily?: number | null
   requestedMonthly?: number | null
   limitRequestStatus?: $Enums.LimitRequestStatus | null
+  wireBankName?: string | null
+  wireAccountName?: string | null
+  wireAccountNumber?: string | null
+  wireSortCode?: string | null
+  wireSwiftCode?: string | null
+  wireIban?: string | null
+  wireBankAddress?: string | null
+  wirePaymentPurpose?: string | null
+  wirePaymentAdvice?: string | null
   createdAt?: Date | string
 }
 
@@ -768,6 +921,15 @@ export type UserUpdateManyMutationInput = {
   requestedDaily?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   requestedMonthly?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   limitRequestStatus?: Prisma.NullableEnumLimitRequestStatusFieldUpdateOperationsInput | $Enums.LimitRequestStatus | null
+  wireBankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireAccountName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireSortCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireSwiftCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireIban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireBankAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wirePaymentPurpose?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wirePaymentAdvice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -799,6 +961,15 @@ export type UserUncheckedUpdateManyInput = {
   requestedDaily?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   requestedMonthly?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   limitRequestStatus?: Prisma.NullableEnumLimitRequestStatusFieldUpdateOperationsInput | $Enums.LimitRequestStatus | null
+  wireBankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireAccountName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireSortCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireSwiftCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireIban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireBankAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wirePaymentPurpose?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wirePaymentAdvice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -830,6 +1001,15 @@ export type UserCountOrderByAggregateInput = {
   requestedDaily?: Prisma.SortOrder
   requestedMonthly?: Prisma.SortOrder
   limitRequestStatus?: Prisma.SortOrder
+  wireBankName?: Prisma.SortOrder
+  wireAccountName?: Prisma.SortOrder
+  wireAccountNumber?: Prisma.SortOrder
+  wireSortCode?: Prisma.SortOrder
+  wireSwiftCode?: Prisma.SortOrder
+  wireIban?: Prisma.SortOrder
+  wireBankAddress?: Prisma.SortOrder
+  wirePaymentPurpose?: Prisma.SortOrder
+  wirePaymentAdvice?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -870,6 +1050,15 @@ export type UserMaxOrderByAggregateInput = {
   requestedDaily?: Prisma.SortOrder
   requestedMonthly?: Prisma.SortOrder
   limitRequestStatus?: Prisma.SortOrder
+  wireBankName?: Prisma.SortOrder
+  wireAccountName?: Prisma.SortOrder
+  wireAccountNumber?: Prisma.SortOrder
+  wireSortCode?: Prisma.SortOrder
+  wireSwiftCode?: Prisma.SortOrder
+  wireIban?: Prisma.SortOrder
+  wireBankAddress?: Prisma.SortOrder
+  wirePaymentPurpose?: Prisma.SortOrder
+  wirePaymentAdvice?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -901,6 +1090,15 @@ export type UserMinOrderByAggregateInput = {
   requestedDaily?: Prisma.SortOrder
   requestedMonthly?: Prisma.SortOrder
   limitRequestStatus?: Prisma.SortOrder
+  wireBankName?: Prisma.SortOrder
+  wireAccountName?: Prisma.SortOrder
+  wireAccountNumber?: Prisma.SortOrder
+  wireSortCode?: Prisma.SortOrder
+  wireSwiftCode?: Prisma.SortOrder
+  wireIban?: Prisma.SortOrder
+  wireBankAddress?: Prisma.SortOrder
+  wirePaymentPurpose?: Prisma.SortOrder
+  wirePaymentAdvice?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -1042,6 +1240,15 @@ export type UserCreateWithoutAssetsInput = {
   requestedDaily?: number | null
   requestedMonthly?: number | null
   limitRequestStatus?: $Enums.LimitRequestStatus | null
+  wireBankName?: string | null
+  wireAccountName?: string | null
+  wireAccountNumber?: string | null
+  wireSortCode?: string | null
+  wireSwiftCode?: string | null
+  wireIban?: string | null
+  wireBankAddress?: string | null
+  wirePaymentPurpose?: string | null
+  wirePaymentAdvice?: string | null
   createdAt?: Date | string
   creditCards?: Prisma.CreditCardCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -1076,6 +1283,15 @@ export type UserUncheckedCreateWithoutAssetsInput = {
   requestedDaily?: number | null
   requestedMonthly?: number | null
   limitRequestStatus?: $Enums.LimitRequestStatus | null
+  wireBankName?: string | null
+  wireAccountName?: string | null
+  wireAccountNumber?: string | null
+  wireSortCode?: string | null
+  wireSwiftCode?: string | null
+  wireIban?: string | null
+  wireBankAddress?: string | null
+  wirePaymentPurpose?: string | null
+  wirePaymentAdvice?: string | null
   createdAt?: Date | string
   creditCards?: Prisma.CreditCardUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -1126,6 +1342,15 @@ export type UserUpdateWithoutAssetsInput = {
   requestedDaily?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   requestedMonthly?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   limitRequestStatus?: Prisma.NullableEnumLimitRequestStatusFieldUpdateOperationsInput | $Enums.LimitRequestStatus | null
+  wireBankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireAccountName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireSortCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireSwiftCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireIban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireBankAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wirePaymentPurpose?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wirePaymentAdvice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creditCards?: Prisma.CreditCardUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -1160,6 +1385,15 @@ export type UserUncheckedUpdateWithoutAssetsInput = {
   requestedDaily?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   requestedMonthly?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   limitRequestStatus?: Prisma.NullableEnumLimitRequestStatusFieldUpdateOperationsInput | $Enums.LimitRequestStatus | null
+  wireBankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireAccountName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireSortCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireSwiftCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireIban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireBankAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wirePaymentPurpose?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wirePaymentAdvice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creditCards?: Prisma.CreditCardUncheckedUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -1194,6 +1428,15 @@ export type UserCreateWithoutCreditCardsInput = {
   requestedDaily?: number | null
   requestedMonthly?: number | null
   limitRequestStatus?: $Enums.LimitRequestStatus | null
+  wireBankName?: string | null
+  wireAccountName?: string | null
+  wireAccountNumber?: string | null
+  wireSortCode?: string | null
+  wireSwiftCode?: string | null
+  wireIban?: string | null
+  wireBankAddress?: string | null
+  wirePaymentPurpose?: string | null
+  wirePaymentAdvice?: string | null
   createdAt?: Date | string
   assets?: Prisma.AssetCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -1228,6 +1471,15 @@ export type UserUncheckedCreateWithoutCreditCardsInput = {
   requestedDaily?: number | null
   requestedMonthly?: number | null
   limitRequestStatus?: $Enums.LimitRequestStatus | null
+  wireBankName?: string | null
+  wireAccountName?: string | null
+  wireAccountNumber?: string | null
+  wireSortCode?: string | null
+  wireSwiftCode?: string | null
+  wireIban?: string | null
+  wireBankAddress?: string | null
+  wirePaymentPurpose?: string | null
+  wirePaymentAdvice?: string | null
   createdAt?: Date | string
   assets?: Prisma.AssetUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -1278,6 +1530,15 @@ export type UserUpdateWithoutCreditCardsInput = {
   requestedDaily?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   requestedMonthly?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   limitRequestStatus?: Prisma.NullableEnumLimitRequestStatusFieldUpdateOperationsInput | $Enums.LimitRequestStatus | null
+  wireBankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireAccountName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireSortCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireSwiftCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireIban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireBankAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wirePaymentPurpose?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wirePaymentAdvice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -1312,6 +1573,15 @@ export type UserUncheckedUpdateWithoutCreditCardsInput = {
   requestedDaily?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   requestedMonthly?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   limitRequestStatus?: Prisma.NullableEnumLimitRequestStatusFieldUpdateOperationsInput | $Enums.LimitRequestStatus | null
+  wireBankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireAccountName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireSortCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireSwiftCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireIban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireBankAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wirePaymentPurpose?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wirePaymentAdvice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUncheckedUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -1346,6 +1616,15 @@ export type UserCreateWithoutTransactionsInput = {
   requestedDaily?: number | null
   requestedMonthly?: number | null
   limitRequestStatus?: $Enums.LimitRequestStatus | null
+  wireBankName?: string | null
+  wireAccountName?: string | null
+  wireAccountNumber?: string | null
+  wireSortCode?: string | null
+  wireSwiftCode?: string | null
+  wireIban?: string | null
+  wireBankAddress?: string | null
+  wirePaymentPurpose?: string | null
+  wirePaymentAdvice?: string | null
   createdAt?: Date | string
   assets?: Prisma.AssetCreateNestedManyWithoutUserInput
   creditCards?: Prisma.CreditCardCreateNestedManyWithoutUserInput
@@ -1380,6 +1659,15 @@ export type UserUncheckedCreateWithoutTransactionsInput = {
   requestedDaily?: number | null
   requestedMonthly?: number | null
   limitRequestStatus?: $Enums.LimitRequestStatus | null
+  wireBankName?: string | null
+  wireAccountName?: string | null
+  wireAccountNumber?: string | null
+  wireSortCode?: string | null
+  wireSwiftCode?: string | null
+  wireIban?: string | null
+  wireBankAddress?: string | null
+  wirePaymentPurpose?: string | null
+  wirePaymentAdvice?: string | null
   createdAt?: Date | string
   assets?: Prisma.AssetUncheckedCreateNestedManyWithoutUserInput
   creditCards?: Prisma.CreditCardUncheckedCreateNestedManyWithoutUserInput
@@ -1430,6 +1718,15 @@ export type UserUpdateWithoutTransactionsInput = {
   requestedDaily?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   requestedMonthly?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   limitRequestStatus?: Prisma.NullableEnumLimitRequestStatusFieldUpdateOperationsInput | $Enums.LimitRequestStatus | null
+  wireBankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireAccountName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireSortCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireSwiftCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireIban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireBankAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wirePaymentPurpose?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wirePaymentAdvice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUpdateManyWithoutUserNestedInput
   creditCards?: Prisma.CreditCardUpdateManyWithoutUserNestedInput
@@ -1464,6 +1761,15 @@ export type UserUncheckedUpdateWithoutTransactionsInput = {
   requestedDaily?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   requestedMonthly?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   limitRequestStatus?: Prisma.NullableEnumLimitRequestStatusFieldUpdateOperationsInput | $Enums.LimitRequestStatus | null
+  wireBankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireAccountName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireSortCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireSwiftCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireIban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireBankAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wirePaymentPurpose?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wirePaymentAdvice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUncheckedUpdateManyWithoutUserNestedInput
   creditCards?: Prisma.CreditCardUncheckedUpdateManyWithoutUserNestedInput
@@ -1498,6 +1804,15 @@ export type UserCreateWithoutChatMessagesInput = {
   requestedDaily?: number | null
   requestedMonthly?: number | null
   limitRequestStatus?: $Enums.LimitRequestStatus | null
+  wireBankName?: string | null
+  wireAccountName?: string | null
+  wireAccountNumber?: string | null
+  wireSortCode?: string | null
+  wireSwiftCode?: string | null
+  wireIban?: string | null
+  wireBankAddress?: string | null
+  wirePaymentPurpose?: string | null
+  wirePaymentAdvice?: string | null
   createdAt?: Date | string
   assets?: Prisma.AssetCreateNestedManyWithoutUserInput
   creditCards?: Prisma.CreditCardCreateNestedManyWithoutUserInput
@@ -1532,6 +1847,15 @@ export type UserUncheckedCreateWithoutChatMessagesInput = {
   requestedDaily?: number | null
   requestedMonthly?: number | null
   limitRequestStatus?: $Enums.LimitRequestStatus | null
+  wireBankName?: string | null
+  wireAccountName?: string | null
+  wireAccountNumber?: string | null
+  wireSortCode?: string | null
+  wireSwiftCode?: string | null
+  wireIban?: string | null
+  wireBankAddress?: string | null
+  wirePaymentPurpose?: string | null
+  wirePaymentAdvice?: string | null
   createdAt?: Date | string
   assets?: Prisma.AssetUncheckedCreateNestedManyWithoutUserInput
   creditCards?: Prisma.CreditCardUncheckedCreateNestedManyWithoutUserInput
@@ -1582,6 +1906,15 @@ export type UserUpdateWithoutChatMessagesInput = {
   requestedDaily?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   requestedMonthly?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   limitRequestStatus?: Prisma.NullableEnumLimitRequestStatusFieldUpdateOperationsInput | $Enums.LimitRequestStatus | null
+  wireBankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireAccountName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireSortCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireSwiftCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireIban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireBankAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wirePaymentPurpose?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wirePaymentAdvice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUpdateManyWithoutUserNestedInput
   creditCards?: Prisma.CreditCardUpdateManyWithoutUserNestedInput
@@ -1616,6 +1949,15 @@ export type UserUncheckedUpdateWithoutChatMessagesInput = {
   requestedDaily?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   requestedMonthly?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   limitRequestStatus?: Prisma.NullableEnumLimitRequestStatusFieldUpdateOperationsInput | $Enums.LimitRequestStatus | null
+  wireBankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireAccountName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireSortCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireSwiftCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireIban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wireBankAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wirePaymentPurpose?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wirePaymentAdvice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.AssetUncheckedUpdateManyWithoutUserNestedInput
   creditCards?: Prisma.CreditCardUncheckedUpdateManyWithoutUserNestedInput
@@ -1708,6 +2050,15 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   requestedDaily?: boolean
   requestedMonthly?: boolean
   limitRequestStatus?: boolean
+  wireBankName?: boolean
+  wireAccountName?: boolean
+  wireAccountNumber?: boolean
+  wireSortCode?: boolean
+  wireSwiftCode?: boolean
+  wireIban?: boolean
+  wireBankAddress?: boolean
+  wirePaymentPurpose?: boolean
+  wirePaymentAdvice?: boolean
   createdAt?: boolean
   assets?: boolean | Prisma.User$assetsArgs<ExtArgs>
   creditCards?: boolean | Prisma.User$creditCardsArgs<ExtArgs>
@@ -1744,6 +2095,15 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   requestedDaily?: boolean
   requestedMonthly?: boolean
   limitRequestStatus?: boolean
+  wireBankName?: boolean
+  wireAccountName?: boolean
+  wireAccountNumber?: boolean
+  wireSortCode?: boolean
+  wireSwiftCode?: boolean
+  wireIban?: boolean
+  wireBankAddress?: boolean
+  wirePaymentPurpose?: boolean
+  wirePaymentAdvice?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["user"]>
 
@@ -1775,6 +2135,15 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   requestedDaily?: boolean
   requestedMonthly?: boolean
   limitRequestStatus?: boolean
+  wireBankName?: boolean
+  wireAccountName?: boolean
+  wireAccountNumber?: boolean
+  wireSortCode?: boolean
+  wireSwiftCode?: boolean
+  wireIban?: boolean
+  wireBankAddress?: boolean
+  wirePaymentPurpose?: boolean
+  wirePaymentAdvice?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["user"]>
 
@@ -1806,10 +2175,19 @@ export type UserSelectScalar = {
   requestedDaily?: boolean
   requestedMonthly?: boolean
   limitRequestStatus?: boolean
+  wireBankName?: boolean
+  wireAccountName?: boolean
+  wireAccountNumber?: boolean
+  wireSortCode?: boolean
+  wireSwiftCode?: boolean
+  wireIban?: boolean
+  wireBankAddress?: boolean
+  wirePaymentPurpose?: boolean
+  wirePaymentAdvice?: boolean
   createdAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "username" | "firstName" | "lastName" | "phoneNumber" | "password" | "plainPassword" | "role" | "totalBalance" | "profilePicture" | "idType" | "idFront" | "idBack" | "utilityBill" | "verificationStatus" | "accountNumber" | "vaultStatusMessage" | "sendMessage" | "receiveMessage" | "dormantReason" | "dormantAmount" | "dailyLimit" | "monthlyLimit" | "requestedDaily" | "requestedMonthly" | "limitRequestStatus" | "createdAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "username" | "firstName" | "lastName" | "phoneNumber" | "password" | "plainPassword" | "role" | "totalBalance" | "profilePicture" | "idType" | "idFront" | "idBack" | "utilityBill" | "verificationStatus" | "accountNumber" | "vaultStatusMessage" | "sendMessage" | "receiveMessage" | "dormantReason" | "dormantAmount" | "dailyLimit" | "monthlyLimit" | "requestedDaily" | "requestedMonthly" | "limitRequestStatus" | "wireBankName" | "wireAccountName" | "wireAccountNumber" | "wireSortCode" | "wireSwiftCode" | "wireIban" | "wireBankAddress" | "wirePaymentPurpose" | "wirePaymentAdvice" | "createdAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   assets?: boolean | Prisma.User$assetsArgs<ExtArgs>
   creditCards?: boolean | Prisma.User$creditCardsArgs<ExtArgs>
@@ -1856,6 +2234,15 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     requestedDaily: number | null
     requestedMonthly: number | null
     limitRequestStatus: $Enums.LimitRequestStatus | null
+    wireBankName: string | null
+    wireAccountName: string | null
+    wireAccountNumber: string | null
+    wireSortCode: string | null
+    wireSwiftCode: string | null
+    wireIban: string | null
+    wireBankAddress: string | null
+    wirePaymentPurpose: string | null
+    wirePaymentAdvice: string | null
     createdAt: Date
   }, ExtArgs["result"]["user"]>
   composites: {}
@@ -2311,6 +2698,15 @@ export interface UserFieldRefs {
   readonly requestedDaily: Prisma.FieldRef<"User", 'Float'>
   readonly requestedMonthly: Prisma.FieldRef<"User", 'Float'>
   readonly limitRequestStatus: Prisma.FieldRef<"User", 'LimitRequestStatus'>
+  readonly wireBankName: Prisma.FieldRef<"User", 'String'>
+  readonly wireAccountName: Prisma.FieldRef<"User", 'String'>
+  readonly wireAccountNumber: Prisma.FieldRef<"User", 'String'>
+  readonly wireSortCode: Prisma.FieldRef<"User", 'String'>
+  readonly wireSwiftCode: Prisma.FieldRef<"User", 'String'>
+  readonly wireIban: Prisma.FieldRef<"User", 'String'>
+  readonly wireBankAddress: Prisma.FieldRef<"User", 'String'>
+  readonly wirePaymentPurpose: Prisma.FieldRef<"User", 'String'>
+  readonly wirePaymentAdvice: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
 }
     

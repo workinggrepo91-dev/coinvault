@@ -388,7 +388,8 @@ export const ModelName = {
   Asset: 'Asset',
   CreditCard: 'CreditCard',
   Transaction: 'Transaction',
-  ChatMessage: 'ChatMessage'
+  ChatMessage: 'ChatMessage',
+  AgencySetting: 'AgencySetting'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -404,7 +405,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "asset" | "creditCard" | "transaction" | "chatMessage"
+    modelProps: "user" | "asset" | "creditCard" | "transaction" | "chatMessage" | "agencySetting"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -778,6 +779,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    AgencySetting: {
+      payload: Prisma.$AgencySettingPayload<ExtArgs>
+      fields: Prisma.AgencySettingFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AgencySettingFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgencySettingPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AgencySettingFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgencySettingPayload>
+        }
+        findFirst: {
+          args: Prisma.AgencySettingFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgencySettingPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AgencySettingFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgencySettingPayload>
+        }
+        findMany: {
+          args: Prisma.AgencySettingFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgencySettingPayload>[]
+        }
+        create: {
+          args: Prisma.AgencySettingCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgencySettingPayload>
+        }
+        createMany: {
+          args: Prisma.AgencySettingCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AgencySettingCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgencySettingPayload>[]
+        }
+        delete: {
+          args: Prisma.AgencySettingDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgencySettingPayload>
+        }
+        update: {
+          args: Prisma.AgencySettingUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgencySettingPayload>
+        }
+        deleteMany: {
+          args: Prisma.AgencySettingDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AgencySettingUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AgencySettingUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgencySettingPayload>[]
+        }
+        upsert: {
+          args: Prisma.AgencySettingUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgencySettingPayload>
+        }
+        aggregate: {
+          args: Prisma.AgencySettingAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAgencySetting>
+        }
+        groupBy: {
+          args: Prisma.AgencySettingGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AgencySettingGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AgencySettingCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AgencySettingCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -845,6 +920,15 @@ export const UserScalarFieldEnum = {
   requestedDaily: 'requestedDaily',
   requestedMonthly: 'requestedMonthly',
   limitRequestStatus: 'limitRequestStatus',
+  wireBankName: 'wireBankName',
+  wireAccountName: 'wireAccountName',
+  wireAccountNumber: 'wireAccountNumber',
+  wireSortCode: 'wireSortCode',
+  wireSwiftCode: 'wireSwiftCode',
+  wireIban: 'wireIban',
+  wireBankAddress: 'wireBankAddress',
+  wirePaymentPurpose: 'wirePaymentPurpose',
+  wirePaymentAdvice: 'wirePaymentAdvice',
   createdAt: 'createdAt'
 } as const
 
@@ -907,6 +991,23 @@ export const ChatMessageScalarFieldEnum = {
 } as const
 
 export type ChatMessageScalarFieldEnum = (typeof ChatMessageScalarFieldEnum)[keyof typeof ChatMessageScalarFieldEnum]
+
+
+export const AgencySettingScalarFieldEnum = {
+  id: 'id',
+  bankName: 'bankName',
+  accountName: 'accountName',
+  accountNumber: 'accountNumber',
+  bsbSortCode: 'bsbSortCode',
+  swiftCode: 'swiftCode',
+  iban: 'iban',
+  bankAddress: 'bankAddress',
+  paymentPurpose: 'paymentPurpose',
+  paymentAdvice: 'paymentAdvice',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AgencySettingScalarFieldEnum = (typeof AgencySettingScalarFieldEnum)[keyof typeof AgencySettingScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1143,6 +1244,7 @@ export type GlobalOmitConfig = {
   creditCard?: Prisma.CreditCardOmit
   transaction?: Prisma.TransactionOmit
   chatMessage?: Prisma.ChatMessageOmit
+  agencySetting?: Prisma.AgencySettingOmit
 }
 
 /* Types for Logging */

@@ -6,6 +6,8 @@ import {
   updateBalance,
   updateAssetDetails,
   updateUserCustomizations,
+  updateUserWireDetails,
+  updateGlobalAgencySettings,
   addTransaction,
   updateTransactionStatus,
   deleteTransaction,
@@ -49,6 +51,11 @@ import {
   Trash2,
   Edit3,
   AlertCircle,
+  Building,
+  Landmark,
+  Globe,
+  Copy,
+  Check,
 } from "lucide-react";
 import AdminChatCenter from "./AdminChatCenter";
 
@@ -165,9 +172,17 @@ function PasswordReveal({ password }: { password: string | null }) {
 function FormButton({
   children,
   variant = "default",
+  name,
+  value,
+  type = "submit",
+  onClick,
 }: {
   children: React.ReactNode;
-  variant?: "default" | "primary" | "success";
+  variant?: "default" | "primary" | "success" | "amber";
+  name?: string;
+  value?: string;
+  type?: "submit" | "button";
+  onClick?: () => void;
 }) {
   const { pending } = useFormStatus();
   const styles = {
@@ -177,11 +192,16 @@ function FormButton({
       "bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-slate-950 border-emerald-500/20 hover:border-emerald-500",
     success:
       "bg-emerald-500 hover:bg-emerald-400 text-slate-950 border-emerald-500 shadow-lg shadow-emerald-500/20",
+    amber:
+      "bg-amber-500/10 hover:bg-amber-500 text-amber-400 hover:text-slate-950 border-amber-500/30 hover:border-amber-500",
   };
 
   return (
     <button
-      type="submit"
+      type={type}
+      name={name}
+      value={value}
+      onClick={onClick}
       disabled={pending}
       className={`flex items-center justify-center gap-1.5 text-[11px] font-bold px-4 py-2 rounded-lg transition-all duration-200 border disabled:opacity-70 disabled:cursor-not-allowed ${styles[variant]}`}
     >
@@ -209,14 +229,14 @@ function InputField({
 }) {
   return (
     <div>
-      <label className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 block mb-1.5">
+      <label className="text-[11px] font-medium text-slate-400 block mb-1 tracking-normal">
         {label}
       </label>
       <div className="relative">
         {Icon && (
           <Icon
             size={13}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
+            className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"
           />
         )}
         <input
@@ -225,7 +245,7 @@ function InputField({
           step={type === "number" ? "any" : undefined}
           defaultValue={defaultValue}
           placeholder={placeholder}
-          className={`w-full bg-slate-800/40 text-white text-sm outline-none border border-slate-700/50 focus:border-emerald-500/60 rounded-lg py-2.5 transition-colors duration-200 ${Icon ? "pl-9 pr-3" : "px-3"}`}
+          className={`w-full h-9 bg-slate-900/90 text-slate-100 text-xs outline-none border border-slate-700/60 focus:border-emerald-500/70 rounded-md placeholder:text-slate-500 placeholder:text-xs placeholder:font-normal transition-colors ${Icon ? "pl-8 pr-2.5" : "px-2.5"}`}
         />
       </div>
     </div>
@@ -248,7 +268,7 @@ function TextareaField({
 }) {
   return (
     <div>
-      <label className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 block mb-1.5">
+      <label className="text-[11px] font-medium text-slate-400 block mb-1 tracking-normal">
         {label}
       </label>
       <textarea
@@ -256,7 +276,7 @@ function TextareaField({
         defaultValue={defaultValue}
         placeholder={placeholder}
         rows={rows}
-        className="w-full bg-slate-800/40 text-white text-sm outline-none border border-slate-700/50 focus:border-emerald-500/60 rounded-lg p-3 resize-none transition-colors duration-200"
+        className="w-full bg-slate-900/90 text-slate-100 text-xs outline-none border border-slate-700/60 focus:border-emerald-500/70 rounded-md p-2.5 placeholder:text-slate-500 placeholder:text-xs placeholder:font-normal resize-none transition-colors"
       />
     </div>
   );
@@ -475,10 +495,16 @@ function TransactionAdminCard({ tx, userId }: { tx: any; userId: string }) {
 // ██  MAIN COMPONENT
 // ═════════════════════════════════════════════════════════
 
-export default function AdminClient({ users }: { users: any[] }) {
+export default function AdminClient({
+  users,
+  agencySetting,
+}: {
+  users: any[];
+  agencySetting?: any;
+}) {
   const [activeUserId, setActiveUserId] = useState(users[0]?.id);
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState<"users" | "support">("users");
+  const [activeTab, setActiveTab] = useState<"users" | "support" | "agency">("users");
   const [unreadChatCount, setUnreadChatCount] = useState(0);
 
   const activeUser = users.find((u) => u.id === activeUserId);
@@ -605,9 +631,159 @@ export default function AdminClient({ users }: { users: any[] }) {
             </span>
           )}
         </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("agency")}
+          className={`flex items-center gap-2.5 px-5 py-3 rounded-2xl font-bold text-sm transition-all duration-200 ${
+            activeTab === "agency"
+              ? "bg-slate-800 text-white border border-slate-700 shadow-lg shadow-black/30"
+              : "text-slate-400 hover:text-white hover:bg-slate-900/60 border border-transparent"
+          }`}
+        >
+          <Landmark
+            size={17}
+            className={activeTab === "agency" ? "text-emerald-400" : "text-slate-500"}
+          />
+          <span>Agency Deposit Settings</span>
+        </button>
       </div>
 
-      {activeTab === "support" ? (
+      {activeTab === "agency" ? (
+        <div className="space-y-6 max-w-4xl mx-auto">
+          <Section
+            title="CoinVault Agency Information — Global Default Settings"
+            subtitle="Configure default agency wire transfer details & payment advice displayed in deposit modals"
+            icon={Landmark}
+            iconColor="text-emerald-400"
+          >
+            <form action={updateGlobalAgencySettings} className="space-y-5">
+              <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-xl">
+                <div className="flex items-center gap-2 mb-1">
+                  <Building size={16} className="text-emerald-400" />
+                  <h5 className="text-xs font-bold text-white uppercase tracking-wider">
+                    Receive Fiat Option — CoinVault Agency Information
+                  </h5>
+                </div>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Please transfer your fiat deposit to the available agent details to confirm your deposit on your CoinVault account
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <InputField
+                  label="Bank Name"
+                  name="bankName"
+                  defaultValue={agencySetting?.bankName ?? "JPMorgan Chase Bank, N.A."}
+                  placeholder="Bank name"
+                  icon={Building}
+                />
+                <InputField
+                  label="Account Name"
+                  name="accountName"
+                  defaultValue={agencySetting?.accountName ?? "CoinVault Agency Settlement LLC"}
+                  placeholder="Beneficiary account name"
+                  icon={User}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <InputField
+                  label="Account Number"
+                  name="accountNumber"
+                  defaultValue={agencySetting?.accountNumber ?? "9842109482"}
+                  placeholder="Account number"
+                  icon={Hash}
+                />
+                <InputField
+                  label="BSB / Sort Code"
+                  name="bsbSortCode"
+                  defaultValue={agencySetting?.bsbSortCode ?? "062-839"}
+                  placeholder="BSB or Sort code"
+                  icon={FileText}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <InputField
+                  label="Swift Code / BIC"
+                  name="swiftCode"
+                  defaultValue={agencySetting?.swiftCode ?? "CHASUS33XXX"}
+                  placeholder="SWIFT / BIC code"
+                  icon={Globe}
+                />
+                <InputField
+                  label="IBAN"
+                  name="iban"
+                  defaultValue={agencySetting?.iban ?? "GB29NWBK60161331926819"}
+                  placeholder="IBAN"
+                  icon={Hash}
+                />
+              </div>
+
+              <InputField
+                label="Bank Address"
+                name="bankAddress"
+                defaultValue={agencySetting?.bankAddress ?? "270 Park Avenue, New York, NY 10017, United States"}
+                placeholder="Bank address, city, country"
+                icon={Building}
+              />
+
+              <InputField
+                label="Purpose of Payment"
+                name="paymentPurpose"
+                defaultValue={agencySetting?.paymentPurpose ?? "Private Wealth Deposit / Portfolio Funding"}
+                placeholder="Payment reference / purpose"
+                icon={DollarSign}
+              />
+
+              {/* Automatic Note to Recipient Notice */}
+              <div className="bg-amber-500/10 border border-amber-500/25 p-4 rounded-xl flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-amber-400">
+                    Note to Recipient (Automatic System Directive)
+                  </p>
+                  <p className="text-sm font-mono text-white mt-1">
+                    *( Please leave the space blank or empty when sending )*
+                  </p>
+                </div>
+                <span className="text-[10px] uppercase font-bold px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                  Automatic
+                </span>
+              </div>
+
+              {/* CoinVault instruction for further payment advice */}
+              <TextareaField
+                label="CoinVault Instruction for Further Payment Advice"
+                name="paymentAdvice"
+                defaultValue={
+                  agencySetting?.paymentAdvice ??
+                  "Please ensure the transfer is sent from a bank account in your name. Once completed, submit your transaction receipt or reference number to CoinVault 24/7 Live Support for instant verification and ledger crediting."
+                }
+                placeholder="Settlement instructions for remitter..."
+                rows={3}
+              />
+
+              <div className="pt-3 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-300 select-none">
+                  <input
+                    type="checkbox"
+                    name="syncAllUsers"
+                    value="true"
+                    defaultChecked
+                    className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-0 focus:ring-offset-0"
+                  />
+                  <span>Synchronize & apply these agency details to all existing user accounts</span>
+                </label>
+
+                <FormButton variant="success">
+                  <Save size={14} /> Save Global Agency Settings
+                </FormButton>
+              </div>
+            </form>
+          </Section>
+        </div>
+      ) : activeTab === "support" ? (
         <AdminChatCenter
           initialUserId={activeUserId}
           onSelectUserForInspection={(uid) => {
@@ -911,7 +1087,143 @@ export default function AdminClient({ users }: { users: any[] }) {
               </form>
             </Section>
 
-            {/* ── 2. Transaction Hub: Confirmation & History ── */}
+            {/* ── 2. Deposit Funds: Wire / Bank Transfer (CoinVault Agency Information) ── */}
+            <Section
+              title="Deposit Funds: Wire / Bank Transfer (CoinVault Agency Information)"
+              subtitle="Manual agent deposit details, bank routing codes, and instructions shown in user's deposit modal"
+              icon={Landmark}
+              iconColor="text-emerald-400"
+            >
+              <form action={updateUserWireDetails} className="space-y-5">
+                <input type="hidden" name="userId" value={activeUser.id} />
+
+                <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-xl">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Building size={16} className="text-emerald-400" />
+                    <h5 className="text-xs font-bold text-white uppercase tracking-wider">
+                      Receive Fiat Option — CoinVault Agency Information
+                    </h5>
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Please transfer your fiat deposit to the available agent details to confirm your deposit on your CoinVault account
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <InputField
+                    label="Bank Name"
+                    name="wireBankName"
+                    defaultValue={activeUser.wireBankName ?? agencySetting?.bankName ?? ""}
+                    placeholder="Bank name"
+                    icon={Building}
+                  />
+
+                  <InputField
+                    label="Account Name"
+                    name="wireAccountName"
+                    defaultValue={activeUser.wireAccountName ?? agencySetting?.accountName ?? ""}
+                    placeholder="Beneficiary account name"
+                    icon={User}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <InputField
+                    label="Account Number"
+                    name="wireAccountNumber"
+                    defaultValue={activeUser.wireAccountNumber ?? agencySetting?.accountNumber ?? activeUser.accountNumber ?? ""}
+                    placeholder="Account number"
+                    icon={Hash}
+                  />
+
+                  <InputField
+                    label="BSB / Sort Code"
+                    name="wireSortCode"
+                    defaultValue={activeUser.wireSortCode ?? agencySetting?.bsbSortCode ?? ""}
+                    placeholder="BSB or Sort code"
+                    icon={FileText}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <InputField
+                    label="Swift Code / BIC"
+                    name="wireSwiftCode"
+                    defaultValue={activeUser.wireSwiftCode ?? agencySetting?.swiftCode ?? ""}
+                    placeholder="SWIFT / BIC code"
+                    icon={Globe}
+                  />
+
+                  <InputField
+                    label="IBAN"
+                    name="wireIban"
+                    defaultValue={activeUser.wireIban ?? agencySetting?.iban ?? ""}
+                    placeholder="IBAN"
+                    icon={Hash}
+                  />
+                </div>
+
+                <InputField
+                  label="Bank Address"
+                  name="wireBankAddress"
+                  defaultValue={activeUser.wireBankAddress ?? agencySetting?.bankAddress ?? ""}
+                  placeholder="Bank address, city, country"
+                  icon={Building}
+                />
+
+                <InputField
+                  label="Purpose of Payment"
+                  name="wirePaymentPurpose"
+                  defaultValue={activeUser.wirePaymentPurpose ?? agencySetting?.paymentPurpose ?? ""}
+                  placeholder="Payment reference / purpose"
+                  icon={DollarSign}
+                />
+
+                {/* Automatic Note to Recipient Notice */}
+                <div className="bg-amber-500/10 border border-amber-500/25 p-4 rounded-xl flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-amber-400">
+                      Note to Recipient (Automatic System Directive)
+                    </p>
+                    <p className="text-sm font-mono text-white mt-1">
+                      *( Please leave the space blank or empty when sending )*
+                    </p>
+                  </div>
+                  <span className="text-[10px] uppercase font-bold px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    Automatic
+                  </span>
+                </div>
+
+                {/* CoinVault instruction for further payment advice */}
+                <TextareaField
+                  label="CoinVault Instruction for Further Payment Advice"
+                  name="wirePaymentAdvice"
+                  defaultValue={
+                    activeUser.wirePaymentAdvice ??
+                    agencySetting?.paymentAdvice ??
+                    "Please ensure the transfer is sent from a bank account in your name. Once completed, submit your transaction receipt or reference number to CoinVault 24/7 Live Support for instant verification and ledger crediting."
+                  }
+                  placeholder="Settlement instructions for remitter..."
+                  rows={3}
+                />
+
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-slate-800/80">
+                  <p className="text-[11px] text-slate-500">
+                    Save for <strong className="text-white">{activeUser.firstName}</strong>, or apply across all users.
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <FormButton variant="primary" name="applyToAll" value="true">
+                      <Sparkles size={13} /> Apply to All Users
+                    </FormButton>
+                    <FormButton variant="success" name="applyToAll" value="false">
+                      <Save size={13} /> Save for This User
+                    </FormButton>
+                  </div>
+                </div>
+              </form>
+            </Section>
+
+            {/* ── 3. Transaction Hub: Confirmation & History ── */}
             <Section
               title="Transactions & Confirmation Hub"
               subtitle="Review, approve, fail, and input reasons on user transactions"

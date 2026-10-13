@@ -26,6 +26,10 @@ export default async function DashboardPage() {
     orderBy: { createdAt: "desc" },
   });
 
+  const agencySetting = await prisma.agencySetting.findUnique({
+    where: { id: "default" },
+  });
+
   return (
     <AppShell role={userVault.role}>
       <div className="p-4 md:p-10 max-w-7xl mx-auto space-y-6">
@@ -55,6 +59,7 @@ export default async function DashboardPage() {
           user={userVault}
           marketData={marketData}
           transactions={transactions}
+          agencySetting={agencySetting}
         />
       </div>
     </AppShell>

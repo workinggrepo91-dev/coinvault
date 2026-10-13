@@ -42,3 +42,8 @@ export type Transaction = Prisma.TransactionModel
  * 
  */
 export type ChatMessage = Prisma.ChatMessageModel
+/**
+ * Model AgencySetting
+ * 
+ */
+export type AgencySetting = Prisma.AgencySettingModel

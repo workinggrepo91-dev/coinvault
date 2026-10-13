@@ -1,3 +1,4 @@
+import "./patch-dns.cjs";
 import "dotenv/config";
 import { defineConfig, env } from "prisma/config";
 

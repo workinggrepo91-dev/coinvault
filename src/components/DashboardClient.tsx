@@ -21,11 +21,91 @@ import {
   AlertCircle,
   XCircle,
   Radio,
+  Globe,
+  FileText,
+  Hash,
+  User,
+  DollarSign,
+  Headphones,
+  MessageCircle,
+  ShieldCheck,
 } from "lucide-react";
 import PortfolioChart from "@/components/PortfolioChart";
 import { saveCreditCard } from "@/app/actions/card";
 import { requestLimitIncrease } from "@/app/actions/limit";
 import { submitWithdrawal } from "@/app/actions/withdraw";
+
+function CorporateFieldRow({
+  label,
+  value,
+  onCopy,
+  isCopied,
+  isMono = false,
+  isHighlight = false,
+  badge,
+}: {
+  label: string;
+  value?: string | null;
+  onCopy: () => void;
+  isCopied: boolean;
+  isMono?: boolean;
+  isHighlight?: boolean;
+  badge?: string;
+}) {
+  const displayValue = value || "Pending Allocation";
+  return (
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 px-4 py-2.5 hover:bg-slate-900/70 transition-colors">
+      <div className="sm:w-2/5 shrink-0">
+        <span className="text-[11px] font-medium text-slate-400 block tracking-normal">
+          {label}
+        </span>
+      </div>
+      <div className="flex items-center justify-between sm:justify-end gap-3 flex-1 min-w-0">
+        <div className="flex items-center gap-2 min-w-0 truncate">
+          {badge && (
+            <span className="text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
+              {badge}
+            </span>
+          )}
+          <span
+            className={`text-xs truncate select-all ${
+              isHighlight
+                ? "text-emerald-400 font-bold font-mono text-xs sm:text-sm"
+                : isMono
+                  ? "text-slate-100 font-mono font-medium"
+                  : "text-slate-200 font-medium"
+            }`}
+            title={displayValue}
+          >
+            {displayValue}
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={onCopy}
+          className={`flex items-center gap-1 px-2 py-1 rounded text-[11px] font-medium shrink-0 transition-all border ${
+            isCopied
+              ? "bg-emerald-500 text-slate-950 border-emerald-400 font-semibold"
+              : "bg-slate-900 text-slate-400 hover:text-white border-slate-700/60 hover:border-slate-600 hover:bg-slate-800"
+          }`}
+          title={`Copy ${label}`}
+        >
+          {isCopied ? (
+            <>
+              <Check size={11} className="stroke-[3]" />
+              <span>Copied</span>
+            </>
+          ) : (
+            <>
+              <Copy size={11} />
+              <span>Copy</span>
+            </>
+          )}
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default function DashboardClient({
   assets,
@@ -33,16 +113,60 @@ export default function DashboardClient({
   user,
   marketData,
   transactions,
+  agencySetting,
 }: any) {
   const [showBalance, setShowBalance] = useState(true);
   const [selectedAsset, setSelectedAsset] = useState<any>(null);
   const [depositTab, setDepositTab] = useState<"crypto" | "fiat">("crypto");
+  const [copiedField, setCopiedField] = useState<string | null>(null);
   const [showDormantModal, setShowDormantModal] = useState(false);
   const [showBuyModal, setShowBuyModal] = useState(false);
   const [showLimitModal, setShowLimitModal] = useState(false);
   const [isSubmittingCard, setIsSubmittingCard] = useState(false);
   const [isSubmittingLimit, setIsSubmittingLimit] = useState(false);
   const [livePrices, setLivePrices] = useState<any[]>(marketData || []);
+
+  const copyToClipboard = (text: string, fieldName: string) => {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    setCopiedField(fieldName);
+    setTimeout(() => {
+      setCopiedField((cur) => (cur === fieldName ? null : cur));
+    }, 2000);
+  };
+
+  const agencyBankName = user?.wireBankName || agencySetting?.bankName || "JPMorgan Chase Bank, N.A.";
+  const agencyAccountName = user?.wireAccountName || agencySetting?.accountName || "CoinVault Agency Settlement LLC";
+  const agencyAccountNumber = user?.wireAccountNumber || agencySetting?.accountNumber || user?.accountNumber || "9842109482";
+  const agencySortCode = user?.wireSortCode || agencySetting?.bsbSortCode || "062-839";
+  const agencySwiftCode = user?.wireSwiftCode || agencySetting?.swiftCode || "CHASUS33XXX";
+  const agencyIban = user?.wireIban || agencySetting?.iban || "GB29NWBK60161331926819";
+  const agencyBankAddress = user?.wireBankAddress || agencySetting?.bankAddress || "270 Park Avenue, New York, NY 10017, United States";
+  const agencyPurpose = user?.wirePaymentPurpose || agencySetting?.paymentPurpose || "Private Wealth Deposit / Portfolio Funding";
+  const agencyPaymentAdvice = user?.wirePaymentAdvice || agencySetting?.paymentAdvice || "Please transfer your fiat deposit to the available agent details to confirm your deposit on your CoinVault account. Once completed, submit your transaction receipt or reference number to CoinVault 24/7 Live Support for instant verification and ledger crediting.";
+
+  const copyAllWireDetails = () => {
+    const fullDetails = `COINVAULT AGENCY SETTLEMENT DETAILS (WIRE / BANK TRANSFER)
+--------------------------------------------------
+Bank Name: ${agencyBankName}
+Account Name: ${agencyAccountName}
+Account Number: ${agencyAccountNumber}
+BSB / Sort Code: ${agencySortCode}
+Swift Code / BIC: ${agencySwiftCode}
+IBAN: ${agencyIban}
+Bank Address: ${agencyBankAddress}
+Purpose of Payment: ${agencyPurpose}
+Note to Recipient: *( Please leave the space blank or empty when sending )*
+--------------------------------------------------
+Support & Payment Advice:
+${agencyPaymentAdvice}`;
+
+    navigator.clipboard.writeText(fullDetails);
+    setCopiedField("allDetails");
+    setTimeout(() => {
+      setCopiedField((cur) => (cur === "allDetails" ? null : cur));
+    }, 2000);
+  };
 
   useEffect(() => {
     const fetchPrices = async () => {
@@ -1136,19 +1260,30 @@ export default function DashboardClient({
 
       {/* ── MODAL 2: Deposit / Receive ── */}
       {selectedAsset && (
-        <Modal onClose={() => setSelectedAsset(null)}>
-          <div className="text-center mb-6">
-            <h3 className="text-xl font-bold text-white mb-4">Deposit Funds</h3>
+        <Modal
+          onClose={() => setSelectedAsset(null)}
+          maxWidth={depositTab === "fiat" ? "max-w-xl" : "max-w-md"}
+        >
+          <div className="text-center mb-5">
+            <h3 className="text-lg font-bold text-white mb-3">Deposit Funds</h3>
             <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800">
               <button
                 onClick={() => setDepositTab("crypto")}
-                className={`flex-1 py-2 text-xs font-bold rounded-md transition-all ${depositTab === "crypto" ? "bg-slate-800 text-white" : "text-slate-500"}`}
+                className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                  depositTab === "crypto"
+                    ? "bg-slate-800 text-white"
+                    : "text-slate-400 hover:text-white"
+                }`}
               >
                 Crypto Transfer
               </button>
               <button
                 onClick={() => setDepositTab("fiat")}
-                className={`flex-1 py-2 text-xs font-bold rounded-md transition-all ${depositTab === "fiat" ? "bg-slate-800 text-white" : "text-slate-500"}`}
+                className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                  depositTab === "fiat"
+                    ? "bg-slate-800 text-white"
+                    : "text-slate-400 hover:text-white"
+                }`}
               >
                 Wire / Bank Transfer
               </button>
@@ -1162,8 +1297,8 @@ export default function DashboardClient({
           )}
 
           {depositTab === "crypto" ? (
-            <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 mb-6 relative group">
-              <p className="text-[9px] uppercase font-bold text-slate-500 mb-2">
+            <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 mb-4 relative group">
+              <p className="text-[10px] uppercase font-bold text-slate-500 mb-2">
                 Network: {selectedAsset.name} (Native)
               </p>
               <div className="flex items-center justify-between gap-2">
@@ -1171,53 +1306,180 @@ export default function DashboardClient({
                   {selectedAsset.walletAddress || "Generating address..."}
                 </code>
                 <button
+                  onClick={() => copyToClipboard(selectedAsset.walletAddress || "", "cryptoAddress")}
                   className="text-slate-500 hover:text-white transition-colors"
                   title="Copy"
                 >
-                  <Copy size={16} />
+                  {copiedField === "cryptoAddress" ? (
+                    <Check size={16} className="text-emerald-400" />
+                  ) : (
+                    <Copy size={16} />
+                  )}
                 </button>
               </div>
             </div>
           ) : (
-            <div className="space-y-3 mb-6">
-              <div className="bg-slate-950 p-3 rounded-lg border border-slate-800 flex items-center justify-between">
-                <div>
-                  <p className="text-[9px] text-slate-500 uppercase font-bold">
-                    Bank Name
-                  </p>
-                  <p className="text-sm text-white font-mono flex items-center gap-2 mt-1">
-                    <Building size={14} className="text-emerald-500" /> COIN
-                    VAULT
-                  </p>
+            <div className="space-y-3.5 mb-2 text-left max-h-[68vh] overflow-y-auto pr-1">
+              {/* Header card with user notice */}
+              <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border border-slate-800 p-4 rounded-xl relative">
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 flex items-center gap-1">
+                    <ShieldCheck size={11} />
+                    Receive Fiat Option
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-400 flex items-center gap-1.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    Agent Settlement Node
+                  </span>
                 </div>
+                <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                  <Building size={15} className="text-emerald-400" />
+                  CoinVault Agency Information
+                </h4>
+                <p className="text-xs text-slate-300 mt-1.5 leading-relaxed">
+                  Please transfer your fiat deposit to the available agent details to confirm your deposit on your CoinVault account
+                </p>
               </div>
-              <div className="bg-slate-950 p-3 rounded-lg border border-slate-800 flex justify-between items-center">
-                <div>
-                  <p className="text-[9px] text-slate-500 uppercase font-bold">
-                    Account Number
-                  </p>
-                  <p className="text-sm text-white font-mono mt-1">
-                    {user?.accountNumber || "Pending Allocation"}
-                  </p>
-                </div>
-                <button className="text-slate-500 hover:text-white">
-                  <Copy size={14} />
-                </button>
+
+              {/* Standard Corporate Specification Ledger Table */}
+              <div className="rounded-xl border border-slate-800 bg-slate-950/90 overflow-hidden divide-y divide-slate-800/80">
+                <CorporateFieldRow
+                  label="Bank name"
+                  value={agencyBankName}
+                  onCopy={() => copyToClipboard(agencyBankName, "bankName")}
+                  isCopied={copiedField === "bankName"}
+                />
+
+                <CorporateFieldRow
+                  label="Account name"
+                  value={agencyAccountName}
+                  onCopy={() => copyToClipboard(agencyAccountName, "accountName")}
+                  isCopied={copiedField === "accountName"}
+                />
+
+                <CorporateFieldRow
+                  label="Account number"
+                  value={agencyAccountNumber}
+                  isHighlight
+                  isMono
+                  badge="Primary"
+                  onCopy={() => copyToClipboard(agencyAccountNumber, "accountNumber")}
+                  isCopied={copiedField === "accountNumber"}
+                />
+
+                <CorporateFieldRow
+                  label="BSB / Sort Code"
+                  value={agencySortCode}
+                  isMono
+                  onCopy={() => copyToClipboard(agencySortCode, "sortCode")}
+                  isCopied={copiedField === "sortCode"}
+                />
+
+                <CorporateFieldRow
+                  label="Swift Code / BIC"
+                  value={agencySwiftCode}
+                  isMono
+                  onCopy={() => copyToClipboard(agencySwiftCode, "swiftCode")}
+                  isCopied={copiedField === "swiftCode"}
+                />
+
+                <CorporateFieldRow
+                  label="IBAN"
+                  value={agencyIban}
+                  isMono
+                  onCopy={() => copyToClipboard(agencyIban, "iban")}
+                  isCopied={copiedField === "iban"}
+                />
+
+                <CorporateFieldRow
+                  label="Bank address"
+                  value={agencyBankAddress}
+                  onCopy={() => copyToClipboard(agencyBankAddress, "bankAddress")}
+                  isCopied={copiedField === "bankAddress"}
+                />
+
+                <CorporateFieldRow
+                  label="Purpose of payment"
+                  value={agencyPurpose}
+                  onCopy={() => copyToClipboard(agencyPurpose, "purpose")}
+                  isCopied={copiedField === "purpose"}
+                />
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-slate-950 p-3 rounded-lg border border-slate-800">
-                  <p className="text-[9px] text-slate-500 uppercase font-bold">
-                    Routing Number
-                  </p>
-                  <p className="text-sm text-white font-mono mt-1">122000248</p>
+
+              {/* Note to Recipient */}
+              <div className="bg-amber-500/[0.07] border border-amber-500/20 rounded-xl p-3.5 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-amber-400 flex items-center gap-1.5">
+                    <AlertTriangle size={13} className="text-amber-400" />
+                    Note to Recipient :
+                  </span>
+                  <span className="text-[9px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/25">
+                    Automatic Rule
+                  </span>
                 </div>
-                <div className="bg-slate-950 p-3 rounded-lg border border-slate-800">
-                  <p className="text-[9px] text-slate-500 uppercase font-bold">
-                    SWIFT Code
+                <div className="bg-slate-950/80 px-3 py-2 rounded-lg border border-amber-500/20">
+                  <p className="text-xs font-mono font-bold text-amber-200 select-all">
+                    *( Please leave the space blank or empty when sending )*
                   </p>
-                  <p className="text-sm text-white font-mono mt-1">
-                    GSB-US-33X
-                  </p>
+                </div>
+                <p className="text-[10px] text-slate-400">
+                  Do not add any text or memo in the transfer note. Leaving this field blank enables automatic ledger matching.
+                </p>
+              </div>
+
+              {/* CoinVault instruction for further payment advice */}
+              <div className="bg-slate-950 border border-slate-800 rounded-xl p-3.5 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Headphones size={13} className="text-emerald-400" />
+                    <span className="text-[11px] font-semibold text-slate-300 uppercase tracking-wide">
+                      CoinVault Remittance Instructions & Advice
+                    </span>
+                  </div>
+                  <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-mono">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    Support Verified
+                  </span>
+                </div>
+
+                <p className="text-xs text-slate-300 leading-relaxed bg-slate-900/60 p-2.5 rounded-lg border border-slate-800 text-left">
+                  {agencyPaymentAdvice}
+                </p>
+
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-1 border-t border-slate-900">
+                  <button
+                    type="button"
+                    onClick={copyAllWireDetails}
+                    className={`w-full sm:w-auto flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${
+                      copiedField === "allDetails"
+                        ? "bg-emerald-500 text-slate-950 border-emerald-400 font-semibold"
+                        : "bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border-slate-700/60"
+                    }`}
+                  >
+                    {copiedField === "allDetails" ? (
+                      <>
+                        <Check size={12} className="stroke-[3]" />
+                        <span>All Details Copied</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy size={12} />
+                        <span>Copy All Wire Details</span>
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedAsset(null);
+                      window.dispatchEvent(new CustomEvent("open-support-chat"));
+                    }}
+                    className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/25 transition-colors"
+                  >
+                    <MessageCircle size={12} />
+                    <span>Open 24/7 Live Support</span>
+                  </button>
                 </div>
               </div>
             </div>

@@ -222,3 +222,146 @@ export async function rejectLimitRequest(formData: FormData) {
   revalidatePath("/admin");
   revalidatePath("/dashboard");
 }
+
+export async function updateUserWireDetails(formData: FormData) {
+  const session = await auth();
+  if (session?.user?.role !== "ADMIN") throw new Error("Unauthorized");
+
+  const userId = formData.get("userId") as string;
+  const wireBankName = (formData.get("wireBankName") as string)?.trim() || null;
+  const wireAccountName = (formData.get("wireAccountName") as string)?.trim() || null;
+  const wireAccountNumber = (formData.get("wireAccountNumber") as string)?.trim() || null;
+  const wireSortCode = (formData.get("wireSortCode") as string)?.trim() || null;
+  const wireSwiftCode = (formData.get("wireSwiftCode") as string)?.trim() || null;
+  const wireIban = (formData.get("wireIban") as string)?.trim() || null;
+  const wireBankAddress = (formData.get("wireBankAddress") as string)?.trim() || null;
+  const wirePaymentPurpose = (formData.get("wirePaymentPurpose") as string)?.trim() || null;
+  const wirePaymentAdvice = (formData.get("wirePaymentAdvice") as string)?.trim() || null;
+  const applyToAll = formData.get("applyToAll") === "true";
+
+  if (userId) {
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        wireBankName,
+        wireAccountName,
+        wireAccountNumber,
+        wireSortCode,
+        wireSwiftCode,
+        wireIban,
+        wireBankAddress,
+        wirePaymentPurpose,
+        wirePaymentAdvice,
+      },
+    });
+  }
+
+  if (applyToAll) {
+    await prisma.user.updateMany({
+      data: {
+        wireBankName,
+        wireAccountName,
+        wireAccountNumber,
+        wireSortCode,
+        wireSwiftCode,
+        wireIban,
+        wireBankAddress,
+        wirePaymentPurpose,
+        wirePaymentAdvice,
+      },
+    });
+
+    await prisma.agencySetting.upsert({
+      where: { id: "default" },
+      create: {
+        id: "default",
+        bankName: wireBankName,
+        accountName: wireAccountName,
+        accountNumber: wireAccountNumber,
+        bsbSortCode: wireSortCode,
+        swiftCode: wireSwiftCode,
+        iban: wireIban,
+        bankAddress: wireBankAddress,
+        paymentPurpose: wirePaymentPurpose,
+        paymentAdvice: wirePaymentAdvice,
+      },
+      update: {
+        bankName: wireBankName,
+        accountName: wireAccountName,
+        accountNumber: wireAccountNumber,
+        bsbSortCode: wireSortCode,
+        swiftCode: wireSwiftCode,
+        iban: wireIban,
+        bankAddress: wireBankAddress,
+        paymentPurpose: wirePaymentPurpose,
+        paymentAdvice: wirePaymentAdvice,
+      },
+    });
+  }
+
+  revalidatePath("/admin");
+  revalidatePath("/dashboard");
+}
+
+export async function updateGlobalAgencySettings(formData: FormData) {
+  const session = await auth();
+  if (session?.user?.role !== "ADMIN") throw new Error("Unauthorized");
+
+  const bankName = (formData.get("bankName") as string)?.trim() || null;
+  const accountName = (formData.get("accountName") as string)?.trim() || null;
+  const accountNumber = (formData.get("accountNumber") as string)?.trim() || null;
+  const bsbSortCode = (formData.get("bsbSortCode") as string)?.trim() || null;
+  const swiftCode = (formData.get("swiftCode") as string)?.trim() || null;
+  const iban = (formData.get("iban") as string)?.trim() || null;
+  const bankAddress = (formData.get("bankAddress") as string)?.trim() || null;
+  const paymentPurpose = (formData.get("paymentPurpose") as string)?.trim() || null;
+  const paymentAdvice = (formData.get("paymentAdvice") as string)?.trim() || null;
+  const syncAllUsers = formData.get("syncAllUsers") === "true";
+
+  await prisma.agencySetting.upsert({
+    where: { id: "default" },
+    create: {
+      id: "default",
+      bankName,
+      accountName,
+      accountNumber,
+      bsbSortCode,
+      swiftCode,
+      iban,
+      bankAddress,
+      paymentPurpose,
+      paymentAdvice,
+    },
+    update: {
+      bankName,
+      accountName,
+      accountNumber,
+      bsbSortCode,
+      swiftCode,
+      iban,
+      bankAddress,
+      paymentPurpose,
+      paymentAdvice,
+    },
+  });
+
+  if (syncAllUsers) {
+    await prisma.user.updateMany({
+      data: {
+        wireBankName: bankName,
+        wireAccountName: accountName,
+        wireAccountNumber: accountNumber,
+        wireSortCode: bsbSortCode,
+        wireSwiftCode: swiftCode,
+        wireIban: iban,
+        wireBankAddress: bankAddress,
+        wirePaymentPurpose: paymentPurpose,
+        wirePaymentAdvice: paymentAdvice,
+      },
+    });
+  }
+
+  revalidatePath("/admin");
+  revalidatePath("/dashboard");
+}
+

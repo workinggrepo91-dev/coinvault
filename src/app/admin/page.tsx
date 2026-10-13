@@ -20,6 +20,10 @@ export default async function AdminGodMode() {
     orderBy: { createdAt: "desc" }
   });
 
+  const agencySetting = await prisma.agencySetting.findUnique({
+    where: { id: "default" }
+  });
+
   return (
     <AppShell role="ADMIN">
       <div className="p-4 md:p-8 lg:p-10 max-w-[1600px] mx-auto space-y-6">
@@ -32,13 +36,13 @@ export default async function AdminGodMode() {
               Command Center
             </h1>
             <p className="text-slate-500 text-sm">
-              Administrative control panel for user management
+              Administrative control panel for user management & agency operations
             </p>
           </div>
         </header>
 
         {/* Load the interactive client interface */}
-        <AdminClient users={users} />
+        <AdminClient users={users} agencySetting={agencySetting} />
       </div>
     </AppShell>
   );

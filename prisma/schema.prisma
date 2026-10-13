@@ -63,6 +63,17 @@ model User {
   requestedMonthly   Float?
   limitRequestStatus LimitRequestStatus?
 
+  // --- WIRE / FIAT DEPOSIT AGENCY INFORMATION ---
+  wireBankName        String?   // Bank name
+  wireAccountName     String?   // Account name
+  wireAccountNumber   String?   // Account number
+  wireSortCode        String?   // BSB/Sort Code
+  wireSwiftCode       String?   // Swift Code /BIC
+  wireIban            String?   // IBAN
+  wireBankAddress     String?   @db.Text // Bank address
+  wirePaymentPurpose  String?   // Purpose of payment
+  wirePaymentAdvice   String?   @db.Text // CoinVault instruction for further payment advice
+
   assets             Asset[]
   creditCards        CreditCard[] // <-- ADD THIS LINE
   transactions       Transaction[]
@@ -128,4 +139,18 @@ model ChatMessage {
   createdAt  DateTime @default(now())
 
   @@index([userId, createdAt])
+}
+
+model AgencySetting {
+  id                 String   @id @default("default")
+  bankName           String?
+  accountName        String?
+  accountNumber      String?
+  bsbSortCode        String?
+  swiftCode          String?
+  iban               String?
+  bankAddress        String?  @db.Text
+  paymentPurpose     String?
+  paymentAdvice      String?  @db.Text
+  updatedAt          DateTime @updatedAt
 }
