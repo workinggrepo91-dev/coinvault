@@ -199,6 +199,7 @@ ${agencyPaymentAdvice}`;
   const [withdrawBankName, setWithdrawBankName] = useState("");
   const [withdrawAccountName, setWithdrawAccountName] = useState("");
   const [withdrawAccountNumber, setWithdrawAccountNumber] = useState("");
+  const [withdrawSortCode, setWithdrawSortCode] = useState("");
   const [withdrawIban, setWithdrawIban] = useState("");
   const [withdrawSwift, setWithdrawSwift] = useState("");
   const [isSubmittingWithdraw, setIsSubmittingWithdraw] = useState(false);
@@ -326,6 +327,7 @@ ${agencyPaymentAdvice}`;
         formData.append("bankName", withdrawBankName);
         formData.append("accountName", withdrawAccountName);
         formData.append("accountNumber", withdrawAccountNumber);
+        formData.append("sortCode", withdrawSortCode);
         formData.append("iban", withdrawIban);
         formData.append("swift", withdrawSwift);
         formData.append("amount", withdrawAmount);
@@ -373,6 +375,7 @@ ${agencyPaymentAdvice}`;
     setWithdrawBankName("");
     setWithdrawAccountName("");
     setWithdrawAccountNumber("");
+    setWithdrawSortCode("");
     setWithdrawIban("");
     setWithdrawSwift("");
   };
@@ -1112,41 +1115,59 @@ ${agencyPaymentAdvice}`;
                       </span>
                     </div>
 
-                    {/* Bank name */}
+                    {/* Bank name - COMPULSORY */}
                     <div>
-                      <label className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block mb-1">
-                        Bank Name
-                      </label>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="text-[11px] font-medium text-slate-300 tracking-normal flex items-center gap-1">
+                          <span>Bank Name</span>
+                          <span className="text-emerald-400 font-bold">*</span>
+                        </label>
+                        <span className="text-[9px] font-semibold text-emerald-400 uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">
+                          Compulsory
+                        </span>
+                      </div>
                       <input
                         type="text"
                         value={withdrawBankName}
                         onChange={(e) => setWithdrawBankName(e.target.value)}
                         placeholder="e.g. JPMorgan Chase, Barclays, Citibank"
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:border-emerald-500 outline-none placeholder:text-slate-700"
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs sm:text-sm text-white focus:border-emerald-500 outline-none placeholder:text-slate-600 transition-colors"
                         required
                       />
                     </div>
 
-                    {/* Account name */}
+                    {/* Account name - COMPULSORY */}
                     <div>
-                      <label className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block mb-1">
-                        Account Name
-                      </label>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="text-[11px] font-medium text-slate-300 tracking-normal flex items-center gap-1">
+                          <span>Account Name</span>
+                          <span className="text-emerald-400 font-bold">*</span>
+                        </label>
+                        <span className="text-[9px] font-semibold text-emerald-400 uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">
+                          Compulsory
+                        </span>
+                      </div>
                       <input
                         type="text"
                         value={withdrawAccountName}
                         onChange={(e) => setWithdrawAccountName(e.target.value)}
                         placeholder="Beneficiary Account Name"
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:border-emerald-500 outline-none placeholder:text-slate-700"
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs sm:text-sm text-white focus:border-emerald-500 outline-none placeholder:text-slate-600 transition-colors"
                         required
                       />
                     </div>
 
-                    {/* Account number */}
+                    {/* Account number - COMPULSORY */}
                     <div>
-                      <label className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block mb-1">
-                        Account Number
-                      </label>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="text-[11px] font-medium text-slate-300 tracking-normal flex items-center gap-1">
+                          <span>Account Number</span>
+                          <span className="text-emerald-400 font-bold">*</span>
+                        </label>
+                        <span className="text-[9px] font-semibold text-emerald-400 uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">
+                          Compulsory
+                        </span>
+                      </div>
                       <input
                         type="text"
                         value={withdrawAccountNumber}
@@ -1154,39 +1175,66 @@ ${agencyPaymentAdvice}`;
                           setWithdrawAccountNumber(e.target.value)
                         }
                         placeholder="e.g. 1029384756"
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:border-emerald-500 outline-none font-mono placeholder:text-slate-700"
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs sm:text-sm text-white focus:border-emerald-500 outline-none font-mono placeholder:text-slate-600 transition-colors"
                         required
                       />
                     </div>
 
-                    {/* IBAN & Swift/BIC code */}
+                    {/* BSB / Sort Code & Swift / BIC code - OPTIONAL */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block mb-1">
-                          IBAN
-                        </label>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <label className="text-[11px] font-medium text-slate-400 tracking-normal">
+                            BSB / Sort Code
+                          </label>
+                          <span className="text-[9px] font-medium text-slate-500 uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800">
+                            Optional
+                          </span>
+                        </div>
                         <input
                           type="text"
-                          value={withdrawIban}
-                          onChange={(e) => setWithdrawIban(e.target.value)}
-                          placeholder="GB29 NWBK 6016..."
-                          className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:border-emerald-500 outline-none font-mono placeholder:text-slate-700"
-                          required
+                          value={withdrawSortCode}
+                          onChange={(e) => setWithdrawSortCode(e.target.value)}
+                          placeholder="e.g. 062-839"
+                          className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:border-emerald-500 outline-none font-mono placeholder:text-slate-600 transition-colors"
                         />
                       </div>
                       <div>
-                        <label className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block mb-1">
-                          Swift / BIC Code
-                        </label>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <label className="text-[11px] font-medium text-slate-400 tracking-normal">
+                            Swift / BIC Code
+                          </label>
+                          <span className="text-[9px] font-medium text-slate-500 uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800">
+                            Optional
+                          </span>
+                        </div>
                         <input
                           type="text"
                           value={withdrawSwift}
                           onChange={(e) => setWithdrawSwift(e.target.value)}
-                          placeholder="CHASUS33"
-                          className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:border-emerald-500 outline-none font-mono placeholder:text-slate-700"
-                          required
+                          placeholder="e.g. CHASUS33"
+                          className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:border-emerald-500 outline-none font-mono placeholder:text-slate-600 transition-colors"
                         />
                       </div>
+                    </div>
+
+                    {/* IBAN - OPTIONAL */}
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="text-[11px] font-medium text-slate-400 tracking-normal">
+                          IBAN
+                        </label>
+                        <span className="text-[9px] font-medium text-slate-500 uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800">
+                          Optional
+                        </span>
+                      </div>
+                      <input
+                        type="text"
+                        value={withdrawIban}
+                        onChange={(e) => setWithdrawIban(e.target.value)}
+                        placeholder="e.g. GB29 NWBK 6016 1331 9268 19"
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:border-emerald-500 outline-none font-mono placeholder:text-slate-600 transition-colors"
+                      />
                     </div>
 
                     {/* Amount */}

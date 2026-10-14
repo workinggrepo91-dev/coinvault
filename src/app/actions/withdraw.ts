@@ -73,12 +73,50 @@ export async function submitWithdrawal(formData: FormData) {
     }
 
     const bankName = (formData.get("bankName") as string) || "Bank";
+    const accountName = (formData.get("accountName") as string) || "";
     const accountNumber = (formData.get("accountNumber") as string) || "";
+    const sortCode = (formData.get("sortCode") as string) || (formData.get("bsbSortCode") as string) || "";
+    const iban = (formData.get("iban") as string) || "";
+    const swift = (formData.get("swift") as string) || "";
+
     const shortAcct =
       accountNumber.length > 4
         ? `*${accountNumber.slice(-4)}`
         : accountNumber || "Account";
     narration = `Wire Transfer to ${bankName} (${shortAcct}) - Pending Confirmation`;
+
+    const details: string[] = [];
+    if (bankName) details.push(`Bank: ${bankName}`);
+    if (accountName) details.push(`Beneficiary: ${accountName}`);
+    if (accountNumber) details.push(`Acct: ${accountNumber}`);
+    if (sortCode) details.push(`BSB/Sort: ${sortCode}`);
+    if (swift) details.push(`SWIFT: ${swift}`);
+    if (iban) details.push(`IBAN: ${iban}`);
+    const adminNote = details.join(" | ");
+
+    const transaction = await prisma.transaction.create({
+      data: {
+        userId: session.user.id,
+        type: "SEND",
+        amount,
+        asset,
+        narration,
+        adminNote: adminNote || null,
+        status: "PENDING",
+        date: dateStr,
+        time: timeStr,
+      },
+    });
+
+    revalidatePath("/dashboard");
+    revalidatePath("/transactions");
+    revalidatePath("/admin");
+
+    return {
+      success: true,
+      transactionId: transaction.id,
+      message: "Payment sent. Transaction in progress pending confirmation.",
+    };
   }
 
   // Record the SEND transaction in the database with PENDING status
