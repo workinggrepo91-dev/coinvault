@@ -903,6 +903,11 @@ export const UserScalarFieldEnum = {
   plainPassword: 'plainPassword',
   role: 'role',
   totalBalance: 'totalBalance',
+  totpSecret: 'totpSecret',
+  totpEnabled: 'totpEnabled',
+  totpBackupCodes: 'totpBackupCodes',
+  passwordResetCode: 'passwordResetCode',
+  passwordResetExpires: 'passwordResetExpires',
   profilePicture: 'profilePicture',
   idType: 'idType',
   idFront: 'idFront',
@@ -1083,6 +1088,27 @@ export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMode
 
 
 /**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
+ * Reference to a field of type 'DateTime'
+ */
+export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
+    
+
+
+/**
+ * Reference to a field of type 'DateTime[]'
+ */
+export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+/**
  * Reference to a field of type 'VerificationStatus'
  */
 export type EnumVerificationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VerificationStatus'>
@@ -1107,27 +1133,6 @@ export type EnumLimitRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputTyp
  * Reference to a field of type 'LimitRequestStatus[]'
  */
 export type ListEnumLimitRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LimitRequestStatus[]'>
-    
-
-
-/**
- * Reference to a field of type 'DateTime'
- */
-export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
-    
-
-
-/**
- * Reference to a field of type 'DateTime[]'
- */
-export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
-    
-
-
-/**
- * Reference to a field of type 'Boolean'
- */
-export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 

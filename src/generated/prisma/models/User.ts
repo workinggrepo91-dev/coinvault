@@ -55,6 +55,10 @@ export type UserMinAggregateOutputType = {
   plainPassword: string | null
   role: $Enums.Role | null
   totalBalance: number | null
+  totpSecret: string | null
+  totpEnabled: boolean | null
+  passwordResetCode: string | null
+  passwordResetExpires: Date | null
   profilePicture: string | null
   idType: string | null
   idFront: string | null
@@ -95,6 +99,10 @@ export type UserMaxAggregateOutputType = {
   plainPassword: string | null
   role: $Enums.Role | null
   totalBalance: number | null
+  totpSecret: string | null
+  totpEnabled: boolean | null
+  passwordResetCode: string | null
+  passwordResetExpires: Date | null
   profilePicture: string | null
   idType: string | null
   idFront: string | null
@@ -135,6 +143,11 @@ export type UserCountAggregateOutputType = {
   plainPassword: number
   role: number
   totalBalance: number
+  totpSecret: number
+  totpEnabled: number
+  totpBackupCodes: number
+  passwordResetCode: number
+  passwordResetExpires: number
   profilePicture: number
   idType: number
   idFront: number
@@ -195,6 +208,10 @@ export type UserMinAggregateInputType = {
   plainPassword?: true
   role?: true
   totalBalance?: true
+  totpSecret?: true
+  totpEnabled?: true
+  passwordResetCode?: true
+  passwordResetExpires?: true
   profilePicture?: true
   idType?: true
   idFront?: true
@@ -235,6 +252,10 @@ export type UserMaxAggregateInputType = {
   plainPassword?: true
   role?: true
   totalBalance?: true
+  totpSecret?: true
+  totpEnabled?: true
+  passwordResetCode?: true
+  passwordResetExpires?: true
   profilePicture?: true
   idType?: true
   idFront?: true
@@ -275,6 +296,11 @@ export type UserCountAggregateInputType = {
   plainPassword?: true
   role?: true
   totalBalance?: true
+  totpSecret?: true
+  totpEnabled?: true
+  totpBackupCodes?: true
+  passwordResetCode?: true
+  passwordResetExpires?: true
   profilePicture?: true
   idType?: true
   idFront?: true
@@ -402,6 +428,11 @@ export type UserGroupByOutputType = {
   plainPassword: string | null
   role: $Enums.Role
   totalBalance: number
+  totpSecret: string | null
+  totpEnabled: boolean
+  totpBackupCodes: string[]
+  passwordResetCode: string | null
+  passwordResetExpires: Date | null
   profilePicture: string | null
   idType: string | null
   idFront: string | null
@@ -465,6 +496,11 @@ export type UserWhereInput = {
   plainPassword?: Prisma.StringNullableFilter<"User"> | string | null
   role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
   totalBalance?: Prisma.FloatFilter<"User"> | number
+  totpSecret?: Prisma.StringNullableFilter<"User"> | string | null
+  totpEnabled?: Prisma.BoolFilter<"User"> | boolean
+  totpBackupCodes?: Prisma.StringNullableListFilter<"User">
+  passwordResetCode?: Prisma.StringNullableFilter<"User"> | string | null
+  passwordResetExpires?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   profilePicture?: Prisma.StringNullableFilter<"User"> | string | null
   idType?: Prisma.StringNullableFilter<"User"> | string | null
   idFront?: Prisma.StringNullableFilter<"User"> | string | null
@@ -509,6 +545,11 @@ export type UserOrderByWithRelationInput = {
   plainPassword?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrder
   totalBalance?: Prisma.SortOrder
+  totpSecret?: Prisma.SortOrderInput | Prisma.SortOrder
+  totpEnabled?: Prisma.SortOrder
+  totpBackupCodes?: Prisma.SortOrder
+  passwordResetCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  passwordResetExpires?: Prisma.SortOrderInput | Prisma.SortOrder
   profilePicture?: Prisma.SortOrderInput | Prisma.SortOrder
   idType?: Prisma.SortOrderInput | Prisma.SortOrder
   idFront?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -557,6 +598,11 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   plainPassword?: Prisma.StringNullableFilter<"User"> | string | null
   role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
   totalBalance?: Prisma.FloatFilter<"User"> | number
+  totpSecret?: Prisma.StringNullableFilter<"User"> | string | null
+  totpEnabled?: Prisma.BoolFilter<"User"> | boolean
+  totpBackupCodes?: Prisma.StringNullableListFilter<"User">
+  passwordResetCode?: Prisma.StringNullableFilter<"User"> | string | null
+  passwordResetExpires?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   profilePicture?: Prisma.StringNullableFilter<"User"> | string | null
   idType?: Prisma.StringNullableFilter<"User"> | string | null
   idFront?: Prisma.StringNullableFilter<"User"> | string | null
@@ -600,6 +646,11 @@ export type UserOrderByWithAggregationInput = {
   plainPassword?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrder
   totalBalance?: Prisma.SortOrder
+  totpSecret?: Prisma.SortOrderInput | Prisma.SortOrder
+  totpEnabled?: Prisma.SortOrder
+  totpBackupCodes?: Prisma.SortOrder
+  passwordResetCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  passwordResetExpires?: Prisma.SortOrderInput | Prisma.SortOrder
   profilePicture?: Prisma.SortOrderInput | Prisma.SortOrder
   idType?: Prisma.SortOrderInput | Prisma.SortOrder
   idFront?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -648,6 +699,11 @@ export type UserScalarWhereWithAggregatesInput = {
   plainPassword?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   role?: Prisma.EnumRoleWithAggregatesFilter<"User"> | $Enums.Role
   totalBalance?: Prisma.FloatWithAggregatesFilter<"User"> | number
+  totpSecret?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  totpEnabled?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  totpBackupCodes?: Prisma.StringNullableListFilter<"User">
+  passwordResetCode?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  passwordResetExpires?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   profilePicture?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   idType?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   idFront?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
@@ -688,6 +744,11 @@ export type UserCreateInput = {
   plainPassword?: string | null
   role?: $Enums.Role
   totalBalance?: number
+  totpSecret?: string | null
+  totpEnabled?: boolean
+  totpBackupCodes?: Prisma.UserCreatetotpBackupCodesInput | string[]
+  passwordResetCode?: string | null
+  passwordResetExpires?: Date | string | null
   profilePicture?: string | null
   idType?: string | null
   idFront?: string | null
@@ -732,6 +793,11 @@ export type UserUncheckedCreateInput = {
   plainPassword?: string | null
   role?: $Enums.Role
   totalBalance?: number
+  totpSecret?: string | null
+  totpEnabled?: boolean
+  totpBackupCodes?: Prisma.UserCreatetotpBackupCodesInput | string[]
+  passwordResetCode?: string | null
+  passwordResetExpires?: Date | string | null
   profilePicture?: string | null
   idType?: string | null
   idFront?: string | null
@@ -776,6 +842,11 @@ export type UserUpdateInput = {
   plainPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
+  totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  totpBackupCodes?: Prisma.UserUpdatetotpBackupCodesInput | string[]
+  passwordResetCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idFront?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -820,6 +891,11 @@ export type UserUncheckedUpdateInput = {
   plainPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
+  totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  totpBackupCodes?: Prisma.UserUpdatetotpBackupCodesInput | string[]
+  passwordResetCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idFront?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -864,6 +940,11 @@ export type UserCreateManyInput = {
   plainPassword?: string | null
   role?: $Enums.Role
   totalBalance?: number
+  totpSecret?: string | null
+  totpEnabled?: boolean
+  totpBackupCodes?: Prisma.UserCreatetotpBackupCodesInput | string[]
+  passwordResetCode?: string | null
+  passwordResetExpires?: Date | string | null
   profilePicture?: string | null
   idType?: string | null
   idFront?: string | null
@@ -904,6 +985,11 @@ export type UserUpdateManyMutationInput = {
   plainPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
+  totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  totpBackupCodes?: Prisma.UserUpdatetotpBackupCodesInput | string[]
+  passwordResetCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idFront?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -944,6 +1030,11 @@ export type UserUncheckedUpdateManyInput = {
   plainPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
+  totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  totpBackupCodes?: Prisma.UserUpdatetotpBackupCodesInput | string[]
+  passwordResetCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idFront?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -973,6 +1064,14 @@ export type UserUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type StringNullableListFilter<$PrismaModel = never> = {
+  equals?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null
+  has?: string | Prisma.StringFieldRefInput<$PrismaModel> | null
+  hasEvery?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  hasSome?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  isEmpty?: boolean
+}
+
 export type UserCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
@@ -984,6 +1083,11 @@ export type UserCountOrderByAggregateInput = {
   plainPassword?: Prisma.SortOrder
   role?: Prisma.SortOrder
   totalBalance?: Prisma.SortOrder
+  totpSecret?: Prisma.SortOrder
+  totpEnabled?: Prisma.SortOrder
+  totpBackupCodes?: Prisma.SortOrder
+  passwordResetCode?: Prisma.SortOrder
+  passwordResetExpires?: Prisma.SortOrder
   profilePicture?: Prisma.SortOrder
   idType?: Prisma.SortOrder
   idFront?: Prisma.SortOrder
@@ -1033,6 +1137,10 @@ export type UserMaxOrderByAggregateInput = {
   plainPassword?: Prisma.SortOrder
   role?: Prisma.SortOrder
   totalBalance?: Prisma.SortOrder
+  totpSecret?: Prisma.SortOrder
+  totpEnabled?: Prisma.SortOrder
+  passwordResetCode?: Prisma.SortOrder
+  passwordResetExpires?: Prisma.SortOrder
   profilePicture?: Prisma.SortOrder
   idType?: Prisma.SortOrder
   idFront?: Prisma.SortOrder
@@ -1073,6 +1181,10 @@ export type UserMinOrderByAggregateInput = {
   plainPassword?: Prisma.SortOrder
   role?: Prisma.SortOrder
   totalBalance?: Prisma.SortOrder
+  totpSecret?: Prisma.SortOrder
+  totpEnabled?: Prisma.SortOrder
+  passwordResetCode?: Prisma.SortOrder
+  passwordResetExpires?: Prisma.SortOrder
   profilePicture?: Prisma.SortOrder
   idType?: Prisma.SortOrder
   idFront?: Prisma.SortOrder
@@ -1116,6 +1228,10 @@ export type UserScalarRelationFilter = {
   isNot?: Prisma.UserWhereInput
 }
 
+export type UserCreatetotpBackupCodesInput = {
+  set: string[]
+}
+
 export type StringFieldUpdateOperationsInput = {
   set?: string
 }
@@ -1134,6 +1250,19 @@ export type FloatFieldUpdateOperationsInput = {
   decrement?: number
   multiply?: number
   divide?: number
+}
+
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
+}
+
+export type UserUpdatetotpBackupCodesInput = {
+  set?: string[]
+  push?: string | string[]
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
 }
 
 export type EnumVerificationStatusFieldUpdateOperationsInput = {
@@ -1223,6 +1352,11 @@ export type UserCreateWithoutAssetsInput = {
   plainPassword?: string | null
   role?: $Enums.Role
   totalBalance?: number
+  totpSecret?: string | null
+  totpEnabled?: boolean
+  totpBackupCodes?: Prisma.UserCreatetotpBackupCodesInput | string[]
+  passwordResetCode?: string | null
+  passwordResetExpires?: Date | string | null
   profilePicture?: string | null
   idType?: string | null
   idFront?: string | null
@@ -1266,6 +1400,11 @@ export type UserUncheckedCreateWithoutAssetsInput = {
   plainPassword?: string | null
   role?: $Enums.Role
   totalBalance?: number
+  totpSecret?: string | null
+  totpEnabled?: boolean
+  totpBackupCodes?: Prisma.UserCreatetotpBackupCodesInput | string[]
+  passwordResetCode?: string | null
+  passwordResetExpires?: Date | string | null
   profilePicture?: string | null
   idType?: string | null
   idFront?: string | null
@@ -1325,6 +1464,11 @@ export type UserUpdateWithoutAssetsInput = {
   plainPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
+  totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  totpBackupCodes?: Prisma.UserUpdatetotpBackupCodesInput | string[]
+  passwordResetCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idFront?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1368,6 +1512,11 @@ export type UserUncheckedUpdateWithoutAssetsInput = {
   plainPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
+  totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  totpBackupCodes?: Prisma.UserUpdatetotpBackupCodesInput | string[]
+  passwordResetCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idFront?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1411,6 +1560,11 @@ export type UserCreateWithoutCreditCardsInput = {
   plainPassword?: string | null
   role?: $Enums.Role
   totalBalance?: number
+  totpSecret?: string | null
+  totpEnabled?: boolean
+  totpBackupCodes?: Prisma.UserCreatetotpBackupCodesInput | string[]
+  passwordResetCode?: string | null
+  passwordResetExpires?: Date | string | null
   profilePicture?: string | null
   idType?: string | null
   idFront?: string | null
@@ -1454,6 +1608,11 @@ export type UserUncheckedCreateWithoutCreditCardsInput = {
   plainPassword?: string | null
   role?: $Enums.Role
   totalBalance?: number
+  totpSecret?: string | null
+  totpEnabled?: boolean
+  totpBackupCodes?: Prisma.UserCreatetotpBackupCodesInput | string[]
+  passwordResetCode?: string | null
+  passwordResetExpires?: Date | string | null
   profilePicture?: string | null
   idType?: string | null
   idFront?: string | null
@@ -1513,6 +1672,11 @@ export type UserUpdateWithoutCreditCardsInput = {
   plainPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
+  totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  totpBackupCodes?: Prisma.UserUpdatetotpBackupCodesInput | string[]
+  passwordResetCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idFront?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1556,6 +1720,11 @@ export type UserUncheckedUpdateWithoutCreditCardsInput = {
   plainPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
+  totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  totpBackupCodes?: Prisma.UserUpdatetotpBackupCodesInput | string[]
+  passwordResetCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idFront?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1599,6 +1768,11 @@ export type UserCreateWithoutTransactionsInput = {
   plainPassword?: string | null
   role?: $Enums.Role
   totalBalance?: number
+  totpSecret?: string | null
+  totpEnabled?: boolean
+  totpBackupCodes?: Prisma.UserCreatetotpBackupCodesInput | string[]
+  passwordResetCode?: string | null
+  passwordResetExpires?: Date | string | null
   profilePicture?: string | null
   idType?: string | null
   idFront?: string | null
@@ -1642,6 +1816,11 @@ export type UserUncheckedCreateWithoutTransactionsInput = {
   plainPassword?: string | null
   role?: $Enums.Role
   totalBalance?: number
+  totpSecret?: string | null
+  totpEnabled?: boolean
+  totpBackupCodes?: Prisma.UserCreatetotpBackupCodesInput | string[]
+  passwordResetCode?: string | null
+  passwordResetExpires?: Date | string | null
   profilePicture?: string | null
   idType?: string | null
   idFront?: string | null
@@ -1701,6 +1880,11 @@ export type UserUpdateWithoutTransactionsInput = {
   plainPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
+  totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  totpBackupCodes?: Prisma.UserUpdatetotpBackupCodesInput | string[]
+  passwordResetCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idFront?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1744,6 +1928,11 @@ export type UserUncheckedUpdateWithoutTransactionsInput = {
   plainPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
+  totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  totpBackupCodes?: Prisma.UserUpdatetotpBackupCodesInput | string[]
+  passwordResetCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idFront?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1787,6 +1976,11 @@ export type UserCreateWithoutChatMessagesInput = {
   plainPassword?: string | null
   role?: $Enums.Role
   totalBalance?: number
+  totpSecret?: string | null
+  totpEnabled?: boolean
+  totpBackupCodes?: Prisma.UserCreatetotpBackupCodesInput | string[]
+  passwordResetCode?: string | null
+  passwordResetExpires?: Date | string | null
   profilePicture?: string | null
   idType?: string | null
   idFront?: string | null
@@ -1830,6 +2024,11 @@ export type UserUncheckedCreateWithoutChatMessagesInput = {
   plainPassword?: string | null
   role?: $Enums.Role
   totalBalance?: number
+  totpSecret?: string | null
+  totpEnabled?: boolean
+  totpBackupCodes?: Prisma.UserCreatetotpBackupCodesInput | string[]
+  passwordResetCode?: string | null
+  passwordResetExpires?: Date | string | null
   profilePicture?: string | null
   idType?: string | null
   idFront?: string | null
@@ -1889,6 +2088,11 @@ export type UserUpdateWithoutChatMessagesInput = {
   plainPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
+  totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  totpBackupCodes?: Prisma.UserUpdatetotpBackupCodesInput | string[]
+  passwordResetCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idFront?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1932,6 +2136,11 @@ export type UserUncheckedUpdateWithoutChatMessagesInput = {
   plainPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   totalBalance?: Prisma.FloatFieldUpdateOperationsInput | number
+  totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  totpBackupCodes?: Prisma.UserUpdatetotpBackupCodesInput | string[]
+  passwordResetCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idFront?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2033,6 +2242,11 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   plainPassword?: boolean
   role?: boolean
   totalBalance?: boolean
+  totpSecret?: boolean
+  totpEnabled?: boolean
+  totpBackupCodes?: boolean
+  passwordResetCode?: boolean
+  passwordResetExpires?: boolean
   profilePicture?: boolean
   idType?: boolean
   idFront?: boolean
@@ -2078,6 +2292,11 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   plainPassword?: boolean
   role?: boolean
   totalBalance?: boolean
+  totpSecret?: boolean
+  totpEnabled?: boolean
+  totpBackupCodes?: boolean
+  passwordResetCode?: boolean
+  passwordResetExpires?: boolean
   profilePicture?: boolean
   idType?: boolean
   idFront?: boolean
@@ -2118,6 +2337,11 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   plainPassword?: boolean
   role?: boolean
   totalBalance?: boolean
+  totpSecret?: boolean
+  totpEnabled?: boolean
+  totpBackupCodes?: boolean
+  passwordResetCode?: boolean
+  passwordResetExpires?: boolean
   profilePicture?: boolean
   idType?: boolean
   idFront?: boolean
@@ -2158,6 +2382,11 @@ export type UserSelectScalar = {
   plainPassword?: boolean
   role?: boolean
   totalBalance?: boolean
+  totpSecret?: boolean
+  totpEnabled?: boolean
+  totpBackupCodes?: boolean
+  passwordResetCode?: boolean
+  passwordResetExpires?: boolean
   profilePicture?: boolean
   idType?: boolean
   idFront?: boolean
@@ -2187,7 +2416,7 @@ export type UserSelectScalar = {
   createdAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "username" | "firstName" | "lastName" | "phoneNumber" | "password" | "plainPassword" | "role" | "totalBalance" | "profilePicture" | "idType" | "idFront" | "idBack" | "utilityBill" | "verificationStatus" | "accountNumber" | "vaultStatusMessage" | "sendMessage" | "receiveMessage" | "dormantReason" | "dormantAmount" | "dailyLimit" | "monthlyLimit" | "requestedDaily" | "requestedMonthly" | "limitRequestStatus" | "wireBankName" | "wireAccountName" | "wireAccountNumber" | "wireSortCode" | "wireSwiftCode" | "wireIban" | "wireBankAddress" | "wirePaymentPurpose" | "wirePaymentAdvice" | "createdAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "username" | "firstName" | "lastName" | "phoneNumber" | "password" | "plainPassword" | "role" | "totalBalance" | "totpSecret" | "totpEnabled" | "totpBackupCodes" | "passwordResetCode" | "passwordResetExpires" | "profilePicture" | "idType" | "idFront" | "idBack" | "utilityBill" | "verificationStatus" | "accountNumber" | "vaultStatusMessage" | "sendMessage" | "receiveMessage" | "dormantReason" | "dormantAmount" | "dailyLimit" | "monthlyLimit" | "requestedDaily" | "requestedMonthly" | "limitRequestStatus" | "wireBankName" | "wireAccountName" | "wireAccountNumber" | "wireSortCode" | "wireSwiftCode" | "wireIban" | "wireBankAddress" | "wirePaymentPurpose" | "wirePaymentAdvice" | "createdAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   assets?: boolean | Prisma.User$assetsArgs<ExtArgs>
   creditCards?: boolean | Prisma.User$creditCardsArgs<ExtArgs>
@@ -2217,6 +2446,11 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     plainPassword: string | null
     role: $Enums.Role
     totalBalance: number
+    totpSecret: string | null
+    totpEnabled: boolean
+    totpBackupCodes: string[]
+    passwordResetCode: string | null
+    passwordResetExpires: Date | null
     profilePicture: string | null
     idType: string | null
     idFront: string | null
@@ -2681,6 +2915,11 @@ export interface UserFieldRefs {
   readonly plainPassword: Prisma.FieldRef<"User", 'String'>
   readonly role: Prisma.FieldRef<"User", 'Role'>
   readonly totalBalance: Prisma.FieldRef<"User", 'Float'>
+  readonly totpSecret: Prisma.FieldRef<"User", 'String'>
+  readonly totpEnabled: Prisma.FieldRef<"User", 'Boolean'>
+  readonly totpBackupCodes: Prisma.FieldRef<"User", 'String[]'>
+  readonly passwordResetCode: Prisma.FieldRef<"User", 'String'>
+  readonly passwordResetExpires: Prisma.FieldRef<"User", 'DateTime'>
   readonly profilePicture: Prisma.FieldRef<"User", 'String'>
   readonly idType: Prisma.FieldRef<"User", 'String'>
   readonly idFront: Prisma.FieldRef<"User", 'String'>

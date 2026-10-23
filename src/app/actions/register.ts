@@ -73,35 +73,95 @@ export async function registerUser(prevState: any, formData: FormData) {
   redirect("/login");
 }
 
+import { sendPasswordAuthenticationCode } from "@/lib/email";
+
+export async function sendPasswordResetCode(email: string) {
+  if (!email || !email.trim()) {
+    return { error: "Please enter your registered email address." };
+  }
+
+  const normalizedEmail = email.toLowerCase().trim();
+  const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
+
+  if (!user) {
+    // For security, don't reveal non-existent users, but return friendly message
+    return { success: "If this email is registered, an authentication code has been sent." };
+  }
+
+  // Generate 6-digit verification code
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      passwordResetCode: code,
+      passwordResetExpires: new Date(Date.now() + 15 * 60 * 1000), // 15 mins
+    },
+  });
+
+  const emailRes = await sendPasswordAuthenticationCode({
+    to: user.email,
+    name: user.username,
+    code,
+    action: "reset",
+  });
+
+  if (!emailRes.success) {
+    return { error: emailRes.error || "Failed to send reset code via email." };
+  }
+
+  return { success: "A 6-digit authentication code has been sent to your email." };
+}
+
 export async function resetForgottenPassword(formData: FormData) {
-  const email = formData.get("email") as string;
+  const email = (formData.get("email") as string)?.toLowerCase().trim();
+  const code = (formData.get("code") as string)?.trim();
   const newPassword = formData.get("newPassword") as string;
 
   if (!email || !newPassword) {
     return { error: "Email and new password are required." };
   }
 
-  try {
-    // Dynamically require bcryptjs to avoid import conflicts
-    const bcrypt = require("bcryptjs");
+  if (newPassword.length < 6) {
+    return { error: "Password must be at least 6 characters." };
+  }
 
-    // 1. FIX: Grab the named export 'prisma' instead of '.default'
-    const { prisma } = await import("@/lib/prisma");
+  try {
+    const user = await prisma.user.findUnique({ where: { email } });
     
-    // 2. Verify the user exists
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    
-    if (!existingUser) {
+    if (!user) {
       return { error: "No account found matching this email address." };
     }
 
-    // 3. Hash the new password
+    const isEmailVerificationEnforced = process.env.ENABLE_EMAIL_VERIFICATION === "true";
+    const hasProvidedCode = !!code;
+
+    if (isEmailVerificationEnforced || hasProvidedCode) {
+      if (!user.passwordResetCode || !user.passwordResetExpires) {
+        return { error: "Please request an authentication code before resetting your password." };
+      }
+
+      if (user.passwordResetCode.trim() !== code) {
+        return { error: "Invalid authentication code. Please check your email and try again." };
+      }
+
+      if (new Date() > new Date(user.passwordResetExpires)) {
+        return { error: "Authentication code has expired. Please request a new code." };
+      }
+    }
+
+    // Hash the new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    // 4. Update the database
+    // Update the database and clear the reset code
     await prisma.user.update({
-      where: { email },
-      data: { password: hashedPassword, plainPassword: newPassword }
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        plainPassword: newPassword,
+        passwordResetCode: null,
+        passwordResetExpires: null,
+      },
     });
 
     return { success: true };

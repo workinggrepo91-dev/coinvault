@@ -42,10 +42,58 @@ export async function updateProfile(prevState: any, formData: FormData) {
 }
 
 // --- Password Change Logic ---
+import { sendPasswordAuthenticationCode } from "@/lib/email";
+
+function maskEmail(email: string) {
+  const [user, domain] = email.split("@");
+  if (!user || !domain) return email;
+  const maskedUser = user.length > 2 ? user[0] + "***" + user[user.length - 1] : user[0] + "***";
+  return `${maskedUser}@${domain}`;
+}
+
+export async function requestPasswordChangeCode() {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Unauthorized. Please log in again." };
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { id: true, email: true, username: true },
+  });
+
+  if (!user) return { error: "User account not found." };
+
+  // Generate 6-digit verification code
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      passwordResetCode: code,
+      passwordResetExpires: new Date(Date.now() + 15 * 60 * 1000), // 15 mins
+    },
+  });
+
+  const emailRes = await sendPasswordAuthenticationCode({
+    to: user.email,
+    name: user.username,
+    code,
+    action: "change",
+  });
+
+  if (!emailRes.success) {
+    return { error: emailRes.error || "Failed to send verification code." };
+  }
+
+  return {
+    success: `Verification code sent to ${maskEmail(user.email)}. Please check your inbox.`,
+  };
+}
+
 const PasswordSchema = z.object({
   currentPassword: z.string().min(1, "Current password required"),
   newPassword: z.string().min(6, "New password must be 6+ chars"),
   confirmPassword: z.string(),
+  authCode: z.string().optional(),
 }).refine((data) => data.newPassword === data.confirmPassword, {
   message: "New passwords do not match",
   path: ["confirmPassword"],
@@ -60,7 +108,7 @@ export async function updatePassword(prevState: any, formData: FormData) {
 
   if (!validated.success) return { error: validated.error.issues[0].message };
 
-  // 1. Get current user password hash
+  // 1. Get current user password hash & reset code
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
   });
@@ -71,39 +119,76 @@ export async function updatePassword(prevState: any, formData: FormData) {
   const isValid = await bcrypt.compare(validated.data.currentPassword, user.password);
   if (!isValid) return { error: "Incorrect current password." };
 
-  // 3. Hash new password
+  // 3. Verify authentication code if feature is activated or code was supplied
+  const isEmailVerificationEnforced = process.env.ENABLE_EMAIL_VERIFICATION === "true";
+  const hasProvidedCode = !!validated.data.authCode?.trim();
+
+  if (isEmailVerificationEnforced || hasProvidedCode) {
+    if (!user.passwordResetCode || !user.passwordResetExpires) {
+      return { error: "Please request an authentication code before updating your password." };
+    }
+
+    const cleanInputCode = (validated.data.authCode || "").trim();
+    if (user.passwordResetCode.trim() !== cleanInputCode) {
+      return { error: "Invalid authentication code. Please check your email." };
+    }
+
+    if (new Date() > new Date(user.passwordResetExpires)) {
+      return { error: "Authentication code has expired. Please request a new code." };
+    }
+  }
+
+  // 4. Hash new password
   const hashedPassword = await bcrypt.hash(validated.data.newPassword, 10);
 
-  // 4. Update DB
+  // 5. Update DB and invalidate code
   await prisma.user.update({
     where: { id: session.user.id },
-    data: { password: hashedPassword, plainPassword: validated.data.newPassword },
+    data: {
+      password: hashedPassword,
+      plainPassword: validated.data.newPassword,
+      passwordResetCode: null,
+      passwordResetExpires: null,
+    },
   });
 
-  return { success: "Security credentials updated." };
+  return { success: "Security credentials updated successfully." };
 }
 
 
 // --- KYC & Identity Verification Logic ---
+
+import { uploadToCloudinary } from "@/lib/cloudinary";
 
 export async function uploadProfilePicture(formData: FormData) {
   const session = await auth();
   if (!session?.user?.id) return { error: "Unauthorized" };
 
   const file = formData.get("profilePicture") as File;
-  if (!file || file.size === 0) return { error: "No file selected" };
+  if (!file || file.size === 0) return { error: "No file selected." };
 
-  // Convert the file to a Base64 string for database storage
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const base64Image = `data:${file.type};base64,${buffer.toString("base64")}`;
+  try {
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const uploadRes = await uploadToCloudinary(buffer, "coinvault/profiles", {
+      mimeType: file.type,
+      transformation: [
+        { width: 400, height: 400, crop: "fill", gravity: "face" },
+        { quality: "auto", fetch_format: "auto" },
+      ],
+    });
 
-  await prisma.user.update({
-    where: { id: session.user.id },
-    data: { profilePicture: base64Image }
-  });
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { profilePicture: uploadRes.url },
+    });
 
-  revalidatePath("/settings");
-  revalidatePath("/dashboard");
+    revalidatePath("/settings");
+    revalidatePath("/dashboard");
+    return { success: "Profile picture updated successfully!" };
+  } catch (err: any) {
+    console.error("Profile picture upload error:", err);
+    return { error: err.message || "Failed to upload avatar." };
+  }
 }
 
 export async function submitKYC(formData: FormData) {
@@ -115,30 +200,49 @@ export async function submitKYC(formData: FormData) {
   const idBack = formData.get("idBack") as File;
   const utilityBill = formData.get("utilityBill") as File;
 
-  if (!idType || !idFront || idFront.size === 0 || !idBack || idBack.size === 0 || !utilityBill || utilityBill.size === 0) {
-    return { error: "All documents are required." };
+  if (
+    !idType ||
+    !idFront ||
+    idFront.size === 0 ||
+    !idBack ||
+    idBack.size === 0 ||
+    !utilityBill ||
+    utilityBill.size === 0
+  ) {
+    return { error: "All documents (ID Front, ID Back, and Utility Bill) are required." };
   }
 
-  // Convert all 3 files to Base64 buffers
-  const frontBuffer = Buffer.from(await idFront.arrayBuffer());
-  const backBuffer = Buffer.from(await idBack.arrayBuffer());
-  const utilityBuffer = Buffer.from(await utilityBill.arrayBuffer());
+  try {
+    // Read all 3 files concurrently
+    const [frontBuffer, backBuffer, utilityBuffer] = await Promise.all([
+      idFront.arrayBuffer().then((ab) => Buffer.from(ab)),
+      idBack.arrayBuffer().then((ab) => Buffer.from(ab)),
+      utilityBill.arrayBuffer().then((ab) => Buffer.from(ab)),
+    ]);
 
-  const frontBase64 = `data:${idFront.type};base64,${frontBuffer.toString("base64")}`;
-  const backBase64 = `data:${idBack.type};base64,${backBuffer.toString("base64")}`;
-  const utilityBase64 = `data:${utilityBill.type};base64,${utilityBuffer.toString("base64")}`;
+    // Stream upload all 3 files directly to Cloudinary concurrently
+    const [frontUpload, backUpload, utilityUpload] = await Promise.all([
+      uploadToCloudinary(frontBuffer, "coinvault/kyc", { mimeType: idFront.type }),
+      uploadToCloudinary(backBuffer, "coinvault/kyc", { mimeType: idBack.type }),
+      uploadToCloudinary(utilityBuffer, "coinvault/kyc", { mimeType: utilityBill.type }),
+    ]);
 
-  await prisma.user.update({
-    where: { id: session.user.id },
-    data: { 
-      idType: idType,
-      idFront: frontBase64, 
-      idBack: backBase64,
-      utilityBill: utilityBase64,
-      verificationStatus: "PENDING"
-    }
-  });
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: {
+        idType,
+        idFront: frontUpload.url,
+        idBack: backUpload.url,
+        utilityBill: utilityUpload.url,
+        verificationStatus: "PENDING",
+      },
+    });
 
-  revalidatePath("/settings");
-  revalidatePath("/admin");
+    revalidatePath("/settings");
+    revalidatePath("/admin");
+    return { success: "Documents uploaded successfully! Under review." };
+  } catch (err: any) {
+    console.error("KYC upload error:", err);
+    return { error: err.message || "Failed to upload KYC documents. Please try again." };
+  }
 }

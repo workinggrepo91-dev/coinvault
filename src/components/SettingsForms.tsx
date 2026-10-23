@@ -1,15 +1,49 @@
 "use client";
 import { useActionState, useState } from "react";
-import { updateProfile, updatePassword } from "@/app/actions/settings";
-import { Save, Lock, User, ShieldAlert, Smartphone } from "lucide-react";
+import { updateProfile, updatePassword, requestPasswordChangeCode } from "@/app/actions/settings";
+import { Save, Lock, User, ShieldAlert, Smartphone, Mail } from "lucide-react";
 import { uploadProfilePicture, submitKYC } from "@/app/actions/settings"; // Import the new actions
 import {Upload, Clock, ShieldCheck, XCircle, Loader2 } from "lucide-react"; // Added new icons
+import TwoFactorSettings from "@/components/TwoFactorSettings";
 
 export default function SettingsForms({ user }: { user: any }) {
   const [profileState, profileAction, isProfilePending] = useActionState(updateProfile, null);
   const [passState, passAction, isPassPending] = useActionState(updatePassword, null);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const [avatarStatus, setAvatarStatus] = useState<{ error?: string; success?: string } | null>(null);
+
   const [isUploadingKYC, setIsUploadingKYC] = useState(false);
+  const [kycStatus, setKycStatus] = useState<{ error?: string; success?: string } | null>(null);
+
+  // Email Code for Password Change
+  const [isSendingCode, setIsSendingCode] = useState(false);
+  const [codeSentMsg, setCodeSentMsg] = useState("");
+  const [codeErrorMsg, setCodeErrorMsg] = useState("");
+  const [cooldown, setCooldown] = useState(0);
+
+  const handleSendPasswordCode = async () => {
+    setIsSendingCode(true);
+    setCodeErrorMsg("");
+    setCodeSentMsg("");
+    const res = await requestPasswordChangeCode();
+    setIsSendingCode(false);
+
+    if (res.error) {
+      setCodeErrorMsg(res.error);
+    } else if (res.success) {
+      setCodeSentMsg(res.success);
+      setCooldown(60);
+      const timer = setInterval(() => {
+        setCooldown((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+  };
 
   return (
     <div className="grid gap-8">
@@ -17,6 +51,10 @@ export default function SettingsForms({ user }: { user: any }) {
      {/* --- Section 0: Profile Picture --- */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
         <h3 className="text-lg font-bold text-white mb-4">Profile Display</h3>
+        
+        {avatarStatus?.success && <SuccessMsg msg={avatarStatus.success} />}
+        {avatarStatus?.error && <ErrorMsg msg={avatarStatus.error} />}
+
         <div className="flex items-center gap-6">
           <div className="w-24 h-24 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center overflow-hidden shrink-0">
             {user?.profilePicture ? (
@@ -29,15 +67,21 @@ export default function SettingsForms({ user }: { user: any }) {
             onSubmit={async (e) => {
               e.preventDefault();
               setIsUploadingAvatar(true);
-              await uploadProfilePicture(new FormData(e.currentTarget));
+              setAvatarStatus(null);
+              const res = await uploadProfilePicture(new FormData(e.currentTarget));
               setIsUploadingAvatar(false);
+              if (res?.error) {
+                setAvatarStatus({ error: res.error });
+              } else if (res?.success) {
+                setAvatarStatus({ success: res.success });
+              }
             }} 
             className="flex-1 space-y-3"
           >
             <input type="file" name="profilePicture" accept="image/*" required className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-emerald-500/10 file:text-emerald-500 hover:file:bg-emerald-500/20 transition-all cursor-pointer" />
             <button type="submit" disabled={isUploadingAvatar} className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
               {isUploadingAvatar ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />} 
-              {isUploadingAvatar ? "Uploading..." : "Upload Avatar"}
+              {isUploadingAvatar ? "Uploading to Cloud..." : "Upload Avatar"}
             </button>
           </form>
         </div>
@@ -59,13 +103,22 @@ export default function SettingsForms({ user }: { user: any }) {
           </div>
         </div>
 
+        {kycStatus?.success && <SuccessMsg msg={kycStatus.success} />}
+        {kycStatus?.error && <ErrorMsg msg={kycStatus.error} />}
+
         {(!user?.verificationStatus || user.verificationStatus === "UNVERIFIED" || user.verificationStatus === "REJECTED") ? (
           <form 
              onSubmit={async (e) => {
                e.preventDefault();
                setIsUploadingKYC(true);
-               await submitKYC(new FormData(e.currentTarget));
+               setKycStatus(null);
+               const res = await submitKYC(new FormData(e.currentTarget));
                setIsUploadingKYC(false);
+               if (res?.error) {
+                 setKycStatus({ error: res.error });
+               } else if (res?.success) {
+                 setKycStatus({ success: res.success });
+               }
              }} 
              className="space-y-5 bg-slate-950 p-5 rounded-xl border border-slate-800"
           >
@@ -101,7 +154,7 @@ export default function SettingsForms({ user }: { user: any }) {
 
             <button type="submit" disabled={isUploadingKYC} className="w-full flex justify-center items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all disabled:opacity-70 disabled:cursor-not-allowed mt-2 shadow-lg shadow-emerald-500/10">
               {isUploadingKYC && <Loader2 size={18} className="animate-spin" />}
-              {isUploadingKYC ? "Uploading Documents..." : "Submit Documents for Review"}
+              {isUploadingKYC ? "Uploading to Cloud Storage..." : "Submit Documents for Review"}
             </button>
           </form>
         ) : (
@@ -165,6 +218,60 @@ export default function SettingsForms({ user }: { user: any }) {
             <Input label="Confirm New Password" name="confirmPassword" type="password" placeholder="Repeat new password" />
           </div>
 
+          {/* Email Authentication Code Verification */}
+          <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <div className="flex items-center gap-2">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    Email Authentication Code
+                  </label>
+                  <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
+                    Optional / Standby
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-500 mt-0.5">
+                  Optional while SMTP credentials are being set up. You can change password directly or test email codes.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleSendPasswordCode}
+                disabled={isSendingCode || cooldown > 0}
+                className="self-start sm:self-auto px-4 py-2 rounded-lg text-xs font-bold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 transition-all flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+              >
+                {isSendingCode ? <Loader2 size={13} className="animate-spin" /> : <Mail size={13} />}
+                {isSendingCode
+                  ? "Sending..."
+                  : cooldown > 0
+                    ? `Resend in ${cooldown}s`
+                    : "Send Code to Email"}
+              </button>
+            </div>
+
+            {codeSentMsg && (
+              <p className="text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-2.5 flex items-center gap-2">
+                ✓ {codeSentMsg}
+              </p>
+            )}
+            {codeErrorMsg && (
+              <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg p-2.5 flex items-center gap-2">
+                ✕ {codeErrorMsg}
+              </p>
+            )}
+
+            <div>
+              <input
+                name="authCode"
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                placeholder="Enter 6-digit email code (Optional)"
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-emerald-400 font-mono tracking-widest text-sm focus:outline-none focus:border-emerald-500 transition-colors placeholder:text-slate-700 placeholder:tracking-normal placeholder:font-sans"
+              />
+            </div>
+          </div>
+
           <div className="pt-2">
             <button disabled={isPassPending} className="flex items-center justify-center md:justify-start gap-2 bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 px-8 py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed w-full md:w-auto">
               {isPassPending ? <Loader2 size={16} className="animate-spin" /> : <Lock size={16} />} 
@@ -173,22 +280,8 @@ export default function SettingsForms({ user }: { user: any }) {
           </div>
         </form>
 
-        {/* --- NEW: 2FA Visual --- */}
-        <div className="pt-8 border-t border-slate-800">
-           <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500 mb-4">Advanced Security</h3>
-           <div className="flex items-center justify-between bg-slate-950 border border-slate-800 p-4 rounded-xl">
-              <div className="flex items-center gap-4">
-                <Smartphone className="text-slate-400" size={24} />
-                <div>
-                  <p className="font-bold text-white text-sm">Two-Factor Authentication (2FA)</p>
-                  <p className="text-xs text-slate-500 mt-0.5">Protect your vault with an authenticator app.</p>
-                </div>
-              </div>
-              <button type="button" className="text-xs font-bold bg-emerald-500/10 text-emerald-500 px-4 py-2 rounded-lg border border-emerald-500/20 hover:bg-emerald-500/20 transition-all">
-                Enable
-              </button>
-           </div>
-        </div>
+        {/* --- Two-Factor Authentication (TOTP) --- */}
+        <TwoFactorSettings user={user} />
       </section>
     </div>
   );

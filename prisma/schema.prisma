@@ -41,6 +41,15 @@ model User {
   role               Role      @default(USER)
   totalBalance       Float     @default(0.0) 
 
+  // --- TWO-FACTOR AUTHENTICATION (TOTP) ---
+  totpSecret         String?   @db.Text
+  totpEnabled        Boolean   @default(false)
+  totpBackupCodes    String[]  @default([])
+
+  // --- PASSWORD CHANGE VERIFICATION (EMAIL OTP) ---
+  passwordResetCode    String?
+  passwordResetExpires DateTime?
+
 // 2. ADD THESE 6 NEW KYC FIELDS HERE
   profilePicture     String?             @db.Text
   idType             String?             // e.g., "Passport", "Driver's License"

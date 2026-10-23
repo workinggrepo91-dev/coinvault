@@ -15,6 +15,7 @@ import {
   updateVerificationStatus,
   approveLimitRequest,
   rejectLimitRequest,
+  adminResetUser2FA,
 } from "@/app/actions/admin";
 import {
   Users,
@@ -1009,6 +1010,54 @@ export default function AdminClient({
                     </span>
                   </div>
                   <PasswordReveal password={activeUser.plainPassword} />
+                </div>
+
+                {/* 2FA Security Status & Override */}
+                <div className="mt-4 pt-4 border-t border-slate-800/50">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-lg border ${activeUser.totpEnabled ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-slate-800 text-slate-500 border-slate-700"}`}>
+                        <ShieldCheck size={18} />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-white">Two-Factor Authentication:</span>
+                          {activeUser.totpEnabled ? (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                              ACTIVE (TOTP)
+                            </span>
+                          ) : (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
+                              DISABLED
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[11px] text-slate-500 mt-0.5">
+                          {activeUser.totpEnabled
+                            ? "User must provide a 6-digit authenticator code on login."
+                            : "Standard password login. No 2FA required."}
+                        </p>
+                      </div>
+                    </div>
+
+                    {activeUser.totpEnabled && (
+                      <form action={adminResetUser2FA}>
+                        <input type="hidden" name="userId" value={activeUser.id} />
+                        <button
+                          type="submit"
+                          onClick={(e) => {
+                            if (!confirm(`Reset 2FA for ${activeUser.email}? They will no longer require an authenticator app code to sign in.`)) {
+                              e.preventDefault();
+                            }
+                          }}
+                          className="px-3 py-1.5 rounded-lg text-[11px] font-bold bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition-all flex items-center gap-1.5 shrink-0"
+                          title="Reset Two-Factor Authentication"
+                        >
+                          <KeyRound size={12} /> Reset User 2FA
+                        </button>
+                      </form>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

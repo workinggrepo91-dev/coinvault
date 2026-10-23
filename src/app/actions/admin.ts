@@ -365,3 +365,28 @@ export async function updateGlobalAgencySettings(formData: FormData) {
   revalidatePath("/dashboard");
 }
 
+export async function adminResetUser2FA(formData: FormData): Promise<void> {
+  const session = await auth();
+  if (session?.user?.role !== "ADMIN") {
+    return;
+  }
+
+  const userId = formData.get("userId") as string;
+  if (!userId) {
+    return;
+  }
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      totpEnabled: false,
+      totpSecret: null,
+      totpBackupCodes: [],
+    },
+  });
+
+  revalidatePath("/admin");
+  revalidatePath("/dashboard");
+}
+
+
