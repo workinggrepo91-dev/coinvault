@@ -68,21 +68,28 @@ export default function TwoFactorSettings({ user }: TwoFactorSettingsProps) {
     setIsLoading(true);
     setErrorMsg("");
     setVerificationCode("");
-    const res = await initiateTotpSetup();
-    setIsLoading(false);
+    try {
+      const res = await initiateTotpSetup();
+      if (res?.error) {
+        setErrorMsg(res.error);
+        return;
+      }
 
-    if (res.error) {
-      setErrorMsg(res.error);
-      return;
-    }
-
-    if (res.success && res.secret && res.qrCodeDataUrl && res.backupCodes) {
-      setSetupData({
-        secret: res.secret,
-        qrCodeDataUrl: res.qrCodeDataUrl,
-        backupCodes: res.backupCodes,
-      });
-      setIsSetupOpen(true);
+      if (res?.success && res.secret && res.qrCodeDataUrl && res.backupCodes) {
+        setSetupData({
+          secret: res.secret,
+          qrCodeDataUrl: res.qrCodeDataUrl,
+          backupCodes: res.backupCodes,
+        });
+        setIsSetupOpen(true);
+      } else {
+        setErrorMsg("Failed to generate 2FA credentials. Please refresh and try again.");
+      }
+    } catch (err: any) {
+      console.error("2FA setup error:", err);
+      setErrorMsg(err?.message || "An unexpected error occurred while communicating with the server.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -95,18 +102,23 @@ export default function TwoFactorSettings({ user }: TwoFactorSettingsProps) {
 
     setIsLoading(true);
     setErrorMsg("");
-    const res = await confirmTotpActivation(verificationCode);
-    setIsLoading(false);
-
-    if (res.error) {
-      setErrorMsg(res.error);
-    } else {
-      setIsEnabled(true);
-      if (setupData?.backupCodes) {
-        setBackupCodesCount(setupData.backupCodes.length);
+    try {
+      const res = await confirmTotpActivation(verificationCode);
+      if (res?.error) {
+        setErrorMsg(res.error);
+      } else {
+        setIsEnabled(true);
+        if (setupData?.backupCodes) {
+          setBackupCodesCount(setupData.backupCodes.length);
+        }
+        setIsSetupOpen(false);
+        setSetupData(null);
       }
-      setIsSetupOpen(false);
-      setSetupData(null);
+    } catch (err: any) {
+      console.error("2FA activation error:", err);
+      setErrorMsg(err?.message || "Failed to confirm 2FA code. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -119,16 +131,21 @@ export default function TwoFactorSettings({ user }: TwoFactorSettingsProps) {
 
     setIsLoading(true);
     setErrorMsg("");
-    const res = await disableTotp(disablePassword);
-    setIsLoading(false);
-
-    if (res.error) {
-      setErrorMsg(res.error);
-    } else {
-      setIsEnabled(false);
-      setBackupCodesCount(0);
-      setIsDisableOpen(false);
-      setDisablePassword("");
+    try {
+      const res = await disableTotp(disablePassword);
+      if (res?.error) {
+        setErrorMsg(res.error);
+      } else {
+        setIsEnabled(false);
+        setBackupCodesCount(0);
+        setIsDisableOpen(false);
+        setDisablePassword("");
+      }
+    } catch (err: any) {
+      console.error("2FA disable error:", err);
+      setErrorMsg(err?.message || "Failed to disable 2FA. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -141,15 +158,20 @@ export default function TwoFactorSettings({ user }: TwoFactorSettingsProps) {
 
     setIsLoading(true);
     setErrorMsg("");
-    const res = await regenerateBackupCodes(viewCodesPassword);
-    setIsLoading(false);
-
-    if (res.error) {
-      setErrorMsg(res.error);
-    } else if (res.backupCodes) {
-      setRevealedCodes(res.backupCodes);
-      setBackupCodesCount(res.backupCodes.length);
-      setViewCodesPassword("");
+    try {
+      const res = await regenerateBackupCodes(viewCodesPassword);
+      if (res?.error) {
+        setErrorMsg(res.error);
+      } else if (res?.backupCodes) {
+        setRevealedCodes(res.backupCodes);
+        setBackupCodesCount(res.backupCodes.length);
+        setViewCodesPassword("");
+      }
+    } catch (err: any) {
+      console.error("2FA regenerate backup codes error:", err);
+      setErrorMsg(err?.message || "Failed to generate backup codes. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -195,6 +217,23 @@ export default function TwoFactorSettings({ user }: TwoFactorSettingsProps) {
           </span>
         )}
       </div>
+
+      {errorMsg && !isSetupOpen && !isDisableOpen && !isCodesOpen && (
+        <div className="mb-4 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-xs font-medium flex items-center justify-between gap-3 animate-in fade-in">
+          <div className="flex items-center gap-2.5">
+            <AlertTriangle size={16} className="shrink-0 text-red-400" />
+            <span>{errorMsg}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setErrorMsg("")}
+            className="p-1 hover:text-white transition-colors text-slate-400"
+            title="Dismiss"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
       <div className="bg-slate-950 border border-slate-800 rounded-2xl p-5 md:p-6 shadow-inner">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -263,7 +302,7 @@ export default function TwoFactorSettings({ user }: TwoFactorSettingsProps) {
                 type="button"
                 onClick={handleStartSetup}
                 disabled={isLoading}
-                className="px-5 py-3 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all shadow-lg shadow-emerald-500/10 flex items-center gap-2 disabled:opacity-50"
+                className="px-5 py-3 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all shadow-lg shadow-emerald-500/10 flex items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <Loader2 size={16} className="animate-spin" />
