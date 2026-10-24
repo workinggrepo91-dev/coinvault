@@ -123,7 +123,7 @@ const DEFAULT_COINS: CoinPriceData[] = [
 ];
 
 let cache: { data: CoinPriceData[]; timestamp: number } | null = null;
-const CACHE_TTL_MS = 6000; // 6 seconds server-side memory cache
+const CACHE_TTL_MS = 20000; // 20 seconds server-side memory cache for high-speed navigation
 
 export async function fetchLiveMarketPrices(): Promise<CoinPriceData[]> {
   const now = Date.now();
@@ -137,6 +137,7 @@ export async function fetchLiveMarketPrices(): Promise<CoinPriceData[]> {
     const res = await fetch("https://api.binance.com/api/v3/ticker/24hr", {
       cache: "no-store",
       headers: { "User-Agent": "CoinVault/1.0" },
+      signal: AbortSignal.timeout(2000), // 2s maximum timeout to avoid blocking page transition
     });
 
     if (res.ok) {
@@ -169,14 +170,14 @@ export async function fetchLiveMarketPrices(): Promise<CoinPriceData[]> {
       return updatedCoins;
     }
   } catch (binanceErr) {
-    console.warn("Binance price fetch fallback triggered:", (binanceErr as any)?.message);
+    // Fast fallback
   }
 
   // 2. Try CoinGecko Markets API
   try {
     const res = await fetch(
       "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=1&sparkline=false",
-      { cache: "no-store" }
+      { cache: "no-store", signal: AbortSignal.timeout(2000) }
     );
     if (res.ok) {
       const data = await res.json();

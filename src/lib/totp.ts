@@ -32,9 +32,9 @@ export async function generateTotpSetup(email: string) {
   const uri = totp.toString();
 
   const qrCodeDataUrl = await QRCode.toDataURL(uri, {
-    errorCorrectionLevel: "M",
-    margin: 2,
-    width: 280,
+    errorCorrectionLevel: "L",
+    margin: 1,
+    width: 200,
     color: {
       dark: "#020617",
       light: "#FFFFFF",

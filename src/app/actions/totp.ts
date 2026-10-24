@@ -40,27 +40,48 @@ async function getAuthenticatedUser() {
  */
 export async function initiateTotpSetup() {
   try {
-    const user = await getAuthenticatedUser();
-    if (!user) {
+    const session = await auth();
+    const userId = session?.user?.id;
+    const userEmail = session?.user?.email;
+
+    if (!userId && !userEmail) {
       return { error: "Unauthorized. Please sign in again." };
     }
 
-    const { secret, uri, qrCodeDataUrl } = await generateTotpSetup(user.email);
+    // Run user lookup and TOTP setup key generation concurrently
+    const [user, setupData] = await Promise.all([
+      prisma.user.findFirst({
+        where: {
+          OR: [
+            ...(userId ? [{ id: userId }] : []),
+            ...(userEmail ? [{ email: userEmail }] : []),
+          ],
+        },
+        select: { id: true, email: true },
+      }),
+      generateTotpSetup(userEmail || "user@coinvault.com"),
+    ]);
+
+    if (!user) {
+      return { error: "User account not found." };
+    }
+
     const backupCodes = generateBackupCodes(8);
 
     // Save secret & backup codes, but keep totpEnabled as false until verified!
     await prisma.user.update({
       where: { id: user.id },
       data: {
-        totpSecret: secret,
+        totpSecret: setupData.secret,
         totpBackupCodes: backupCodes,
       },
+      select: { id: true },
     });
 
     return {
       success: true,
-      secret,
-      qrCodeDataUrl,
+      secret: setupData.secret,
+      qrCodeDataUrl: setupData.qrCodeDataUrl,
       backupCodes,
     };
   } catch (err: any) {

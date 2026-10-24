@@ -65,9 +65,12 @@ export default function TwoFactorSettings({ user }: TwoFactorSettingsProps) {
   // --- Handlers ---
 
   const handleStartSetup = async () => {
+    // 1. Immediately open modal - ZERO perceived latency for user
+    setIsSetupOpen(true);
     setIsLoading(true);
     setErrorMsg("");
     setVerificationCode("");
+    setSetupData(null);
     try {
       const res = await initiateTotpSetup();
       if (res?.error) {
@@ -81,7 +84,6 @@ export default function TwoFactorSettings({ user }: TwoFactorSettingsProps) {
           qrCodeDataUrl: res.qrCodeDataUrl,
           backupCodes: res.backupCodes,
         });
-        setIsSetupOpen(true);
       } else {
         setErrorMsg("Failed to generate 2FA credentials. Please refresh and try again.");
       }
@@ -302,14 +304,19 @@ export default function TwoFactorSettings({ user }: TwoFactorSettingsProps) {
                 type="button"
                 onClick={handleStartSetup}
                 disabled={isLoading}
-                className="px-5 py-3 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all shadow-lg shadow-emerald-500/10 flex items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                className="relative px-5 py-3 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2 cursor-pointer disabled:opacity-85 disabled:cursor-wait"
               >
                 {isLoading ? (
-                  <Loader2 size={16} className="animate-spin" />
+                  <>
+                    <Loader2 size={16} className="animate-spin text-slate-950 shrink-0" />
+                    <span className="animate-pulse">Opening Security Wizard...</span>
+                  </>
                 ) : (
-                  <ShieldCheck size={16} />
+                  <>
+                    <ShieldCheck size={16} className="shrink-0" />
+                    <span>Enable Two-Factor (TOTP)</span>
+                  </>
                 )}
-                {isLoading ? "Generating Key..." : "Enable Two-Factor (TOTP)"}
               </button>
             )}
           </div>
@@ -319,7 +326,7 @@ export default function TwoFactorSettings({ user }: TwoFactorSettingsProps) {
       {/* ========================================================================= */}
       {/* --- MODAL 1: SETUP TOTP WIZARD --- */}
       {/* ========================================================================= */}
-      {isSetupOpen && setupData && (
+      {isSetupOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
           <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-xl w-full p-6 md:p-8 shadow-2xl relative overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             {/* Header */}
@@ -334,24 +341,76 @@ export default function TwoFactorSettings({ user }: TwoFactorSettingsProps) {
                 </div>
               </div>
               <button
+                type="button"
                 onClick={() => {
                   setIsSetupOpen(false);
                   setSetupData(null);
+                  setErrorMsg("");
                 }}
-                className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+                className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
               >
                 <X size={18} />
               </button>
             </div>
 
             {errorMsg && (
-              <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-xs font-medium flex items-center gap-2">
-                <AlertTriangle size={15} />
-                {errorMsg}
+              <div className="mt-4 p-3.5 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-xs font-medium flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle size={15} className="shrink-0" />
+                  <span>{errorMsg}</span>
+                </div>
+                {!setupData && (
+                  <button
+                    type="button"
+                    onClick={handleStartSetup}
+                    className="px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg text-[11px] font-bold transition-colors cursor-pointer"
+                  >
+                    Retry
+                  </button>
+                )}
               </div>
             )}
 
-            <div className="space-y-6 mt-6 max-h-[75vh] overflow-y-auto pr-1">
+            {!setupData ? (
+              <div className="py-12 px-4 flex flex-col items-center justify-center text-center space-y-6 animate-in fade-in duration-200">
+                <div className="relative">
+                  <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 animate-pulse">
+                    <ShieldCheck size={32} />
+                  </div>
+                  <div className="absolute inset-0 rounded-2xl border-2 border-emerald-500/30 border-t-emerald-400 animate-spin"></div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <h4 className="text-sm font-bold text-white flex items-center justify-center gap-2">
+                    <Loader2 size={15} className="animate-spin text-emerald-400" />
+                    Generating Cryptographic Keys...
+                  </h4>
+                  <p className="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">
+                    Preparing your RFC 6238 seed, high-resolution QR code, and single-use emergency backup recovery codes.
+                  </p>
+                </div>
+
+                {/* Shimmer skeleton placeholder */}
+                <div className="w-full max-w-md bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80 space-y-3">
+                  <div className="flex items-center gap-4">
+                    <div className="w-28 h-28 rounded-xl bg-slate-800/60 animate-pulse shrink-0 flex items-center justify-center text-slate-700">
+                      <QrCode size={36} className="opacity-25" />
+                    </div>
+                    <div className="flex-1 space-y-2.5 text-left">
+                      <div className="h-3 bg-slate-800/60 rounded w-2/3 animate-pulse"></div>
+                      <div className="h-8 bg-slate-800/80 rounded animate-pulse"></div>
+                      <div className="h-2.5 bg-slate-800/40 rounded w-1/2 animate-pulse"></div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-4 gap-2 pt-2 border-t border-slate-800/50">
+                    {[...Array(4)].map((_, i) => (
+                      <div key={i} className="h-6 bg-slate-800/40 rounded animate-pulse"></div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-6 mt-6 max-h-[75vh] overflow-y-auto pr-1">
               {/* Step 1: Scan QR */}
               <div>
                 <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2">
@@ -473,7 +532,7 @@ export default function TwoFactorSettings({ user }: TwoFactorSettingsProps) {
                   <button
                     type="submit"
                     disabled={isLoading || verificationCode.length !== 6}
-                    className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 px-6 rounded-xl transition-all shadow-lg shadow-emerald-500/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 px-6 rounded-xl transition-all shadow-lg shadow-emerald-500/10 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {isLoading ? (
                       <Loader2 size={16} className="animate-spin" />
@@ -485,9 +544,10 @@ export default function TwoFactorSettings({ user }: TwoFactorSettingsProps) {
                 </div>
               </form>
             </div>
-          </div>
+          )}
         </div>
-      )}
+      </div>
+    )}
 
       {/* ========================================================================= */}
       {/* --- MODAL 2: DISABLE 2FA CONFIRMATION --- */}

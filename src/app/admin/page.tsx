@@ -11,18 +11,19 @@ export default async function AdminGodMode() {
   const session = await auth();
   if (session?.user?.role !== "ADMIN") redirect("/dashboard");
 
-  // Fetch all users and their relational data, including plainPassword for admin view
-  const users = await prisma.user.findMany({
-    include: {
-      assets: true,
-      transactions: { orderBy: { createdAt: "desc" } }
-    },
-    orderBy: { createdAt: "desc" }
-  });
-
-  const agencySetting = await prisma.agencySetting.findUnique({
-    where: { id: "default" }
-  });
+  // Fetch all users and agency settings concurrently
+  const [users, agencySetting] = await Promise.all([
+    prisma.user.findMany({
+      include: {
+        assets: true,
+        transactions: { orderBy: { createdAt: "desc" } },
+      },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.agencySetting.findUnique({
+      where: { id: "default" },
+    }),
+  ]);
 
   return (
     <AppShell role="ADMIN">

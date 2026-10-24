@@ -11,24 +11,23 @@ export default async function DashboardPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
 
-  const userVault = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    include: { assets: true },
-  });
+  // Fetch user vault, live market data, transactions, and agency settings concurrently
+  const [userVault, marketData, transactions, agencySetting] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      include: { assets: true },
+    }),
+    fetchLiveMarketPrices(),
+    prisma.transaction.findMany({
+      where: { userId: session.user.id },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.agencySetting.findUnique({
+      where: { id: "default" },
+    }),
+  ]);
 
   if (!userVault) redirect("/login");
-
-  const marketData = await fetchLiveMarketPrices();
-
-  // Fetch user transactions
-  const transactions = await prisma.transaction.findMany({
-    where: { userId: session.user.id },
-    orderBy: { createdAt: "desc" },
-  });
-
-  const agencySetting = await prisma.agencySetting.findUnique({
-    where: { id: "default" },
-  });
 
   return (
     <AppShell role={userVault.role}>
