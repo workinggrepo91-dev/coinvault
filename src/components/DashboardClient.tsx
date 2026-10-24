@@ -4,6 +4,7 @@ import {
   Eye,
   EyeOff,
   ArrowDown,
+  ArrowUpRight,
   Send,
   CreditCard,
   X,
@@ -449,8 +450,8 @@ ${agencyPaymentAdvice}`;
                   }}
                 />
                 <ActionButton
-                  icon={<Send size={16} />}
-                  label="Send"
+                  icon={<ArrowUpRight size={16} />}
+                  label="Withdraw"
                   onClick={() => {
                     resetWithdrawForm();
                     setShowWithdrawModal(true);
@@ -607,7 +608,7 @@ ${agencyPaymentAdvice}`;
                         }}
                         className="text-xs font-bold text-slate-400 hover:text-white underline decoration-dotted"
                       >
-                        Send
+                        Withdraw
                       </button>
                     </td>
                   </tr>
@@ -839,11 +840,11 @@ ${agencyPaymentAdvice}`;
             <div className="space-y-5">
               <div className="text-center">
                 <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-3 text-emerald-400">
-                  <Send size={22} />
+                  <ArrowUpRight size={22} />
                 </div>
                 <h3 className="text-xl font-bold text-white">Withdraw Funds</h3>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Send cryptocurrency or wire funds to external accounts
+                  Withdraw cryptocurrency or wire funds to external accounts
                 </p>
 
                 {/* TYPE Switcher (CRYPTO & FIAT) */}
@@ -1069,7 +1070,7 @@ ${agencyPaymentAdvice}`;
                         )}
                     </div>
 
-                    {/* Send Button */}
+                    {/* Withdraw Button */}
                     <div className="pt-2">
                       <button
                         type="submit"
@@ -1079,14 +1080,14 @@ ${agencyPaymentAdvice}`;
                           parsedWithdrawAmount >
                             (activeWithdrawCoin?.amount || 0)
                         }
-                        className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                       >
                         {isSubmittingWithdraw ? (
                           <Loader2 size={18} className="animate-spin" />
                         ) : (
                           <>
-                            <Send size={16} />
-                            <span>Send {activeWithdrawCoin?.symbol}</span>
+                            <ArrowUpRight size={16} />
+                            <span>Withdraw {activeWithdrawCoin?.symbol}</span>
                           </>
                         )}
                       </button>
@@ -1277,7 +1278,7 @@ ${agencyPaymentAdvice}`;
                       )}
                     </div>
 
-                    {/* Send Button */}
+                    {/* Withdraw Button */}
                     <div className="pt-2">
                       <button
                         type="submit"
@@ -1286,14 +1287,14 @@ ${agencyPaymentAdvice}`;
                           safeTotalBalance <= 0 ||
                           parsedWithdrawAmount > safeTotalBalance
                         }
-                        className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-400 hover:to-blue-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-400 hover:to-blue-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                       >
                         {isSubmittingWithdraw ? (
                           <Loader2 size={18} className="animate-spin" />
                         ) : (
                           <>
-                            <Send size={16} />
-                            <span>Send Fiat Wire Transfer</span>
+                            <ArrowUpRight size={16} />
+                            <span>Withdraw Fiat Wire Transfer</span>
                           </>
                         )}
                       </button>
