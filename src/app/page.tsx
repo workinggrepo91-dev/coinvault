@@ -23,7 +23,12 @@ async function getTrendingCoins() {
 
 export default async function LandingPage() {
   const trendingCoins = await getTrendingCoins();
-  const session = await auth(); // <-- Check if logged in
+  let session = null;
+  try {
+    session = await auth(); // <-- Check if logged in
+  } catch {
+    session = null;
+  }
 
   return (
     <main className="bg-slate-950 min-h-screen text-white selection:bg-emerald-500/30">
