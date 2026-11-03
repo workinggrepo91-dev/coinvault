@@ -7,7 +7,7 @@ export interface CoinPriceData {
   image: string;
 }
 
-const DEFAULT_COINS: CoinPriceData[] = [
+export const DEFAULT_COINS: CoinPriceData[] = [
   {
     id: "bitcoin",
     symbol: "btc",

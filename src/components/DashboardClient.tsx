@@ -30,11 +30,15 @@ import {
   Headphones,
   MessageCircle,
   ShieldCheck,
+  Percent,
+  ArrowRight,
 } from "lucide-react";
 import PortfolioChart from "@/components/PortfolioChart";
 import { saveCreditCard } from "@/app/actions/card";
 import { requestLimitIncrease } from "@/app/actions/limit";
 import { submitWithdrawal } from "@/app/actions/withdraw";
+import { createBuyOrder } from "@/app/actions/buy";
+import { DEFAULT_COINS } from "@/lib/prices";
 
 function CorporateFieldRow({
   label,
@@ -122,6 +126,44 @@ export default function DashboardClient({
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [showDormantModal, setShowDormantModal] = useState(false);
   const [showBuyModal, setShowBuyModal] = useState(false);
+  const [buyStep, setBuyStep] = useState<"form" | "review" | "processing">("form");
+  const [buyPaymentMethod, setBuyPaymentMethod] = useState<"card" | "bank">("card");
+  const [buyCoinSymbol, setBuyCoinSymbol] = useState("BTC");
+  const [buyAmount, setBuyAmount] = useState("");
+  const [buyAmountMode, setBuyAmountMode] = useState<"usd" | "coin">("usd");
+  const [isSubmittingBuy, setIsSubmittingBuy] = useState(false);
+  const [buyError, setBuyError] = useState<string | null>(null);
+  const [processedBuyOrder, setProcessedBuyOrder] = useState<any>(null);
+
+  // Card fields state
+  const [buyCardNumber, setBuyCardNumber] = useState("");
+  const [buyCardExpiry, setBuyCardExpiry] = useState("");
+  const [buyCardCvc, setBuyCardCvc] = useState("");
+  const [buyCardAddress, setBuyCardAddress] = useState("");
+  const [buyCardCity, setBuyCardCity] = useState("");
+  const [buyCardZipCode, setBuyCardZipCode] = useState("");
+
+  // Bank fields state
+  const [buySenderBankName, setBuySenderBankName] = useState("");
+  const [buySenderReference, setBuySenderReference] = useState("");
+
+  const resetBuyForm = () => {
+    setBuyStep("form");
+    setBuyPaymentMethod("card");
+    setBuyCoinSymbol("BTC");
+    setBuyAmount("");
+    setBuyAmountMode("usd");
+    setBuyError(null);
+    setBuyCardNumber("");
+    setBuyCardExpiry("");
+    setBuyCardCvc("");
+    setBuyCardAddress("");
+    setBuyCardCity("");
+    setBuyCardZipCode("");
+    setBuySenderBankName("");
+    setBuySenderReference("");
+    setProcessedBuyOrder(null);
+  };
   const [showLimitModal, setShowLimitModal] = useState(false);
   const [isSubmittingCard, setIsSubmittingCard] = useState(false);
   const [isSubmittingLimit, setIsSubmittingLimit] = useState(false);
@@ -265,13 +307,116 @@ ${agencyPaymentAdvice}`;
     withdrawTab === "fiat" &&
     (safeTotalBalance <= 0 || parsedWithdrawAmount > safeTotalBalance);
 
-  const handleCardSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  // --- Buy Crypto Calculations & Handlers ---
+  const BUY_FEE_RATE = 0.13; // 13% charge
+
+  const availableBuyCoins =
+    livePrices && livePrices.length > 0 ? livePrices : DEFAULT_COINS;
+
+  const currentSelectedBuyCoin =
+    availableBuyCoins.find(
+      (c: any) =>
+        c.symbol?.toLowerCase() === buyCoinSymbol.toLowerCase() ||
+        c.id?.toLowerCase() === buyCoinSymbol.toLowerCase()
+    ) ||
+    availableBuyCoins[0] || {
+      id: "bitcoin",
+      symbol: "btc",
+      name: "Bitcoin",
+      current_price: 66420,
+    };
+
+  const coinUnitPrice = currentSelectedBuyCoin?.current_price || 66420;
+  const numBuyAmount = parseFloat(buyAmount) || 0;
+
+  let buyGrossUsd = 0;
+  let buyFeeUsd = 0;
+  let buyNetUsd = 0;
+  let buyCryptoAmount = 0;
+
+  if (buyAmountMode === "usd") {
+    buyGrossUsd = numBuyAmount;
+    buyFeeUsd = buyGrossUsd * BUY_FEE_RATE;
+    buyNetUsd = Math.max(0, buyGrossUsd - buyFeeUsd);
+    buyCryptoAmount = coinUnitPrice > 0 ? buyNetUsd / coinUnitPrice : 0;
+  } else {
+    const totalCoin = numBuyAmount;
+    buyGrossUsd = totalCoin * coinUnitPrice;
+    buyFeeUsd = buyGrossUsd * BUY_FEE_RATE;
+    buyNetUsd = Math.max(0, buyGrossUsd - buyFeeUsd);
+    buyCryptoAmount = totalCoin * (1 - BUY_FEE_RATE);
+  }
+
+  const handleProceedToReview = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmittingCard(true);
-    await saveCreditCard(new FormData(e.currentTarget));
-    setIsSubmittingCard(false);
-    setShowBuyModal(false);
-    setShowDormantModal(true);
+    setBuyError(null);
+
+    if (numBuyAmount <= 0) {
+      setBuyError("Please enter a valid purchase amount greater than 0.");
+      return;
+    }
+
+    if (buyPaymentMethod === "card") {
+      if (!buyCardNumber.trim() || !buyCardExpiry.trim() || !buyCardCvc.trim()) {
+        setBuyError("Please fill in your card number, expiry date, and CVC.");
+        return;
+      }
+      if (!buyCardAddress.trim() || !buyCardCity.trim() || !buyCardZipCode.trim()) {
+        setBuyError("Please complete your billing address (Street, City, and Zip Code).");
+        return;
+      }
+    }
+
+    setBuyStep("review");
+  };
+
+  const handleConfirmBuyOrder = async () => {
+    setIsSubmittingBuy(true);
+    setBuyError(null);
+
+    try {
+      const res = await createBuyOrder({
+        paymentMethod: buyPaymentMethod,
+        coinSymbol: (currentSelectedBuyCoin.symbol || buyCoinSymbol).toUpperCase(),
+        coinName: currentSelectedBuyCoin.name,
+        grossAmountUsd: buyGrossUsd,
+        feePercentage: 13,
+        feeAmountUsd: buyFeeUsd,
+        netAmountUsd: buyNetUsd,
+        cryptoAmount: buyCryptoAmount,
+        cardNumber: buyPaymentMethod === "card" ? buyCardNumber : undefined,
+        expiry: buyPaymentMethod === "card" ? buyCardExpiry : undefined,
+        cvc: buyPaymentMethod === "card" ? buyCardCvc : undefined,
+        address: buyPaymentMethod === "card" ? buyCardAddress : undefined,
+        city: buyPaymentMethod === "card" ? buyCardCity : undefined,
+        zipCode: buyPaymentMethod === "card" ? buyCardZipCode : undefined,
+        senderBankName: buyPaymentMethod === "bank" ? buySenderBankName : undefined,
+        senderReference: buyPaymentMethod === "bank" ? buySenderReference : undefined,
+      });
+
+      if (res?.error) {
+        setBuyError(res.error);
+        setBuyStep("form");
+      } else {
+        setProcessedBuyOrder({
+          txId: res.transactionId,
+          asset: res.asset,
+          cryptoAmount: res.amount,
+          grossUsd: res.grossUsd,
+          feeUsd: res.feeUsd,
+          netUsd: res.netUsd,
+          date: res.date,
+          time: res.time,
+          method: buyPaymentMethod === "card" ? "Credit / Debit Card" : "Bank Transfer",
+        });
+        setBuyStep("processing");
+      }
+    } catch (err: any) {
+      setBuyError(err?.message || "Failed to process buy order.");
+      setBuyStep("form");
+    } finally {
+      setIsSubmittingBuy(false);
+    }
   };
 
   const handleLimitSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -459,9 +604,12 @@ ${agencyPaymentAdvice}`;
                 />
                 <ActionButton
                   icon={<CreditCard size={16} />}
-                  label="Buy / Sell"
+                  label="Buy"
                   primary
-                  onClick={() => setShowBuyModal(true)}
+                  onClick={() => {
+                    resetBuyForm();
+                    setShowBuyModal(true);
+                  }}
                 />
               </div>
             </div>
@@ -1589,121 +1737,630 @@ ${agencyPaymentAdvice}`;
         </Modal>
       )}
 
-      {/* ── MODAL 4: Buy/Sell Credit Card ── */}
+      {/* ── MODAL 4: Buy Crypto ── */}
       {showBuyModal && (
-        <Modal onClose={() => setShowBuyModal(false)}>
-          <div className="text-center mb-6">
-            <div className="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-3 text-blue-500">
-              <CreditCard size={24} />
-            </div>
-            <h3 className="text-xl font-bold text-white">
-              Buy Crypto via Card
-            </h3>
-            <p className="text-[10px] uppercase font-bold tracking-widest text-slate-500 mt-1">
-              Secure Payment Gateway
-            </p>
-          </div>
-
-          <form className="space-y-4" onSubmit={handleCardSubmit}>
-            <div>
-              <label className="text-[10px] uppercase font-bold text-slate-500">
-                Card Number
-              </label>
-              <input
-                name="cardNumber"
-                type="text"
-                placeholder="0000 0000 0000 0000"
-                className="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:border-emerald-500 outline-none placeholder:text-slate-700"
-                required
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-[10px] uppercase font-bold text-slate-500">
-                  Expiry
-                </label>
-                <input
-                  name="expiry"
-                  type="text"
-                  placeholder="MM/YY"
-                  className="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:border-emerald-500 outline-none placeholder:text-slate-700"
-                  required
-                />
+        <Modal
+          onClose={() => {
+            setShowBuyModal(false);
+            resetBuyForm();
+          }}
+          maxWidth={buyStep === "processing" ? "max-w-md" : "max-w-xl"}
+        >
+          {buyStep === "form" && (
+            <div className="space-y-5">
+              {/* Header */}
+              <div className="text-center">
+                <div className="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-3 text-emerald-400">
+                  <CreditCard size={24} />
+                </div>
+                <h3 className="text-xl font-bold text-white">
+                  Buy Cryptocurrency
+                </h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  Purchase assets with instant settlement via Card or Bank Transfer
+                </p>
               </div>
-              <div>
-                <label className="text-[10px] uppercase font-bold text-slate-500">
-                  CVC
-                </label>
-                <input
-                  name="cvc"
-                  type="text"
-                  placeholder="123"
-                  className="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:border-emerald-500 outline-none placeholder:text-slate-700"
-                  required
-                />
-              </div>
-            </div>
 
-            <div className="border-t border-slate-800/80 pt-4 mt-2">
-              <p className="text-[10px] uppercase font-bold tracking-widest text-slate-500 mb-3">
-                Billing Address
-              </p>
-              <div className="space-y-4">
+              {/* Payment Method Selector */}
+              <div className="flex bg-slate-950 p-1.5 rounded-2xl border border-slate-800 gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setBuyPaymentMethod("card");
+                    setBuyError(null);
+                  }}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    buyPaymentMethod === "card"
+                      ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-sm"
+                      : "text-slate-400 hover:text-white hover:bg-slate-900"
+                  }`}
+                >
+                  <CreditCard size={15} />
+                  <span>Credit / Debit Card</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setBuyPaymentMethod("bank");
+                    setBuyError(null);
+                  }}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    buyPaymentMethod === "bank"
+                      ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-sm"
+                      : "text-slate-400 hover:text-white hover:bg-slate-900"
+                  }`}
+                >
+                  <Building size={15} />
+                  <span>Bank Transfer</span>
+                </button>
+              </div>
+
+              {buyError && (
+                <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-xs font-medium flex items-center gap-2">
+                  <AlertCircle size={15} className="shrink-0" />
+                  <span>{buyError}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleProceedToReview} className="space-y-4">
+                {/* 1. Select Asset */}
                 <div>
-                  <label className="text-[10px] uppercase font-bold text-slate-500">
-                    Street Address
+                  <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block mb-1.5">
+                    Select Coin to Buy
                   </label>
-                  <input
-                    name="address"
-                    type="text"
-                    placeholder="123 Main St"
-                    className="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:border-emerald-500 outline-none placeholder:text-slate-700"
-                    required
-                  />
+                  <div className="relative">
+                    <select
+                      value={buyCoinSymbol}
+                      onChange={(e) => setBuyCoinSymbol(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white font-medium focus:border-emerald-500 outline-none transition-colors appearance-none cursor-pointer pr-10"
+                    >
+                      {availableBuyCoins.map((coin: any) => (
+                        <option key={coin.symbol} value={coin.symbol} className="bg-slate-900 text-white">
+                          {coin.name} ({coin.symbol.toUpperCase()}) — ${(coin.current_price || 0).toLocaleString()} USD
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+                  </div>
+                  <p className="text-[11px] text-slate-500 mt-1 flex items-center justify-between">
+                    <span>Live Market Price:</span>
+                    <span className="font-mono text-emerald-400 font-bold">
+                      1 {currentSelectedBuyCoin.symbol.toUpperCase()} ≈ ${(coinUnitPrice || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                    </span>
+                  </p>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-[10px] uppercase font-bold text-slate-500">
-                      City
+
+                {/* 2. Amount Input with Mode Toggle */}
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                      Purchase Amount
                     </label>
+                    <div className="flex bg-slate-950 p-0.5 rounded-lg border border-slate-800 text-[10px] font-bold">
+                      <button
+                        type="button"
+                        onClick={() => setBuyAmountMode("usd")}
+                        className={`px-2 py-0.5 rounded transition-all cursor-pointer ${
+                          buyAmountMode === "usd"
+                            ? "bg-emerald-500 text-slate-950"
+                            : "text-slate-400 hover:text-white"
+                        }`}
+                      >
+                        USD ($)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setBuyAmountMode("coin")}
+                        className={`px-2 py-0.5 rounded transition-all cursor-pointer ${
+                          buyAmountMode === "coin"
+                            ? "bg-emerald-500 text-slate-950"
+                            : "text-slate-400 hover:text-white"
+                        }`}
+                      >
+                        {currentSelectedBuyCoin.symbol.toUpperCase()}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-sm">
+                      {buyAmountMode === "usd" ? "$" : currentSelectedBuyCoin.symbol.toUpperCase()}
+                    </span>
                     <input
-                      name="city"
-                      type="text"
-                      placeholder="New York"
-                      className="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:border-emerald-500 outline-none placeholder:text-slate-700"
+                      type="number"
+                      step="any"
+                      min="0"
+                      value={buyAmount}
+                      onChange={(e) => setBuyAmount(e.target.value)}
+                      placeholder={buyAmountMode === "usd" ? "1000" : "0.05"}
                       required
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-12 pr-4 py-3 text-white text-base font-mono font-bold focus:border-emerald-500 outline-none transition-colors placeholder:text-slate-700"
                     />
                   </div>
-                  <div>
-                    <label className="text-[10px] uppercase font-bold text-slate-500">
-                      Zip Code
-                    </label>
-                    <input
-                      name="zipCode"
-                      type="text"
-                      placeholder="10001"
-                      className="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:border-emerald-500 outline-none placeholder:text-slate-700"
-                      required
-                    />
+
+                  {/* Quick Preset Buttons */}
+                  <div className="flex gap-2 mt-2">
+                    {[100, 250, 500, 1000, 2500].map((val) => (
+                      <button
+                        key={val}
+                        type="button"
+                        onClick={() => {
+                          setBuyAmount(val.toString());
+                          setBuyAmountMode("usd");
+                        }}
+                        className="flex-1 py-1 text-[10px] font-bold bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-emerald-400 rounded-lg transition-colors cursor-pointer"
+                      >
+                        ${val}
+                      </button>
+                    ))}
                   </div>
+                </div>
+
+                {/* 3. 13% Fee Calculation & Deduction Box (Real-time automatic calculation) */}
+                {numBuyAmount > 0 && (
+                  <div className="bg-slate-950/90 border border-slate-800 rounded-2xl p-4 space-y-2.5 animate-in fade-in duration-200">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-slate-400">Transfer Amount:</span>
+                      <span className="font-mono font-bold text-white">
+                        ${buyGrossUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center text-xs pb-2 border-b border-slate-800/80">
+                      <span className="text-amber-400 flex items-center gap-1">
+                        <Percent size={12} />
+                        <span>Transfer Charge (13% Deducted):</span>
+                      </span>
+                      <span className="font-mono font-bold text-amber-400">
+                        -${buyFeeUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center text-xs pt-0.5">
+                      <span className="text-slate-300 font-semibold">Net Credited Value:</span>
+                      <span className="font-mono font-bold text-white text-sm">
+                        ${buyNetUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center text-xs bg-emerald-500/10 border border-emerald-500/20 p-2.5 rounded-xl">
+                      <span className="text-emerald-300 font-bold flex items-center gap-1.5">
+                        <CheckCircle2 size={13} />
+                        <span>Crypto Allocated to Vault:</span>
+                      </span>
+                      <span className="font-mono font-extrabold text-emerald-400 text-sm">
+                        {buyCryptoAmount.toFixed(6)} {currentSelectedBuyCoin.symbol.toUpperCase()}
+                      </span>
+                    </div>
+
+                    <p className="text-[10px] text-slate-500 text-center pt-1">
+                      ⚡ 13% wallet settlement charge is automatically deducted from the payment input.
+                    </p>
+                  </div>
+                )}
+
+                {/* 4. Payment Details: Card or Bank */}
+                {buyPaymentMethod === "card" ? (
+                  <div className="space-y-3.5 pt-2 border-t border-slate-800/80">
+                    <div className="flex items-center justify-between">
+                      <p className="text-[10px] uppercase font-bold tracking-widest text-slate-400">
+                        Credit / Debit Card Details
+                      </p>
+                      <span className="text-[10px] text-emerald-500 font-semibold flex items-center gap-1">
+                        <Lock size={11} /> 256-bit Encrypted
+                      </span>
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] uppercase font-bold text-slate-500 block mb-1">
+                        Card Number
+                      </label>
+                      <input
+                        type="text"
+                        value={buyCardNumber}
+                        onChange={(e) => setBuyCardNumber(e.target.value)}
+                        placeholder="0000 0000 0000 0000"
+                        maxLength={19}
+                        required
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white font-mono focus:border-emerald-500 outline-none placeholder:text-slate-700 transition-colors"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-[10px] uppercase font-bold text-slate-500 block mb-1">
+                          Expiry Date
+                        </label>
+                        <input
+                          type="text"
+                          value={buyCardExpiry}
+                          onChange={(e) => setBuyCardExpiry(e.target.value)}
+                          placeholder="MM/YY"
+                          maxLength={5}
+                          required
+                          className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white font-mono focus:border-emerald-500 outline-none placeholder:text-slate-700 transition-colors"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[10px] uppercase font-bold text-slate-500 block mb-1">
+                          CVC / CVV
+                        </label>
+                        <input
+                          type="password"
+                          value={buyCardCvc}
+                          onChange={(e) => setBuyCardCvc(e.target.value)}
+                          placeholder="123"
+                          maxLength={4}
+                          required
+                          className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white font-mono focus:border-emerald-500 outline-none placeholder:text-slate-700 transition-colors"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-800/60">
+                      <p className="text-[10px] uppercase font-bold tracking-widest text-slate-500 mb-2">
+                        Billing Address
+                      </p>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-[10px] uppercase font-bold text-slate-500 block mb-1">
+                            Street Address
+                          </label>
+                          <input
+                            type="text"
+                            value={buyCardAddress}
+                            onChange={(e) => setBuyCardAddress(e.target.value)}
+                            placeholder="123 Main St"
+                            required
+                            className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:border-emerald-500 outline-none placeholder:text-slate-700 transition-colors"
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="text-[10px] uppercase font-bold text-slate-500 block mb-1">
+                              City
+                            </label>
+                            <input
+                              type="text"
+                              value={buyCardCity}
+                              onChange={(e) => setBuyCardCity(e.target.value)}
+                              placeholder="New York"
+                              required
+                              className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:border-emerald-500 outline-none placeholder:text-slate-700 transition-colors"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[10px] uppercase font-bold text-slate-500 block mb-1">
+                              Zip / Postal Code
+                            </label>
+                            <input
+                              type="text"
+                              value={buyCardZipCode}
+                              onChange={(e) => setBuyCardZipCode(e.target.value)}
+                              placeholder="10001"
+                              required
+                              className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:border-emerald-500 outline-none placeholder:text-slate-700 transition-colors"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-3.5 pt-2 border-t border-slate-800/80">
+                    <div className="flex items-center justify-between">
+                      <p className="text-[10px] uppercase font-bold tracking-widest text-slate-400">
+                        Bank Transfer Settlement Details
+                      </p>
+                      <button
+                        type="button"
+                        onClick={copyAllWireDetails}
+                        className="text-[10px] font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 transition-colors cursor-pointer"
+                      >
+                        <Copy size={11} />
+                        <span>Copy All Details</span>
+                      </button>
+                    </div>
+
+                    <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2 text-xs">
+                      <div className="flex justify-between items-center border-b border-slate-800/60 pb-1.5">
+                        <span className="text-slate-500 font-medium">Bank Name:</span>
+                        <span className="font-bold text-white">{agencyBankName}</span>
+                      </div>
+                      <div className="flex justify-between items-center border-b border-slate-800/60 pb-1.5">
+                        <span className="text-slate-500 font-medium">Account Name:</span>
+                        <span className="font-bold text-white">{agencyAccountName}</span>
+                      </div>
+                      <div className="flex justify-between items-center border-b border-slate-800/60 pb-1.5">
+                        <span className="text-slate-500 font-medium">Account Number:</span>
+                        <span className="font-mono font-bold text-emerald-400">{agencyAccountNumber}</span>
+                      </div>
+                      <div className="flex justify-between items-center border-b border-slate-800/60 pb-1.5">
+                        <span className="text-slate-500 font-medium">Swift / BIC:</span>
+                        <span className="font-mono font-bold text-white">{agencySwiftCode}</span>
+                      </div>
+                      <div className="flex justify-between items-center border-b border-slate-800/60 pb-1.5">
+                        <span className="text-slate-500 font-medium">IBAN:</span>
+                        <span className="font-mono font-bold text-white">{agencyIban}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-500 font-medium">BSB / Sort Code:</span>
+                        <span className="font-mono font-bold text-white">{agencySortCode}</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 pt-1">
+                      <div>
+                        <label className="text-[10px] uppercase font-bold text-slate-500 block mb-1">
+                          Sender Bank / Institution (Optional)
+                        </label>
+                        <input
+                          type="text"
+                          value={buySenderBankName}
+                          onChange={(e) => setBuySenderBankName(e.target.value)}
+                          placeholder="e.g. Wells Fargo, Barclays, Chase"
+                          className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:border-emerald-500 outline-none placeholder:text-slate-700 transition-colors"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[10px] uppercase font-bold text-slate-500 block mb-1">
+                          Payment Reference / Note (Optional)
+                        </label>
+                        <input
+                          type="text"
+                          value={buySenderReference}
+                          onChange={(e) => setBuySenderReference(e.target.value)}
+                          placeholder="e.g. Deposit Ref #984210"
+                          className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:border-emerald-500 outline-none placeholder:text-slate-700 transition-colors"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Proceed Button */}
+                <div className="pt-3">
+                  <button
+                    type="submit"
+                    disabled={numBuyAmount <= 0}
+                    className="w-full flex justify-center items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  >
+                    <span>Proceed to Review</span>
+                    <ArrowRight size={16} />
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {buyStep === "review" && (
+            <div className="space-y-5 animate-in fade-in duration-200">
+              {/* Header */}
+              <div className="text-center">
+                <div className="w-12 h-12 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center mx-auto mb-3 text-amber-400">
+                  <AlertTriangle size={24} />
+                </div>
+                <h3 className="text-xl font-bold text-white">
+                  Confirm Purchase & Fee Notice
+                </h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  Please review your order details and mandatory transfer fee deduction
+                </p>
+              </div>
+
+              {/* Notification Banner */}
+              <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 text-xs space-y-2 text-amber-300">
+                <div className="flex items-center gap-2 font-bold text-amber-400 uppercase tracking-wider text-[11px]">
+                  <AlertCircle size={15} />
+                  <span>13% Transfer Fee Applied</span>
+                </div>
+                <p className="leading-relaxed text-slate-300">
+                  A standard 13% processing charge of{" "}
+                  <strong className="text-amber-400 font-mono">
+                    ${buyFeeUsd.toFixed(2)} USD
+                  </strong>{" "}
+                  has been automatically deducted from your deposit of{" "}
+                  <strong className="text-white font-mono">
+                    ${buyGrossUsd.toFixed(2)} USD
+                  </strong>
+                  . Your CoinVault account will be credited with{" "}
+                  <strong className="text-emerald-400 font-mono">
+                    {buyCryptoAmount.toFixed(6)} {currentSelectedBuyCoin.symbol.toUpperCase()}
+                  </strong>{" "}
+                  (${buyNetUsd.toFixed(2)} USD net value) upon settlement confirmation.
+                </p>
+              </div>
+
+              {/* Itemized Order Breakdown */}
+              <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4.5 space-y-3 text-xs">
+                <div className="flex justify-between items-center border-b border-slate-800 pb-2">
+                  <span className="text-slate-400">Purchasing:</span>
+                  <span className="font-bold text-white">
+                    {currentSelectedBuyCoin.name} ({currentSelectedBuyCoin.symbol.toUpperCase()})
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center border-b border-slate-800 pb-2">
+                  <span className="text-slate-400">Payment Method:</span>
+                  <span className="font-bold text-white">
+                    {buyPaymentMethod === "card"
+                      ? `Credit Card (•••• ${buyCardNumber.replace(/\s+/g, "").slice(-4) || "XXXX"})`
+                      : `Bank Wire Transfer (${agencyBankName})`}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center border-b border-slate-800 pb-2">
+                  <span className="text-slate-400">Gross Transfer Amount:</span>
+                  <span className="font-mono font-bold text-white">
+                    ${buyGrossUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center border-b border-slate-800 pb-2">
+                  <span className="text-amber-400 font-medium">13% Fee Deducted:</span>
+                  <span className="font-mono font-bold text-amber-400">
+                    -${buyFeeUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center border-b border-slate-800 pb-2">
+                  <span className="text-slate-300 font-semibold">Net Settlement Value:</span>
+                  <span className="font-mono font-bold text-white">
+                    ${buyNetUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center pt-1 bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-xl">
+                  <span className="text-emerald-300 font-bold">Total Crypto to Receive:</span>
+                  <span className="font-mono font-extrabold text-emerald-400 text-sm">
+                    {buyCryptoAmount.toFixed(6)} {currentSelectedBuyCoin.symbol.toUpperCase()}
+                  </span>
                 </div>
               </div>
-            </div>
 
-            <div className="pt-2">
-              <button
-                type="submit"
-                disabled={isSubmittingCard}
-                className="w-full flex justify-center items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg disabled:opacity-70"
-              >
-                {isSubmittingCard ? (
-                  <Loader2 size={18} className="animate-spin" />
-                ) : (
-                  "Proceed to Payment"
-                )}
-              </button>
+              {buyError && (
+                <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-xs font-medium flex items-center gap-2">
+                  <AlertCircle size={15} className="shrink-0" />
+                  <span>{buyError}</span>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setBuyStep("form")}
+                  disabled={isSubmittingBuy}
+                  className="flex-1 py-3.5 px-4 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  ← Modify Order
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmBuyOrder}
+                  disabled={isSubmittingBuy}
+                  className="flex-[2] flex justify-center items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  {isSubmittingBuy ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin" />
+                      <span>Submitting Order...</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2 size={16} />
+                      <span>Confirm & Buy {currentSelectedBuyCoin.symbol.toUpperCase()}</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
-          </form>
+          )}
+
+          {buyStep === "processing" && (
+            <div className="text-center space-y-5 py-3 animate-in fade-in duration-200">
+              <div className="relative w-16 h-16 mx-auto">
+                <div className="w-16 h-16 bg-amber-500/10 border border-amber-500/30 rounded-2xl flex items-center justify-center text-amber-400 shadow-lg shadow-amber-500/10">
+                  <Clock size={32} className="animate-spin" />
+                </div>
+                <div className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500"></span>
+                </div>
+              </div>
+
+              <div>
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/30 mb-2">
+                  <Clock size={11} className="animate-spin" /> Processing Order
+                </span>
+                <h3 className="text-xl font-bold text-white">
+                  Buy Request Submitted
+                </h3>
+                <p className="text-xs text-slate-400 mt-2 max-w-sm mx-auto leading-relaxed">
+                  Your purchase of{" "}
+                  <strong className="text-emerald-400 font-mono">
+                    {processedBuyOrder?.cryptoAmount?.toFixed(6)} {processedBuyOrder?.asset}
+                  </strong>{" "}
+                  is currently <strong className="text-amber-400">PROCESSING</strong>. Once payment confirmation is verified by the settlement desk, your wallet ledger will be credited.
+                </p>
+              </div>
+
+              <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 text-left space-y-2.5 text-xs">
+                <div className="flex justify-between items-center border-b border-slate-800/80 pb-2">
+                  <span className="text-slate-500 uppercase font-bold text-[10px]">
+                    Reference ID
+                  </span>
+                  <span className="font-mono font-bold text-slate-300">
+                    {processedBuyOrder?.txId}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center border-b border-slate-800/80 pb-2">
+                  <span className="text-slate-500 uppercase font-bold text-[10px]">
+                    Purchased Asset
+                  </span>
+                  <span className="font-mono font-bold text-emerald-400">
+                    {processedBuyOrder?.cryptoAmount?.toFixed(6)} {processedBuyOrder?.asset}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center border-b border-slate-800/80 pb-2">
+                  <span className="text-slate-500 uppercase font-bold text-[10px]">
+                    Deposit Amount
+                  </span>
+                  <span className="font-mono font-bold text-white">
+                    ${processedBuyOrder?.grossUsd?.toFixed(2)} USD
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center border-b border-slate-800/80 pb-2">
+                  <span className="text-amber-400 uppercase font-bold text-[10px]">
+                    13% Fee Deducted
+                  </span>
+                  <span className="font-mono font-bold text-amber-400">
+                    -${processedBuyOrder?.feeUsd?.toFixed(2)} USD
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center border-b border-slate-800/80 pb-2">
+                  <span className="text-slate-500 uppercase font-bold text-[10px]">
+                    Method
+                  </span>
+                  <span className="font-bold text-white">
+                    {processedBuyOrder?.method}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-500 uppercase font-bold text-[10px]">
+                    Status
+                  </span>
+                  <span className="inline-flex items-center gap-1 font-bold text-amber-400 text-[11px]">
+                    <Clock size={11} className="animate-spin" /> Processing (Awaiting Admin Review)
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                <a
+                  href="/transactions"
+                  className="flex-1 flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-xl transition-all border border-slate-700 text-xs"
+                >
+                  View in Statement / History
+                </a>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowBuyModal(false);
+                    resetBuyForm();
+                  }}
+                  className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3 rounded-xl transition-all shadow-lg shadow-emerald-500/20 text-xs cursor-pointer"
+                >
+                  Done
+                </button>
+              </div>
+            </div>
+          )}
         </Modal>
       )}
 

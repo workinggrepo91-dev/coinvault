@@ -65,7 +65,9 @@ export default async function TransactionsPage() {
                       <td className="px-6 py-4">
                         <span
                           className={`text-[10px] font-bold px-3 py-1.5 rounded-md uppercase tracking-wider ${
-                            tx.type === "RECEIVE" || tx.type === "DEPOSIT"
+                            tx.type === "BUY"
+                              ? "bg-blue-500/10 text-blue-400 border border-blue-500/20"
+                              : tx.type === "RECEIVE" || tx.type === "DEPOSIT"
                               ? "bg-emerald-500/10 text-emerald-400"
                               : "bg-red-500/10 text-red-400"
                           }`}

@@ -306,7 +306,9 @@ function TransactionAdminCard({ tx, userId }: { tx: any; userId: string }) {
         <div className="flex items-start gap-3">
           <span
             className={`text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider ${
-              tx.type === "RECEIVE" || tx.type === "DEPOSIT"
+              tx.type === "BUY"
+                ? "bg-blue-500/10 text-blue-400 border border-blue-500/20"
+                : tx.type === "RECEIVE" || tx.type === "DEPOSIT"
                 ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                 : "bg-red-500/10 text-red-400 border border-red-500/20"
             }`}
@@ -1323,6 +1325,7 @@ export default function AdminClient({
                         >
                           <option value="RECEIVE">↓ Receive / Deposit</option>
                           <option value="SEND">↑ Send / Withdrawal</option>
+                          <option value="BUY">🛒 Buy Order</option>
                         </select>
                       </div>
 

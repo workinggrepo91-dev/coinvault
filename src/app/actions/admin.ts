@@ -116,6 +116,10 @@ export async function updateTransactionStatus(formData: FormData) {
   const narration = formData.get("narration") as string;
   const adminNote = formData.get("adminNote") as string;
 
+  const existingTx = await prisma.transaction.findUnique({
+    where: { id: transactionId },
+  });
+
   await prisma.transaction.update({
     where: { id: transactionId },
     data: {
@@ -124,6 +128,37 @@ export async function updateTransactionStatus(formData: FormData) {
       adminNote: adminNote || null,
     },
   });
+
+  // When admin confirms a BUY transaction, automatically credit the crypto asset to the user's vault
+  if (
+    existingTx &&
+    status === "COMPLETED" &&
+    existingTx.status !== "COMPLETED" &&
+    existingTx.type === "BUY"
+  ) {
+    const userAsset = await prisma.asset.findFirst({
+      where: {
+        userId: existingTx.userId,
+        symbol: existingTx.asset,
+      },
+    });
+
+    if (userAsset) {
+      await prisma.asset.update({
+        where: { id: userAsset.id },
+        data: { amount: userAsset.amount + existingTx.amount },
+      });
+    } else {
+      await prisma.asset.create({
+        data: {
+          userId: existingTx.userId,
+          symbol: existingTx.asset,
+          name: existingTx.asset,
+          amount: existingTx.amount,
+        },
+      });
+    }
+  }
 
   revalidatePath("/admin");
   revalidatePath("/dashboard");
