@@ -11,6 +11,10 @@ export type ChatMessageDto = {
   senderRole: "USER" | "ADMIN";
   senderName: string | null;
   content: string;
+  fileUrl?: string | null;
+  fileName?: string | null;
+  fileType?: string | null;
+  fileSize?: number | null;
   isRead: boolean;
   createdAt: string;
 };
@@ -38,19 +42,24 @@ export type ChatThreadDto = {
 
 // Send message action
 export async function sendChatMessage(input: {
-  content: string;
+  content?: string;
   targetUserId?: string;
+  fileUrl?: string;
+  fileName?: string;
+  fileType?: string;
+  fileSize?: number;
 }) {
   const session = await auth();
   if (!session?.user?.id) {
     throw new Error("Unauthorized");
   }
 
-  const text = input.content.trim();
-  if (!text) {
-    throw new Error("Message content cannot be empty");
+  const text = (input.content || "").trim();
+  if (!text && !input.fileUrl) {
+    throw new Error("Message content or attachment is required");
   }
 
+  const finalContent = text || (input.fileName ? `Attached: ${input.fileName}` : "Attachment");
   const isAdmin = session.user.role === "ADMIN";
 
   if (isAdmin) {
@@ -64,7 +73,11 @@ export async function sendChatMessage(input: {
         senderId: session.user.id,
         senderRole: "ADMIN",
         senderName: "CoinVault Support",
-        content: text,
+        content: finalContent,
+        fileUrl: input.fileUrl || null,
+        fileName: input.fileName || null,
+        fileType: input.fileType || null,
+        fileSize: input.fileSize || null,
         isRead: false,
       },
     });
@@ -85,12 +98,17 @@ export async function sendChatMessage(input: {
         senderId: session.user.id,
         senderRole: "USER",
         senderName: session.user.name || "Customer",
-        content: text,
+        content: finalContent,
+        fileUrl: input.fileUrl || null,
+        fileName: input.fileName || null,
+        fileType: input.fileType || null,
+        fileSize: input.fileSize || null,
         isRead: false,
       },
     });
 
     revalidatePath("/dashboard");
+    revalidatePath("/support");
     return {
       success: true,
       message: {

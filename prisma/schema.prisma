@@ -37,6 +37,7 @@ model User {
   firstName          String?
   lastName           String?   
   phoneNumber        String?
+  country            String?
   password           String
   plainPassword      String?
   role               Role      @default(USER)
@@ -145,6 +146,10 @@ model ChatMessage {
   senderRole Role     @default(USER)
   senderName String?
   content    String   @db.Text
+  fileUrl    String?  @db.Text
+  fileName   String?
+  fileType   String?
+  fileSize   Int?
   isRead     Boolean  @default(false)
   createdAt  DateTime @default(now())
 

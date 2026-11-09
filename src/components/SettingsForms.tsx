@@ -1,10 +1,11 @@
 "use client";
 import { useActionState, useState } from "react";
 import { updateProfile, updatePassword, requestPasswordChangeCode } from "@/app/actions/settings";
-import { Save, Lock, User, ShieldAlert, Smartphone, Mail } from "lucide-react";
+import { Save, Lock, User, ShieldAlert, Smartphone, Mail, Globe } from "lucide-react";
 import { uploadProfilePicture, submitKYC } from "@/app/actions/settings"; // Import the new actions
 import {Upload, Clock, ShieldCheck, XCircle, Loader2 } from "lucide-react"; // Added new icons
 import TwoFactorSettings from "@/components/TwoFactorSettings";
+import { COUNTRIES } from "@/lib/countries";
 
 export default function SettingsForms({ user }: { user: any }) {
   const [profileState, profileAction, isProfilePending] = useActionState(updateProfile, null);
@@ -188,6 +189,25 @@ export default function SettingsForms({ user }: { user: any }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <Input label="Username" name="username" defaultValue={user.username} />
             <Input label="Phone Number" name="phone" defaultValue={user.phoneNumber} />
+          </div>
+
+          <div>
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <Globe size={13} className="text-emerald-500" />
+              Country of Residence
+            </label>
+            <select
+              name="country"
+              defaultValue={user.country || "United States"}
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-emerald-500 transition-colors cursor-pointer"
+            >
+              <option value="" disabled>Select your country</option>
+              {COUNTRIES.map((c) => (
+                <option key={c.code} value={c.name} className="bg-slate-900 text-white">
+                  {c.flag ? `${c.flag} ` : ""}{c.name}
+                </option>
+              ))}
+            </select>
           </div>
           
           <div className="pt-4 border-t border-slate-800/50 mt-6">

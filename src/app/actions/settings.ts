@@ -11,6 +11,7 @@ const ProfileSchema = z.object({
   lastName: z.string().min(2, "Last name too short"),
   username: z.string().min(3, "Username too short"),
   phone: z.string().min(10, "Invalid phone number"),
+  country: z.string().optional(),
 });
 
 export async function updateProfile(prevState: any, formData: FormData) {
@@ -32,6 +33,7 @@ export async function updateProfile(prevState: any, formData: FormData) {
         lastName: validated.data.lastName,
         username: validated.data.username,
         phoneNumber: validated.data.phone,
+        country: validated.data.country || null,
       },
     });
     revalidatePath("/dashboard");

@@ -20,8 +20,21 @@ import {
   ExternalLink,
   ChevronRight,
   SlidersHorizontal,
+  Paperclip,
+  Image as ImageIcon,
+  FileText,
+  Download,
+  X,
 } from "lucide-react";
 import { ChatThreadDto, ChatMessageDto } from "@/app/actions/chat";
+import { uploadChatAttachment } from "@/app/actions/chat-upload";
+
+function formatFileSize(bytes?: number | null) {
+  if (!bytes) return "";
+  if (bytes < 1024) return bytes + " B";
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+  return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+}
 
 const CANNED_RESPONSES = [
   "Hello! How can CoinVault administrative support assist you today?",
@@ -52,6 +65,9 @@ export default function AdminChatCenter({
   const [isLoadingThreads, setIsLoadingThreads] = useState(true);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploadingFile, setIsUploadingFile] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -180,7 +196,40 @@ export default function AdminChatCenter({
   // Send message as Admin
   const handleSendMessage = async (textToSend?: string) => {
     const content = (textToSend || inputText).trim();
-    if (!content || !activeUserId || isSending) return;
+    if ((!content && !selectedFile) || !activeUserId || isSending || isUploadingFile) return;
+
+    let fileUrl: string | undefined;
+    let fileName: string | undefined;
+    let fileType: string | undefined;
+    let fileSize: number | undefined;
+
+    setIsSending(true);
+
+    if (selectedFile) {
+      setIsUploadingFile(true);
+      try {
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+        const uploadRes = await uploadChatAttachment(formData);
+        if (uploadRes.error || !uploadRes.url) {
+          alert(uploadRes.error || "Failed to upload file attachment.");
+          setIsSending(false);
+          setIsUploadingFile(false);
+          return;
+        }
+        fileUrl = uploadRes.url;
+        fileName = uploadRes.fileName;
+        fileType = uploadRes.fileType;
+        fileSize = uploadRes.fileSize;
+      } catch (e: any) {
+        alert("Upload error: " + (e.message || "Failed to upload file."));
+        setIsSending(false);
+        setIsUploadingFile(false);
+        return;
+      } finally {
+        setIsUploadingFile(false);
+      }
+    }
 
     const tempId = `temp-${Date.now()}`;
     const optimisticMessage: ChatMessageDto = {
@@ -189,14 +238,19 @@ export default function AdminChatCenter({
       senderId: "admin",
       senderRole: "ADMIN",
       senderName: "CoinVault Support",
-      content,
+      content: content || (fileName ? `Attached: ${fileName}` : "Attachment"),
+      fileUrl,
+      fileName,
+      fileType,
+      fileSize,
       isRead: true,
       createdAt: new Date().toISOString(),
     };
 
     setMessages((prev) => [...prev, optimisticMessage]);
     setInputText("");
-    setIsSending(true);
+    setSelectedFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
     setTimeout(() => scrollToBottom(true), 50);
 
     try {
@@ -206,6 +260,10 @@ export default function AdminChatCenter({
         body: JSON.stringify({
           content,
           targetUserId: activeUserId,
+          fileUrl,
+          fileName,
+          fileType,
+          fileSize,
         }),
       });
 
@@ -558,9 +616,56 @@ export default function AdminChatCenter({
                             : "bg-slate-800/90 border border-slate-700/70 text-white rounded-bl-xs"
                         }`}
                       >
-                        <p className="whitespace-pre-wrap break-words">
-                          {msg.content}
-                        </p>
+                        {/* File Attachment Display */}
+                        {msg.fileUrl && (
+                          <div className="mb-2">
+                            {msg.fileType?.startsWith("image/") || msg.fileUrl.match(/\.(jpeg|jpg|gif|png|webp)/i) ? (
+                              <a
+                                href={msg.fileUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block overflow-hidden rounded-xl border border-white/10 hover:opacity-90 transition-opacity max-w-[280px]"
+                              >
+                                <img
+                                  src={msg.fileUrl}
+                                  alt={msg.fileName || "Image attachment"}
+                                  className="w-full max-h-56 object-cover rounded-xl"
+                                />
+                                <div className="flex items-center justify-between text-[10px] bg-slate-950/80 text-slate-300 px-3 py-1">
+                                  <span className="truncate max-w-[200px]">{msg.fileName || "View image"}</span>
+                                  <Download size={12} className="shrink-0 text-emerald-400" />
+                                </div>
+                              </a>
+                            ) : (
+                              <a
+                                href={msg.fileUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                download={msg.fileName || "file"}
+                                className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-950/80 border border-white/10 hover:border-emerald-500/40 transition-colors text-left max-w-[280px]"
+                              >
+                                <div className="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0">
+                                  <FileText size={15} />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-xs font-bold text-white truncate">
+                                    {msg.fileName || "Attached file"}
+                                  </p>
+                                  <p className="text-[10px] text-slate-400 font-mono">
+                                    {formatFileSize(msg.fileSize)}
+                                  </p>
+                                </div>
+                                <Download size={13} className="text-slate-400 shrink-0" />
+                              </a>
+                            )}
+                          </div>
+                        )}
+
+                        {msg.content && (!msg.fileUrl || !msg.content.startsWith("Attached: ")) && (
+                          <p className="whitespace-pre-wrap break-words">
+                            {msg.content}
+                          </p>
+                        )}
                       </div>
 
                       {/* Timestamp & Status */}
@@ -594,26 +699,77 @@ export default function AdminChatCenter({
 
             {/* Input Bar */}
             <div className="p-3 bg-slate-950/90 border-t border-slate-800/80 shrink-0">
+              {/* Selected File Attachment Preview */}
+              {selectedFile && (
+                <div className="mb-2 flex items-center justify-between bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 text-xs">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="w-6 h-6 rounded bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
+                      {selectedFile.type.startsWith("image/") ? (
+                        <ImageIcon size={13} />
+                      ) : (
+                        <FileText size={13} />
+                      )}
+                    </div>
+                    <span className="text-white truncate font-medium text-[11px] max-w-[220px]">
+                      {selectedFile.name}
+                    </span>
+                    <span className="text-slate-500 text-[10px] font-mono shrink-0">
+                      ({formatFileSize(selectedFile.size)})
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedFile(null);
+                      if (fileInputRef.current) fileInputRef.current.value = "";
+                    }}
+                    className="text-slate-400 hover:text-red-400 transition-colors p-1 cursor-pointer"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              )}
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                className="hidden"
+                accept="image/*,.pdf,.doc,.docx,.txt"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) setSelectedFile(file);
+                }}
+              />
+
               <div className="relative flex items-end gap-2 bg-slate-900 border border-slate-800 focus-within:border-emerald-500/50 rounded-2xl p-1.5 transition-all">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  title="Attach image or document"
+                  className="flex h-10 w-10 items-center justify-center rounded-xl text-slate-400 hover:text-emerald-400 hover:bg-slate-800 transition-all shrink-0 cursor-pointer"
+                >
+                  <Paperclip size={18} />
+                </button>
+
                 <textarea
                   ref={inputRef}
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder={`Reply to ${activeThread.user.firstName || "user"} as Admin Support...`}
+                  placeholder={selectedFile ? "Add an optional note... (Enter to send)" : `Reply to ${activeThread.user.firstName || "user"} as Admin Support...`}
                   rows={2}
-                  className="flex-1 bg-transparent text-white text-xs sm:text-sm px-3 py-2 outline-none resize-none max-h-32 placeholder:text-slate-600 scrollbar-none"
+                  className="flex-1 bg-transparent text-white text-xs sm:text-sm px-2 py-2 outline-none resize-none max-h-32 placeholder:text-slate-600 scrollbar-none"
                 />
                 <button
                   onClick={() => handleSendMessage()}
-                  disabled={!inputText.trim() || isSending}
+                  disabled={(!inputText.trim() && !selectedFile) || isSending || isUploadingFile}
                   className={`flex h-10 w-10 items-center justify-center rounded-xl transition-all ${
-                    inputText.trim() && !isSending
-                      ? "bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-500/20"
+                    (inputText.trim() || selectedFile) && !isSending && !isUploadingFile
+                      ? "bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-500/20 cursor-pointer"
                       : "bg-slate-800 text-slate-600 cursor-not-allowed"
                   }`}
                 >
-                  {isSending ? (
+                  {isSending || isUploadingFile ? (
                     <Loader2 size={16} className="animate-spin" />
                   ) : (
                     <Send size={16} />
@@ -621,7 +777,7 @@ export default function AdminChatCenter({
                 </button>
               </div>
               <div className="flex justify-between items-center px-2 pt-1 text-[10px] text-slate-500">
-                <span>Press Enter to reply • Shift+Enter for new line</span>
+                <span>Press Enter to reply • 📎 Send attachments up to 10MB</span>
                 <span className="font-mono text-emerald-400">Authenticated Administrator</span>
               </div>
             </div>

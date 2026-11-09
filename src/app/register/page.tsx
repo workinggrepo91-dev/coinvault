@@ -1,8 +1,9 @@
 "use client";
 import { useActionState, useState } from "react";
 import { registerUser } from "@/app/actions/register";
-import { Eye, EyeOff, Info, ArrowLeft, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Info, ArrowLeft, Loader2, Globe } from "lucide-react";
 import Link from "next/link"; // Import Link for navigation
+import { COUNTRIES } from "@/lib/countries";
 
 export default function RegisterPage() {
   const [state, formAction, isPending] = useActionState(registerUser, null);
@@ -35,6 +36,29 @@ export default function RegisterPage() {
           <InputField name="username" label="Username" placeholder="crypto_king" instruction="At least 3 characters" />
           <InputField name="email" label="Email" type="email" placeholder="name@company.com" instruction="Use a valid email" />
           <InputField name="phone" label="Phone" type="tel" placeholder="+1234567890" instruction="Include country code" />
+
+          <div>
+            <div className="flex justify-between items-center mb-1">
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
+                <Globe size={12} className="text-emerald-500" />
+                Country of Residence
+              </label>
+              <span className="text-[9px] text-slate-600 italic">Select country</span>
+            </div>
+            <select
+              name="country"
+              required
+              defaultValue="United States"
+              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-white outline-none focus:ring-1 focus:ring-emerald-500 text-sm cursor-pointer"
+            >
+              <option value="" disabled>Select your country</option>
+              {COUNTRIES.map((c) => (
+                <option key={c.code} value={c.name} className="bg-slate-900 text-white">
+                  {c.flag ? `${c.flag} ` : ""}{c.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="relative">

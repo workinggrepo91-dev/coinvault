@@ -82,6 +82,7 @@ export const UserScalarFieldEnum = {
   firstName: 'firstName',
   lastName: 'lastName',
   phoneNumber: 'phoneNumber',
+  country: 'country',
   password: 'password',
   plainPassword: 'plainPassword',
   role: 'role',
@@ -174,6 +175,10 @@ export const ChatMessageScalarFieldEnum = {
   senderRole: 'senderRole',
   senderName: 'senderName',
   content: 'content',
+  fileUrl: 'fileUrl',
+  fileName: 'fileName',
+  fileType: 'fileType',
+  fileSize: 'fileSize',
   isRead: 'isRead',
   createdAt: 'createdAt'
 } as const

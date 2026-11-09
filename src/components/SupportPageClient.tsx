@@ -3,9 +3,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
-  Headphones,
+  Mail,
   Send,
   Loader2,
+  Paperclip,
+  Image as ImageIcon,
+  FileText,
+  Download,
+  X,
   ShieldCheck,
   Check,
   CheckCheck,
@@ -14,10 +19,10 @@ import {
   Shield,
   Clock,
   HelpCircle,
-  FileText,
   CreditCard,
   Lock,
 } from "lucide-react";
+import { uploadChatAttachment } from "@/app/actions/chat-upload";
 
 type Message = {
   id: string;
@@ -26,10 +31,21 @@ type Message = {
   senderRole: "USER" | "ADMIN";
   senderName: string | null;
   content: string;
+  fileUrl?: string | null;
+  fileName?: string | null;
+  fileType?: string | null;
+  fileSize?: number | null;
   isRead: boolean;
   createdAt: string;
   pending?: boolean;
 };
+
+function formatFileSize(bytes?: number | null) {
+  if (!bytes) return "";
+  if (bytes < 1024) return bytes + " B";
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+  return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+}
 
 const QUICK_PROMPTS = [
   "How do I increase my withdrawal limit?",
@@ -64,6 +80,9 @@ export default function SupportPageClient({
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploadingFile, setIsUploadingFile] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -106,7 +125,40 @@ export default function SupportPageClient({
 
   const handleSendMessage = async (customText?: string) => {
     const textToSend = (customText || inputMessage).trim();
-    if (!textToSend || isSending) return;
+    if ((!textToSend && !selectedFile) || isSending || isUploadingFile) return;
+
+    let fileUrl: string | undefined;
+    let fileName: string | undefined;
+    let fileType: string | undefined;
+    let fileSize: number | undefined;
+
+    setIsSending(true);
+
+    if (selectedFile) {
+      setIsUploadingFile(true);
+      try {
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+        const uploadRes = await uploadChatAttachment(formData);
+        if (uploadRes.error || !uploadRes.url) {
+          alert(uploadRes.error || "Failed to upload file attachment.");
+          setIsSending(false);
+          setIsUploadingFile(false);
+          return;
+        }
+        fileUrl = uploadRes.url;
+        fileName = uploadRes.fileName;
+        fileType = uploadRes.fileType;
+        fileSize = uploadRes.fileSize;
+      } catch (e: any) {
+        alert("Upload error: " + (e.message || "Failed to upload file."));
+        setIsSending(false);
+        setIsUploadingFile(false);
+        return;
+      } finally {
+        setIsUploadingFile(false);
+      }
+    }
 
     const tempId = `temp-${Date.now()}`;
     const optimisticMsg: Message = {
@@ -115,7 +167,11 @@ export default function SupportPageClient({
       senderId: "",
       senderRole: "USER",
       senderName: userName || "Customer",
-      content: textToSend,
+      content: textToSend || (fileName ? `Attached: ${fileName}` : "Attachment"),
+      fileUrl,
+      fileName,
+      fileType,
+      fileSize,
       isRead: false,
       createdAt: new Date().toISOString(),
       pending: true,
@@ -123,13 +179,20 @@ export default function SupportPageClient({
 
     setMessages((prev) => [...prev, optimisticMsg]);
     if (!customText) setInputMessage("");
-    setIsSending(true);
+    setSelectedFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
 
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: textToSend }),
+        body: JSON.stringify({
+          content: textToSend,
+          fileUrl,
+          fileName,
+          fileType,
+          fileSize,
+        }),
       });
 
       if (res.ok) {
@@ -141,6 +204,7 @@ export default function SupportPageClient({
         }
       } else {
         setMessages((prev) => prev.filter((m) => m.id !== tempId));
+        alert("Failed to send message. Please try again.");
       }
     } catch (err) {
       console.error("Failed to send message:", err);
@@ -156,7 +220,7 @@ export default function SupportPageClient({
       <header className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-slate-900 pb-6 gap-4">
         <div>
           <div className="flex items-center gap-2 mb-2 text-emerald-500">
-            <Headphones size={20} />
+            <Mail size={20} />
             <h1 className="text-[10px] font-bold uppercase tracking-[0.2em]">
               Support & Inquiries
             </h1>
@@ -243,7 +307,7 @@ export default function SupportPageClient({
             ) : messages.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center p-6 space-y-4">
                 <div className="w-16 h-16 rounded-3xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shadow-inner">
-                  <Headphones size={32} />
+                  <Mail size={32} />
                 </div>
                 <div>
                   <h4 className="font-bold text-white text-base">
@@ -286,7 +350,54 @@ export default function SupportPageClient({
                           : "bg-emerald-600 text-white rounded-tr-sm"
                       } ${isPending ? "opacity-70" : ""}`}
                     >
-                      <p className="whitespace-pre-wrap break-words">{msg.content}</p>
+                      {/* File Attachment Display */}
+                      {msg.fileUrl && (
+                        <div className="mb-2">
+                          {msg.fileType?.startsWith("image/") || msg.fileUrl.match(/\.(jpeg|jpg|gif|png|webp)/i) ? (
+                            <a
+                              href={msg.fileUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="block overflow-hidden rounded-xl border border-white/10 hover:opacity-90 transition-opacity max-w-[280px]"
+                            >
+                              <img
+                                src={msg.fileUrl}
+                                alt={msg.fileName || "Image attachment"}
+                                className="w-full max-h-56 object-cover rounded-xl"
+                              />
+                              <div className="flex items-center justify-between text-[10px] bg-slate-950/80 text-slate-300 px-3 py-1.5">
+                                <span className="truncate max-w-[200px]">{msg.fileName || "View image"}</span>
+                                <Download size={12} className="shrink-0 text-emerald-400" />
+                              </div>
+                            </a>
+                          ) : (
+                            <a
+                              href={msg.fileUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              download={msg.fileName || "file"}
+                              className="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-950/80 border border-white/10 hover:border-emerald-500/40 transition-colors text-left max-w-[280px]"
+                            >
+                              <div className="w-8 h-8 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0">
+                                <FileText size={16} />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs font-bold text-white truncate">
+                                  {msg.fileName || "Attached file"}
+                                </p>
+                                <p className="text-[10px] text-slate-400 font-mono">
+                                  {formatFileSize(msg.fileSize)}
+                                </p>
+                              </div>
+                              <Download size={14} className="text-slate-400 shrink-0" />
+                            </a>
+                          )}
+                        </div>
+                      )}
+
+                      {msg.content && (!msg.fileUrl || !msg.content.startsWith("Attached: ")) && (
+                        <p className="whitespace-pre-wrap break-words">{msg.content}</p>
+                      )}
                     </div>
 
                     <div className="flex items-center gap-1 text-[9px] text-slate-500 mt-1 px-1">
@@ -317,6 +428,48 @@ export default function SupportPageClient({
 
           {/* Chat Message Input Bar */}
           <div className="p-4 bg-slate-950 border-t border-slate-800 shrink-0">
+            {/* Selected File Attachment Preview */}
+            {selectedFile && (
+              <div className="mb-3 flex items-center justify-between bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-xs">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
+                    {selectedFile.type.startsWith("image/") ? (
+                      <ImageIcon size={15} />
+                    ) : (
+                      <FileText size={15} />
+                    )}
+                  </div>
+                  <span className="text-white truncate font-medium text-xs max-w-[280px]">
+                    {selectedFile.name}
+                  </span>
+                  <span className="text-slate-500 text-[11px] font-mono shrink-0">
+                    ({formatFileSize(selectedFile.size)})
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedFile(null);
+                    if (fileInputRef.current) fileInputRef.current.value = "";
+                  }}
+                  className="text-slate-400 hover:text-red-400 transition-colors p-1 cursor-pointer"
+                >
+                  <X size={15} />
+                </button>
+              </div>
+            )}
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              className="hidden"
+              accept="image/*,.pdf,.doc,.docx,.txt"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) setSelectedFile(file);
+              }}
+            />
+
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -324,6 +477,15 @@ export default function SupportPageClient({
               }}
               className="flex items-end gap-3"
             >
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                title="Attach image or document"
+                className="h-11 w-11 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-emerald-400 flex items-center justify-center transition-all shrink-0 cursor-pointer"
+              >
+                <Paperclip size={18} />
+              </button>
+
               <textarea
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
@@ -334,16 +496,16 @@ export default function SupportPageClient({
                   }
                 }}
                 rows={2}
-                placeholder="Type your message to support desk... (Press Enter to send)"
+                placeholder={selectedFile ? "Add an optional note... (Press Enter to send)" : "Type your message to support desk... (Press Enter to send)"}
                 className="flex-1 bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-2xl px-4 py-3 text-xs text-white placeholder-slate-500 resize-none outline-none transition-all"
               />
 
               <button
                 type="submit"
-                disabled={!inputMessage.trim() || isSending}
-                className="h-11 px-5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 disabled:bg-slate-800 disabled:text-slate-600 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-emerald-500/20 disabled:shadow-none"
+                disabled={(!inputMessage.trim() && !selectedFile) || isSending || isUploadingFile}
+                className="h-11 px-5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 disabled:bg-slate-800 disabled:text-slate-600 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-emerald-500/20 disabled:shadow-none shrink-0"
               >
-                {isSending ? (
+                {isSending || isUploadingFile ? (
                   <Loader2 size={16} className="animate-spin" />
                 ) : (
                   <>
@@ -353,6 +515,10 @@ export default function SupportPageClient({
                 )}
               </button>
             </form>
+            <div className="flex justify-between items-center px-1 pt-2 text-[10px] text-slate-500">
+              <span>Press Enter to send • 📎 Attach images, PDFs, or documents up to 10MB</span>
+              <span className="font-mono">Encrypted Support Session</span>
+            </div>
           </div>
         </div>
 
@@ -457,3 +623,4 @@ export default function SupportPageClient({
     </div>
   );
 }
+

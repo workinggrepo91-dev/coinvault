@@ -54,18 +54,23 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { content, targetUserId } = body;
+    const { content, targetUserId, fileUrl, fileName, fileType, fileSize } = body;
 
-    if (!content || typeof content !== "string" || !content.trim()) {
+    const trimmedContent = typeof content === "string" ? content.trim() : "";
+    if (!trimmedContent && !fileUrl) {
       return NextResponse.json(
-        { error: "Content is required" },
+        { error: "Content or file attachment is required" },
         { status: 400 }
       );
     }
 
     const result = await sendChatMessage({
-      content,
+      content: trimmedContent,
       targetUserId,
+      fileUrl,
+      fileName,
+      fileType,
+      fileSize,
     });
 
     return NextResponse.json(result);

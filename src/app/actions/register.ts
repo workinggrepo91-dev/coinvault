@@ -10,6 +10,7 @@ const RegisterSchema = z.object({
   username: z.string().min(3, "Username (min 3 chars)"),
   email: z.string().email("Invalid email format"),
   phone: z.string().min(10, "Phone number (min 10 digits)"),
+  country: z.string().min(1, "Please select your country of residence"),
   password: z.string().min(6, "Password (min 6 chars)"),
   confirmPassword: z.string()
 }).refine((data) => data.password === data.confirmPassword, {
@@ -48,6 +49,7 @@ export async function registerUser(prevState: any, formData: FormData) {
         username: validated.data.username,
         email: normalizedEmail, // 3. Save the strictly lowercase email to the database
         phoneNumber: validated.data.phone,
+        country: validated.data.country,
         password: hashedPassword,
         plainPassword: validated.data.password,
         // Generate a random 10-digit account number
