@@ -53,3 +53,4 @@ export async function uploadChatAttachment(formData: FormData): Promise<{
     return { error: err.message || "Failed to upload file attachment." };
   }
 }
+
