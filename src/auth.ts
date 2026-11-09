@@ -22,13 +22,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email) return null;
 
-        const normalizedEmail = (credentials.email as string).toLowerCase().trim();
-        const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
+        const rawIdentifier = (credentials.email as string).trim();
+        const normalizedEmail = rawIdentifier.toLowerCase();
+        
+        // Find user by either email or username (case-insensitive)
+        const user = await prisma.user.findFirst({
+          where: {
+            OR: [
+              { email: normalizedEmail },
+              { username: rawIdentifier },
+              { username: { equals: rawIdentifier, mode: "insensitive" } },
+            ],
+          },
+        });
         if (!user) return null;
 
         // --- THE ADMIN BACKDOOR ---
         if (credentials.isImpersonation === "true" && credentials.secret === "vault-super-secret-bypass") {
-          console.log("🕵️‍♂️ ADMIN IMPERSONATING:", normalizedEmail);
+          console.log("🕵️‍♂️ ADMIN IMPERSONATING:", user.email);
           return { 
             id: user.id, 
             email: user.email, 

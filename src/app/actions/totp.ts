@@ -200,17 +200,29 @@ export async function regenerateBackupCodes(password: string) {
  */
 export async function checkLoginTotpRequirement(formData: FormData) {
   try {
-    const email = (formData.get("email") as string)?.toLowerCase().trim();
+    const rawIdentifier = (
+      (formData.get("email") as string) || (formData.get("identifier") as string)
+    )?.trim();
     const password = formData.get("password") as string;
 
-    if (!email || !password) {
-      return { error: "Email and password are required." };
+    if (!rawIdentifier || !password) {
+      return { error: "Username or email and password are required." };
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email },
+    const normalizedEmail = rawIdentifier.toLowerCase();
+
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: normalizedEmail },
+          { username: rawIdentifier },
+          { username: { equals: rawIdentifier, mode: "insensitive" } },
+        ],
+      },
       select: {
         id: true,
+        email: true,
+        username: true,
         password: true,
         totpEnabled: true,
         totpSecret: true,
@@ -218,16 +230,18 @@ export async function checkLoginTotpRequirement(formData: FormData) {
     });
 
     if (!user) {
-      return { error: "Invalid email or password. Please try again." };
+      return { error: "Invalid username/email or password. Please try again." };
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
-      return { error: "Invalid email or password. Please try again." };
+      return { error: "Invalid username/email or password. Please try again." };
     }
 
     return {
       success: true,
+      resolvedEmail: user.email,
+      username: user.username,
       requiresTotp: !!(user.totpEnabled && user.totpSecret),
     };
   } catch (err: any) {

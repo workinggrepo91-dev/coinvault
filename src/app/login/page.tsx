@@ -84,7 +84,7 @@ export default function LoginPage() {
     setError("");
 
     const formData = new FormData(e.currentTarget);
-    const email = (formData.get("email") as string)?.toLowerCase().trim();
+    const rawIdentifier = (formData.get("email") as string)?.trim();
     const password = formData.get("password") as string;
 
     try {
@@ -97,9 +97,11 @@ export default function LoginPage() {
         return;
       }
 
+      const loginEmail = checkRes.resolvedEmail || rawIdentifier;
+
       if (checkRes.requiresTotp) {
         // Switch to TOTP 2-Factor Authentication step
-        setPendingCredentials({ email, password });
+        setPendingCredentials({ email: loginEmail, password });
         setIsTotpChallenge(true);
         setTotpCode("");
         setIsLoading(false);
@@ -109,12 +111,12 @@ export default function LoginPage() {
       // No 2FA required: proceed with regular sign in
       const res = await signIn("credentials", {
         redirect: false,
-        email,
+        email: loginEmail,
         password,
       });
 
       if (res?.error) {
-        setError("Invalid email or password. Please try again.");
+        setError("Invalid username/email or password. Please try again.");
         setIsLoading(false);
       } else {
         router.push("/dashboard");
@@ -345,17 +347,17 @@ export default function LoginPage() {
             <form onSubmit={handleLogin} className="space-y-5">
               <div>
                 <label className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 block">
-                  Email Address
+                  Username or Email Address
                 </label>
                 <div className="relative">
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
                   <input
-                    type="email"
+                    type="text"
                     name="email"
                     required
                     autoComplete="username"
                     className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl pl-12 pr-4 py-3 outline-none focus:border-emerald-500 transition-colors placeholder:text-slate-700"
-                    placeholder="investor@example.com"
+                    placeholder="Enter your username or email"
                   />
                 </div>
               </div>
