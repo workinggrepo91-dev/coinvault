@@ -12,6 +12,10 @@ import {
   LogIn,
   List,
   Loader2,
+  Headphones,
+  Send,
+  Bell,
+  MessageSquare,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 
@@ -76,6 +80,13 @@ export default function Navigation({
       name: "History",
       href: "/transactions",
       icon: List,
+      reqAuth: true,
+      reqAdmin: false,
+    },
+    {
+      name: "Support",
+      href: "/support",
+      icon: Headphones,
       reqAuth: true,
       reqAdmin: false,
     },
@@ -149,7 +160,7 @@ export default function Navigation({
                       }
                     />
                   )}
-                  {link.name === "Vault" && unreadChatCount > 0 && !isPending && (
+                  {link.name === "Support" && unreadChatCount > 0 && !isPending && (
                     <span className="absolute -top-1 -right-2 flex h-2.5 w-2.5">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
@@ -243,16 +254,81 @@ export default function Navigation({
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
                     Loading...
                   </span>
-                ) : link.name === "Vault" && unreadChatCount > 0 ? (
+                ) : link.name === "Support" && unreadChatCount > 0 ? (
                   <span className="flex items-center gap-1 bg-emerald-500/20 text-emerald-400 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border border-emerald-500/30">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    {unreadChatCount} msg
+                    {unreadChatCount} new
                   </span>
                 ) : null}
               </Link>
             );
           })}
         </div>
+
+        {/* SUPPORT MESSAGE MODULE ON SIDEBAR */}
+        {isLoggedIn && (
+          <div className="mt-auto mb-3 bg-gradient-to-b from-slate-900/90 to-slate-950 border border-slate-800/90 hover:border-slate-700/80 rounded-2xl p-3.5 transition-all shadow-xl group">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <div className="relative w-7 h-7 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                  <Headphones size={14} />
+                  <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 border border-slate-950 animate-pulse" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-white block leading-tight">
+                    Support Desk
+                  </span>
+                  <span className="text-[10px] text-slate-500 block leading-tight">
+                    24/7 VIP Concierge
+                  </span>
+                </div>
+              </div>
+
+              {unreadChatCount > 0 ? (
+                <span className="flex items-center gap-1 bg-amber-500/20 text-amber-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-500/30 animate-pulse">
+                  <Bell size={10} />
+                  {unreadChatCount} new
+                </span>
+              ) : (
+                <span className="flex items-center gap-1 text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  Online
+                </span>
+              )}
+            </div>
+
+            {unreadChatCount > 0 ? (
+              <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-2 mb-2.5 text-[11px] text-amber-200 leading-snug">
+                You have <strong className="text-amber-300">{unreadChatCount} unread message{unreadChatCount > 1 ? "s" : ""}</strong> from support.
+              </div>
+            ) : (
+              <p className="text-[11px] text-slate-400 mb-2.5 leading-snug">
+                Have questions or need assistance with your vault?
+              </p>
+            )}
+
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent("open-support-chat"));
+                }}
+                className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-md shadow-emerald-500/20 cursor-pointer active:scale-95"
+              >
+                <Send size={12} />
+                Send Message
+              </button>
+
+              <Link
+                href="/support"
+                title="Full Support Center"
+                className="w-8 h-8 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors border border-slate-700/60 shrink-0"
+              >
+                <MessageSquare size={13} />
+              </Link>
+            </div>
+          </div>
+        )}
 
         {/* Dynamic Bottom Button */}
         {isLoggedIn ? (
@@ -262,7 +338,7 @@ export default function Navigation({
               signOut({ callbackUrl: "/login" });
             }}
             disabled={isSigningOut}
-            className="flex items-center gap-3 px-4 py-3 mt-auto text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all w-full text-left cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all w-full text-left cursor-pointer disabled:opacity-50"
           >
             {isSigningOut ? (
               <Loader2 size={18} className="animate-spin text-red-400" />

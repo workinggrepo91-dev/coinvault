@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MessageCircle,
@@ -67,6 +68,7 @@ function playNotificationChime() {
 }
 
 export default function SupportChatWidget({ userRole }: { userRole?: string }) {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
@@ -261,6 +263,10 @@ export default function SupportChatWidget({ userRole }: { userRole?: string }) {
     setIncomingToast(null);
     setIsOpen(true);
   };
+
+  if (pathname === "/support") {
+    return null;
+  }
 
   return (
     // Responsive positioning: bottom-20 on mobile (above 64px mobile bottom nav) and bottom-6 on desktop
