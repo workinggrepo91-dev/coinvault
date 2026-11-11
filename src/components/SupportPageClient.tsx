@@ -101,6 +101,9 @@ export default function SupportPageClient({
         const data = await res.json();
         if (data.messages) {
           setMessages(data.messages);
+          if (typeof window !== "undefined") {
+            window.dispatchEvent(new CustomEvent("chat-unread-updated", { detail: 0 }));
+          }
         }
       }
     } catch (err) {

@@ -58,7 +58,20 @@ export default function Navigation({
     };
     checkUnread();
     const interval = setInterval(checkUnread, 8000);
-    return () => clearInterval(interval);
+
+    const handleCountUpdate = (e: any) => {
+      if (typeof e?.detail === "number") {
+        setUnreadChatCount(e.detail);
+      } else {
+        checkUnread();
+      }
+    };
+    window.addEventListener("chat-unread-updated", handleCountUpdate);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("chat-unread-updated", handleCountUpdate);
+    };
   }, [isLoggedIn]);
 
   const navLinks = [
@@ -130,7 +143,7 @@ export default function Navigation({
               <Link
                 key={link.name}
                 href={link.href}
-                prefetch={true}
+                prefetch={link.href === "/support" ? false : true}
                 onClick={() => {
                   if (pathname !== link.href) {
                     setNavigatingTo(link.href);
@@ -224,7 +237,7 @@ export default function Navigation({
               <Link
                 key={link.name}
                 href={link.href}
-                prefetch={true}
+                prefetch={link.href === "/support" ? false : true}
                 onClick={() => {
                   if (pathname !== link.href) {
                     setNavigatingTo(link.href);

@@ -12,10 +12,10 @@ export default async function SupportPage() {
     redirect("/login");
   }
 
-  // Fetch initial chat messages for the current user and mark incoming admin messages as read
+  // Fetch initial chat messages for the current user (DO NOT mark read on server/prefetch)
   let initialMessages: any[] = [];
   try {
-    const rawMessages = await getChatMessages(session.user.id, true);
+    const rawMessages = await getChatMessages(session.user.id, false);
     initialMessages = (rawMessages || []).map((m: any) => ({
       ...m,
       createdAt:

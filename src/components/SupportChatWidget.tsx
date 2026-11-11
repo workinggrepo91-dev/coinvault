@@ -125,6 +125,9 @@ export default function SupportChatWidget({ userRole }: { userRole?: string }) {
           setUnreadCount(0);
           prevUnreadCountRef.current = 0;
           setIncomingToast(null);
+          if (typeof window !== "undefined") {
+            window.dispatchEvent(new CustomEvent("chat-unread-updated", { detail: 0 }));
+          }
         }
       }
     } catch (err) {
@@ -152,16 +155,25 @@ export default function SupportChatWidget({ userRole }: { userRole?: string }) {
           const previewRes = await fetch("/api/chat?markRead=false");
           if (previewRes.ok) {
             const previewData = await previewRes.json();
-            const latestAdminMsg = (previewData.messages || [])
-              .filter((m: Message) => m.senderRole === "ADMIN")
-              .slice(-1)[0];
+            const unreadAdminMsgs = (previewData.messages || []).filter(
+              (m: Message) => m.senderRole === "ADMIN" && !m.isRead
+            );
+            const latestAdminMsg =
+              unreadAdminMsgs.slice(-1)[0] ||
+              (previewData.messages || [])
+                .filter((m: Message) => m.senderRole === "ADMIN")
+                .slice(-1)[0];
 
-            if (latestAdminMsg && !isOpen) {
+            if (!isOpen) {
               // Set persistent notification toast (stays until opened)
               setIncomingToast({
-                id: latestAdminMsg.id,
-                content: latestAdminMsg.content,
-                sender: "CoinVault Support",
+                id: latestAdminMsg?.id || `unread-${newCount}`,
+                content:
+                  latestAdminMsg?.content ||
+                  (latestAdminMsg?.fileName
+                    ? `Attached: ${latestAdminMsg.fileName}`
+                    : "You have a new support message"),
+                sender: latestAdminMsg?.senderName || "CoinVault Support",
                 count: newCount,
               });
             }
@@ -172,6 +184,9 @@ export default function SupportChatWidget({ userRole }: { userRole?: string }) {
 
         setUnreadCount(newCount);
         prevUnreadCountRef.current = newCount;
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("chat-unread-updated", { detail: newCount }));
+        }
       }
     } catch (err) {
       console.error("Failed to fetch unread count:", err);
@@ -187,6 +202,8 @@ export default function SupportChatWidget({ userRole }: { userRole?: string }) {
 
   // Initial and interval fetch
   useEffect(() => {
+    if (pathname === "/support") return;
+
     if (isOpen) {
       setIncomingToast(null);
       fetchMessages(messages.length === 0);
@@ -201,7 +218,7 @@ export default function SupportChatWidget({ userRole }: { userRole?: string }) {
       }, 5000);
       return () => clearInterval(interval);
     }
-  }, [isOpen]);
+  }, [isOpen, pathname]);
 
   // Scroll to bottom when new messages arrive or modal opens
   useEffect(() => {

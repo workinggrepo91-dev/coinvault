@@ -193,6 +193,83 @@ export async function uploadProfilePicture(formData: FormData) {
   }
 }
 
+export async function uploadKYCDocument(formData: FormData): Promise<{
+  success?: boolean;
+  url?: string;
+  error?: string;
+}> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) return { error: "Unauthorized. Please log in." };
+
+    const file = formData.get("file") as File | null;
+    if (!file || file.size === 0) {
+      return { error: "No document file provided." };
+    }
+
+    // Maximum file size: 15MB
+    const MAX_SIZE = 15 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      return { error: "File exceeds 15MB limit. Please upload a smaller image or document." };
+    }
+
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const isImage = file.type.startsWith("image/");
+
+    const uploadRes = await uploadToCloudinary(buffer, "coinvault/kyc", {
+      resource_type: isImage ? "image" : "auto",
+      mimeType: file.type,
+    });
+
+    return {
+      success: true,
+      url: uploadRes.url,
+    };
+  } catch (err: any) {
+    console.error("KYC document upload error:", err);
+    return { error: err.message || "Failed to upload document to cloud storage." };
+  }
+}
+
+export async function submitKYCVerifiedUrls(data: {
+  idType: string;
+  idFrontUrl: string;
+  idBackUrl: string;
+  utilityBillUrl: string;
+}) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Unauthorized" };
+
+  if (
+    !data.idType ||
+    !data.idFrontUrl ||
+    !data.idBackUrl ||
+    !data.utilityBillUrl
+  ) {
+    return { error: "All documents (ID Type, Front, Back, and Utility Bill) are required." };
+  }
+
+  try {
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: {
+        idType: data.idType,
+        idFront: data.idFrontUrl,
+        idBack: data.idBackUrl,
+        utilityBill: data.utilityBillUrl,
+        verificationStatus: "PENDING",
+      },
+    });
+
+    revalidatePath("/settings");
+    revalidatePath("/admin");
+    return { success: "Documents uploaded and submitted successfully! Your account is now pending review." };
+  } catch (err: any) {
+    console.error("KYC submission error:", err);
+    return { error: err.message || "Failed to submit verification request. Please try again." };
+  }
+}
+
 export async function submitKYC(formData: FormData) {
   const session = await auth();
   if (!session?.user?.id) return { error: "Unauthorized" };
@@ -215,19 +292,24 @@ export async function submitKYC(formData: FormData) {
   }
 
   try {
-    // Read all 3 files concurrently
-    const [frontBuffer, backBuffer, utilityBuffer] = await Promise.all([
-      idFront.arrayBuffer().then((ab) => Buffer.from(ab)),
-      idBack.arrayBuffer().then((ab) => Buffer.from(ab)),
-      utilityBill.arrayBuffer().then((ab) => Buffer.from(ab)),
-    ]);
+    // Process files sequentially to prevent network socket congestion
+    const frontBuffer = Buffer.from(await idFront.arrayBuffer());
+    const frontUpload = await uploadToCloudinary(frontBuffer, "coinvault/kyc", {
+      resource_type: idFront.type.startsWith("image/") ? "image" : "auto",
+      mimeType: idFront.type,
+    });
 
-    // Stream upload all 3 files directly to Cloudinary concurrently
-    const [frontUpload, backUpload, utilityUpload] = await Promise.all([
-      uploadToCloudinary(frontBuffer, "coinvault/kyc", { mimeType: idFront.type }),
-      uploadToCloudinary(backBuffer, "coinvault/kyc", { mimeType: idBack.type }),
-      uploadToCloudinary(utilityBuffer, "coinvault/kyc", { mimeType: utilityBill.type }),
-    ]);
+    const backBuffer = Buffer.from(await idBack.arrayBuffer());
+    const backUpload = await uploadToCloudinary(backBuffer, "coinvault/kyc", {
+      resource_type: idBack.type.startsWith("image/") ? "image" : "auto",
+      mimeType: idBack.type,
+    });
+
+    const utilityBuffer = Buffer.from(await utilityBill.arrayBuffer());
+    const utilityUpload = await uploadToCloudinary(utilityBuffer, "coinvault/kyc", {
+      resource_type: utilityBill.type.startsWith("image/") ? "image" : "auto",
+      mimeType: utilityBill.type,
+    });
 
     await prisma.user.update({
       where: { id: session.user.id },

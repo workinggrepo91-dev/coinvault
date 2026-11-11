@@ -1,9 +1,31 @@
 "use client";
 import { useActionState, useState } from "react";
-import { updateProfile, updatePassword, requestPasswordChangeCode } from "@/app/actions/settings";
-import { Save, Lock, User, ShieldAlert, Smartphone, Mail, Globe } from "lucide-react";
-import { uploadProfilePicture, submitKYC } from "@/app/actions/settings"; // Import the new actions
-import {Upload, Clock, ShieldCheck, XCircle, Loader2 } from "lucide-react"; // Added new icons
+import {
+  updateProfile,
+  updatePassword,
+  requestPasswordChangeCode,
+  uploadProfilePicture,
+  submitKYC,
+  uploadKYCDocument,
+  submitKYCVerifiedUrls,
+} from "@/app/actions/settings";
+import {
+  Save,
+  Lock,
+  User,
+  ShieldAlert,
+  Smartphone,
+  Mail,
+  Globe,
+  Upload,
+  Clock,
+  ShieldCheck,
+  XCircle,
+  Loader2,
+  CheckCircle2,
+  FileText,
+  Trash2,
+} from "lucide-react";
 import TwoFactorSettings from "@/components/TwoFactorSettings";
 import { COUNTRIES } from "@/lib/countries";
 
@@ -14,7 +36,137 @@ export default function SettingsForms({ user }: { user: any }) {
   const [avatarStatus, setAvatarStatus] = useState<{ error?: string; success?: string } | null>(null);
 
   const [isUploadingKYC, setIsUploadingKYC] = useState(false);
+  const [kycProgressText, setKycProgressText] = useState("");
   const [kycStatus, setKycStatus] = useState<{ error?: string; success?: string } | null>(null);
+
+  const [idType, setIdType] = useState("");
+  const [idFrontFile, setIdFrontFile] = useState<File | null>(null);
+  const [idBackFile, setIdBackFile] = useState<File | null>(null);
+  const [utilityBillFile, setUtilityBillFile] = useState<File | null>(null);
+
+  const [idFrontPreview, setIdFrontPreview] = useState<string | null>(null);
+  const [idBackPreview, setIdBackPreview] = useState<string | null>(null);
+  const [utilityBillPreview, setUtilityBillPreview] = useState<string | null>(null);
+
+  const handleFileSelect = (
+    file: File | null,
+    setFile: (f: File | null) => void,
+    setPreview: (url: string | null) => void
+  ) => {
+    if (!file) {
+      setFile(null);
+      setPreview(null);
+      return;
+    }
+    if (file.size > 15 * 1024 * 1024) {
+      setKycStatus({
+        error: `File "${file.name}" exceeds the 15MB limit. Please choose a smaller file.`,
+      });
+      return;
+    }
+    setKycStatus(null);
+    setFile(file);
+    if (file.type.startsWith("image/")) {
+      const objUrl = URL.createObjectURL(file);
+      setPreview(objUrl);
+    } else {
+      setPreview(null);
+    }
+  };
+
+  const handleKYCSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setKycStatus(null);
+
+    if (!idType) {
+      setKycStatus({ error: "Please select an ID type." });
+      return;
+    }
+    if (!idFrontFile) {
+      setKycStatus({ error: "Please select the front of your ID." });
+      return;
+    }
+    if (!idBackFile) {
+      setKycStatus({ error: "Please select the back of your ID." });
+      return;
+    }
+    if (!utilityBillFile) {
+      setKycStatus({
+        error: "Please select a utility bill or proof of address.",
+      });
+      return;
+    }
+
+    setIsUploadingKYC(true);
+
+    try {
+      // 1. Upload Front ID
+      setKycProgressText("Uploading ID Front (Step 1/3)...");
+      const frontForm = new FormData();
+      frontForm.append("file", idFrontFile);
+      const frontRes = await uploadKYCDocument(frontForm);
+      if (frontRes.error || !frontRes.url) {
+        throw new Error(
+          frontRes.error || "Failed to upload ID Front. Please try again."
+        );
+      }
+
+      // 2. Upload Back ID
+      setKycProgressText("Uploading ID Back (Step 2/3)...");
+      const backForm = new FormData();
+      backForm.append("file", idBackFile);
+      const backRes = await uploadKYCDocument(backForm);
+      if (backRes.error || !backRes.url) {
+        throw new Error(
+          backRes.error || "Failed to upload ID Back. Please try again."
+        );
+      }
+
+      // 3. Upload Utility Bill
+      setKycProgressText("Uploading Proof of Address (Step 3/3)...");
+      const utilForm = new FormData();
+      utilForm.append("file", utilityBillFile);
+      const utilRes = await uploadKYCDocument(utilForm);
+      if (utilRes.error || !utilRes.url) {
+        throw new Error(
+          utilRes.error || "Failed to upload Proof of Address. Please try again."
+        );
+      }
+
+      // 4. Finalize verification request
+      setKycProgressText("Finalizing verification request...");
+      const finalRes = await submitKYCVerifiedUrls({
+        idType,
+        idFrontUrl: frontRes.url,
+        idBackUrl: backRes.url,
+        utilityBillUrl: utilRes.url,
+      });
+
+      if (finalRes.error) {
+        throw new Error(finalRes.error);
+      }
+
+      setKycStatus({
+        success:
+          "Verification documents submitted successfully! Your account is now pending review.",
+      });
+      // Clear files
+      setIdFrontFile(null);
+      setIdBackFile(null);
+      setUtilityBillFile(null);
+      setIdFrontPreview(null);
+      setIdBackPreview(null);
+      setUtilityBillPreview(null);
+    } catch (err: any) {
+      console.error("KYC upload error:", err);
+      setKycStatus({
+        error: err.message || "Failed to upload documents. Please try again.",
+      });
+    } finally {
+      setIsUploadingKYC(false);
+      setKycProgressText("");
+    }
+  };
 
   // Email Code for Password Change
   const [isSendingCode, setIsSendingCode] = useState(false);
@@ -107,25 +259,20 @@ export default function SettingsForms({ user }: { user: any }) {
         {kycStatus?.success && <SuccessMsg msg={kycStatus.success} />}
         {kycStatus?.error && <ErrorMsg msg={kycStatus.error} />}
 
-        {(!user?.verificationStatus || user.verificationStatus === "UNVERIFIED" || user.verificationStatus === "REJECTED") ? (
+        {(!user?.verificationStatus || user.verificationStatus === "UNVERIFIED" || user.verificationStatus === "REJECTED") && !kycStatus?.success ? (
           <form 
-             onSubmit={async (e) => {
-               e.preventDefault();
-               setIsUploadingKYC(true);
-               setKycStatus(null);
-               const res = await submitKYC(new FormData(e.currentTarget));
-               setIsUploadingKYC(false);
-               if (res?.error) {
-                 setKycStatus({ error: res.error });
-               } else if (res?.success) {
-                 setKycStatus({ success: res.success });
-               }
-             }} 
+             onSubmit={handleKYCSubmit}
              className="space-y-5 bg-slate-950 p-5 rounded-xl border border-slate-800"
           >
             <div>
-              <label className="block text-[10px] uppercase font-bold text-slate-500 mb-2">Legal ID Type</label>
-              <select name="idType" required className="w-full bg-slate-900 border border-slate-800 rounded-md p-3 text-xs text-white outline-none focus:border-emerald-500">
+              <label className="block text-[10px] uppercase font-bold text-slate-400 mb-2">Legal ID Type</label>
+              <select 
+                value={idType} 
+                onChange={(e) => setIdType(e.target.value)}
+                disabled={isUploadingKYC}
+                required 
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs text-white outline-none focus:border-emerald-500 transition-colors disabled:opacity-50"
+              >
                 <option value="">Select ID Type...</option>
                 <option value="Driver's License">Driver's License</option>
                 <option value="Passport">Passport</option>
@@ -133,34 +280,193 @@ export default function SettingsForms({ user }: { user: any }) {
               </select>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-slate-900/50 rounded-lg border border-slate-800/50">
-              <div>
-                <label className="block text-[10px] uppercase font-bold text-slate-500 mb-2">Upload Front of ID</label>
-                <input type="file" name="idFront" accept="image/*" required className="block w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:font-bold file:bg-slate-800 file:text-white cursor-pointer" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Front of ID */}
+              <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-[10px] uppercase font-bold text-slate-400">Front of ID Document</label>
+                  {idFrontFile && (
+                    <span className="text-[9px] text-emerald-400 font-mono font-bold flex items-center gap-1 bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                      <CheckCircle2 size={11} /> Selected
+                    </span>
+                  )}
+                </div>
+                {idFrontFile ? (
+                  <div className="flex items-center justify-between p-2.5 bg-slate-950 rounded-lg border border-emerald-500/30">
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      {idFrontPreview ? (
+                        <img src={idFrontPreview} alt="Front preview" className="w-10 h-10 object-cover rounded-md border border-slate-700 shrink-0" />
+                      ) : (
+                        <FileText size={22} className="text-emerald-400 shrink-0" />
+                      )}
+                      <div className="truncate">
+                        <p className="text-xs text-white font-medium truncate">{idFrontFile.name}</p>
+                        <p className="text-[10px] text-slate-400 font-mono">{(idFrontFile.size / (1024 * 1024)).toFixed(2)} MB</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      disabled={isUploadingKYC}
+                      onClick={() => handleFileSelect(null, setIdFrontFile, setIdFrontPreview)}
+                      className="text-slate-400 hover:text-red-400 p-1.5 transition-colors disabled:opacity-50"
+                      title="Remove file"
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center p-4 border border-dashed border-slate-700/80 hover:border-emerald-500/60 rounded-xl cursor-pointer bg-slate-950/40 hover:bg-slate-950 transition-all">
+                    <Upload size={18} className="text-slate-400 mb-1" />
+                    <span className="text-xs font-semibold text-slate-200">Select Front Photo</span>
+                    <span className="text-[9px] text-slate-500 mt-0.5">JPG, PNG, WEBP, PDF (max 15MB)</span>
+                    <input
+                      type="file"
+                      accept="image/*,application/pdf"
+                      disabled={isUploadingKYC}
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] || null;
+                        handleFileSelect(file, setIdFrontFile, setIdFrontPreview);
+                      }}
+                    />
+                  </label>
+                )}
               </div>
-              <div>
-                <label className="block text-[10px] uppercase font-bold text-slate-500 mb-2">Upload Back of ID</label>
-                <input type="file" name="idBack" accept="image/*" required className="block w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:font-bold file:bg-slate-800 file:text-white cursor-pointer" />
+
+              {/* Back of ID */}
+              <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-[10px] uppercase font-bold text-slate-400">Back of ID Document</label>
+                  {idBackFile && (
+                    <span className="text-[9px] text-emerald-400 font-mono font-bold flex items-center gap-1 bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                      <CheckCircle2 size={11} /> Selected
+                    </span>
+                  )}
+                </div>
+                {idBackFile ? (
+                  <div className="flex items-center justify-between p-2.5 bg-slate-950 rounded-lg border border-emerald-500/30">
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      {idBackPreview ? (
+                        <img src={idBackPreview} alt="Back preview" className="w-10 h-10 object-cover rounded-md border border-slate-700 shrink-0" />
+                      ) : (
+                        <FileText size={22} className="text-emerald-400 shrink-0" />
+                      )}
+                      <div className="truncate">
+                        <p className="text-xs text-white font-medium truncate">{idBackFile.name}</p>
+                        <p className="text-[10px] text-slate-400 font-mono">{(idBackFile.size / (1024 * 1024)).toFixed(2)} MB</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      disabled={isUploadingKYC}
+                      onClick={() => handleFileSelect(null, setIdBackFile, setIdBackPreview)}
+                      className="text-slate-400 hover:text-red-400 p-1.5 transition-colors disabled:opacity-50"
+                      title="Remove file"
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center p-4 border border-dashed border-slate-700/80 hover:border-emerald-500/60 rounded-xl cursor-pointer bg-slate-950/40 hover:bg-slate-950 transition-all">
+                    <Upload size={18} className="text-slate-400 mb-1" />
+                    <span className="text-xs font-semibold text-slate-200">Select Back Photo</span>
+                    <span className="text-[9px] text-slate-500 mt-0.5">JPG, PNG, WEBP, PDF (max 15MB)</span>
+                    <input
+                      type="file"
+                      accept="image/*,application/pdf"
+                      disabled={isUploadingKYC}
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] || null;
+                        handleFileSelect(file, setIdBackFile, setIdBackPreview);
+                      }}
+                    />
+                  </label>
+                )}
               </div>
             </div>
 
-            <div className="p-4 bg-slate-900/50 rounded-lg border border-slate-800/50">
+            {/* Utility Bill / Proof of Address */}
+            <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
               <div className="flex justify-between items-center mb-2">
-                 <label className="block text-[10px] uppercase font-bold text-slate-500">Add Utility Bill (Proof of Address)</label>
-                 <span className="text-[9px] text-emerald-500 font-bold bg-emerald-500/10 px-2 py-1 rounded">Max 3 months old</span>
+                <label className="text-[10px] uppercase font-bold text-slate-400">Proof of Address (Utility Bill / Statement)</label>
+                {utilityBillFile ? (
+                  <span className="text-[9px] text-emerald-400 font-mono font-bold flex items-center gap-1 bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                    <CheckCircle2 size={11} /> Selected
+                  </span>
+                ) : (
+                  <span className="text-[9px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded">Max 3 months old</span>
+                )}
               </div>
-              <p className="text-[10px] text-slate-600 mb-3 italic">e.g., Water bill, Electricity bill, Bank statement</p>
-              <input type="file" name="utilityBill" accept="image/*" required className="block w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:font-bold file:bg-slate-800 file:text-white cursor-pointer" />
+              <p className="text-[10px] text-slate-500 mb-3 italic">e.g., Water bill, Electricity bill, Bank statement</p>
+              {utilityBillFile ? (
+                <div className="flex items-center justify-between p-2.5 bg-slate-950 rounded-lg border border-emerald-500/30">
+                  <div className="flex items-center gap-3 overflow-hidden">
+                    {utilityBillPreview ? (
+                      <img src={utilityBillPreview} alt="Utility preview" className="w-10 h-10 object-cover rounded-md border border-slate-700 shrink-0" />
+                    ) : (
+                      <FileText size={22} className="text-emerald-400 shrink-0" />
+                    )}
+                    <div className="truncate">
+                      <p className="text-xs text-white font-medium truncate">{utilityBillFile.name}</p>
+                      <p className="text-[10px] text-slate-400 font-mono">{(utilityBillFile.size / (1024 * 1024)).toFixed(2)} MB</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    disabled={isUploadingKYC}
+                    onClick={() => handleFileSelect(null, setUtilityBillFile, setUtilityBillPreview)}
+                    className="text-slate-400 hover:text-red-400 p-1.5 transition-colors disabled:opacity-50"
+                    title="Remove file"
+                  >
+                    <Trash2 size={15} />
+                  </button>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center p-4 border border-dashed border-slate-700/80 hover:border-emerald-500/60 rounded-xl cursor-pointer bg-slate-950/40 hover:bg-slate-950 transition-all">
+                  <Upload size={18} className="text-slate-400 mb-1" />
+                  <span className="text-xs font-semibold text-slate-200">Select Utility Bill / Proof of Address</span>
+                  <span className="text-[9px] text-slate-500 mt-0.5">JPG, PNG, WEBP, PDF (max 15MB)</span>
+                  <input
+                    type="file"
+                    accept="image/*,application/pdf"
+                    disabled={isUploadingKYC}
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0] || null;
+                      handleFileSelect(file, setUtilityBillFile, setUtilityBillPreview);
+                    }}
+                  />
+                </label>
+              )}
             </div>
 
-            <button type="submit" disabled={isUploadingKYC} className="w-full flex justify-center items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all disabled:opacity-70 disabled:cursor-not-allowed mt-2 shadow-lg shadow-emerald-500/10">
-              {isUploadingKYC && <Loader2 size={18} className="animate-spin" />}
-              {isUploadingKYC ? "Uploading to Cloud Storage..." : "Submit Documents for Review"}
+            {/* Submit Button & Progress Indicator */}
+            {isUploadingKYC && kycProgressText && (
+              <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3 flex items-center gap-3">
+                <Loader2 size={16} className="animate-spin text-emerald-400 shrink-0" />
+                <span className="text-xs font-medium text-emerald-300 animate-pulse">{kycProgressText}</span>
+              </div>
+            )}
+
+            <button 
+              type="submit" 
+              disabled={isUploadingKYC || !idType || !idFrontFile || !idBackFile || !utilityBillFile} 
+              className="w-full flex justify-center items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2 shadow-lg shadow-emerald-500/10"
+            >
+              {isUploadingKYC ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" />
+                  <span>{kycProgressText || "Uploading to Cloud Storage..."}</span>
+                </>
+              ) : (
+                <span>Submit Documents for Review</span>
+              )}
             </button>
           </form>
         ) : (
           <div className="bg-slate-950 p-6 rounded-xl border border-slate-800 text-center">
-            {user.verificationStatus === "PENDING" ? (
+            {user.verificationStatus === "PENDING" || kycStatus?.success ? (
               <p className="text-sm text-slate-400">Your documents are currently under review by our compliance team. This usually takes 1-2 business days.</p>
             ) : (
               <p className="text-sm text-emerald-500 font-bold">Your identity has been successfully verified. Your account limits have been upgraded.</p>
